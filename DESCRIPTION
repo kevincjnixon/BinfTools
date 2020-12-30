@@ -1,6 +1,7 @@
 Package: BinfTools
-Title: BinfTools
+Title: Useful functions for standard analyses
 Version: 0.0.0.9000
+Date: December 30, 2020
 Authors@R: 
     person(given = "Kevin CJ",
            family = "Nixon",
