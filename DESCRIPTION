@@ -1,0 +1,23 @@
+Package: BinfTools
+Title: BinfTools
+Version: 0.0.0.9000
+Authors@R: 
+    person(given = "Kevin CJ",
+           family = "Nixon",
+           role = c("aut", "cre"),
+           email = "Kevin.Nixon@uhnresearch.ca")
+Description: A few useful commands for running analyses and making figures for RNA-seq analysis. Preferrably using DESeq2.
+License: `use_mit_license()`, `use_gpl3_license()` or friends to
+    pick a license
+Encoding: UTF-8
+LazyData: true
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.1.1
+Imports:
+  gprofiler2,
+  ggplot2,
+  ggpubr,
+  rstatix,
+  pheatmap,
+  tidyr,
+  GSVA
