@@ -12,7 +12,7 @@ fromLimma<-function(topTable, geneNames=rownames(topTable)){
                      baseMean=topTable$AveExpr,
                   log2FoldChange=topTable$logFC,
                      pvalue=topTable$P.Value,
-                     padj=topTable$adj.P.Value)
+                     padj=topTable$adj.P.Val)
   return(res)
 }
 
