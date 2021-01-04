@@ -6,8 +6,7 @@ Usage
 
 Ideally, we will be using objects created from DESeq2, but objects from
 other RNA-seq analysis packages can be modified to work as input for
-BinfTools. Here, we are using RNA-seq data from Nixon et al. (<span
-class="citeproc-not-found" data-reference-id="nixon">**???**</span>)
+BinfTools. Here, we are using RNA-seq data from Nixon et al. (2019)
 comparing gene expression in the *Drosophila* musrhoom body between
 Wild-Type (expressing mCherry-shRNA) and Bap60 knockdown.
 
@@ -255,6 +254,13 @@ Merico, Daniele, Ruth Isserlin, Oliver Stueker, Andrew Emili, and Gary
 D. Bader. 2010. “Enrichment Map: A Network-Based Method for Gene-Set
 Enrichment Visualization and Interpretation.” *PLoS One* 5 (11): e13984.
 <https://doi.org/10.1371/journal.pone.0013984>.
+
+Nixon, Kevin C. J., Justine Rousseau, Max H. Stone, Mohammed Sarikahya,
+Sophie Ehresmann, Seiji Mizuno, Naomichi Matsumoto, et al. 2019. “A
+Syndromic Neurodevelopmental Disorder Caused by Mutations in Smarcd1, a
+Core Swi/Snf Subunit Needed for Context-Dependent Neuronal Gene
+Regulation in Flies.” *American Journal of Human Genetics* 104 (4):
+596–610. <https://doi.org/10.1016/j.ajhg.2019.02.001>.
 
 Reimand, Jüri, Ruth Isserlin, Veronique Voisin, Mike Kucera, Christian
 Tannus-Lopes, Asha Rostamianfar, Lina Wadi, et al. 2019. “Pathway
