@@ -21,7 +21,7 @@ zheat(
 
 \item{counts}{Normalized count matrix with rows as genes and columns as samples. Use 'counts(dds, normalized=T)'.}
 
-\item{conditions}{Factor vector indicating conditions belonging to each sample (same order as colnames(counts))}
+\item{conditions}{Character vector indicating conditions belonging to each sample (same order as colnames(counts))}
 
 \item{con}{Character vector indicating the control condition level in 'conditions'. Default is "WT".}
 

@@ -6,7 +6,7 @@
 #' @param genes A character vector of genes to subset from rownames(counts) to create the heatmap
 #' @param bnorm Boolean values indicating if z-score normalization should occur before subsetting genes. Leave "TRUE"
 #' @param counts Normalized count matrix with rows as genes and columns as samples. Use 'counts(dds, normalized=T)'.
-#' @param conditions Factor vector indicating conditions belonging to each sample (same order as colnames(counts))
+#' @param conditions Character vector indicating conditions belonging to each sample (same order as colnames(counts))
 #' @param con Character vector indicating the control condition level in 'conditions'. Default is "WT".
 #' @param title Character vector indicating the title of the figure
 #' @param labgenes Character vector corresponding to rownames(counts) of genes to be labelled on the side of the heatmap. Leave as NULL to label all genes. Use "" to label no genes.

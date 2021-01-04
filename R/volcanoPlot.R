@@ -32,7 +32,7 @@ volcanoPlot<-function(res, title, p=NULL, pval=NULL, FC=1, lab=NULL, col=NULL){
   #print(head(res))
   if(!is.null(p)){
     #Set sig to the p-value threshold
-    sig<--log(res[which(res$padj == max(subset(res, padj<0.05)$padj)),]$pvalue[1],10)
+    sig<--log(res[which(res$padj == max(subset(res, padj<p)$padj)),]$pvalue[1],10)
     #Separate out padj = 0
     zeroes<-subset(res, padj == 0)
     #Remove padj=0 from res

@@ -46,23 +46,25 @@ GO_plot<-function(GOres, prefix, ts){
   b<-diff(ylim.prim)/diff(ylim.sec)
   a<-b*(ylim.prim[1]=ylim.sec[1])
   p<- ggplot2::ggplot(GOres, ggplot2::aes(x=seq(1:length(term_name)), y=enrichment)) +
-    ggplot2::geom_col(fill="blue", width=0.75) + ggplot2::geom_col(aes(x=seq(1:length(term_name)), y=a+(-log10(p_value))*b), fill="orange", width=0.375) +
+    ggplot2::geom_col(fill="blue", width=0.75) + ggplot2::geom_col(ggplot2::aes(x=seq(1:length(term_name)), y=a+(-log10(p_value))*b), fill="orange", width=0.375) +
     ggplot2::scale_x_continuous(name="GO Term", breaks=1:10, labels=GOres$term_name) +
-    ggplot2::scale_y_continuous(name="Enrichment", sec.axis=sec_axis(~(. -a)/b, name="-Log10 P-value")) +
+    ggplot2::scale_y_continuous(name="Enrichment", sec.axis=ggplot2::sec_axis(~(. -a)/b, name="-Log10 P-value")) +
     ggplot2::theme_classic() + ggplot2::theme(axis.title.y=ggplot2::element_text(color="blue"), axis.title.y.right=ggplot2::element_text(color="orange"),
                             axis.text.x=ggplot2::element_text(angle=60, hjust=1))
   #Now get the top ten significant terms with less than 500 genes/term (in tmp)
   tmp<-tmp[which(tmp$term_size <=500),]
   tmp<-tmp[1:10,]
   q<- ggplot2::ggplot(tmp, ggplot2::aes(x=seq(1:length(term_name)), y=enrichment)) +
-    ggplot2::geom_col(fill="blue", width=0.75) + ggplot2::geom_col(aes(x=seq(1:length(term_name)), y=a+(-log10(p_value))*b), fill="orange", width=0.375) +
+    ggplot2::geom_col(fill="blue", width=0.75) + ggplot2::geom_col(ggplot2::aes(x=seq(1:length(term_name)), y=a+(-log10(p_value))*b), fill="orange", width=0.375) +
     ggplot2::scale_x_continuous(name="GO Term", breaks=1:10, labels=tmp$term_name) +
-    ggplot2::scale_y_continuous(name="Enrichment", sec.axis=sec_axis(~(. -a)/b, name="-Log10 P-value")) +
+    ggplot2::scale_y_continuous(name="Enrichment", sec.axis=ggplot2::sec_axis(~(. -a)/b, name="-Log10 P-value")) +
     ggplot2::theme_classic() + ggplot2::theme(axis.title.y=ggplot2::element_text(color="blue"), axis.title.y.right=ggplot2::element_text(color="orange"),
                             axis.text.x=ggplot2::element_text(angle=60, hjust=1))
   pdf(paste0(prefix,".Top10.pdf"))
   print(p)
   print(q)
   dev.off()
+  print(p)
+  print(q)
 }
 

@@ -6,7 +6,7 @@
 #' @param counts Normalized counts from a DESeq2 object - use 'counts(dds, normalized=T)'
 #' @param scaling Method used to scale counts per gene across samples. Either 'zscore' or 'log10'. Default is 'zscore'
 #' @param genes Character vector of genes to subset from counts. Must correspond with rownames(counts).
-#' @param condition Factor vector of conditions in DESeq2 object. Must be in order of columns (counts). - use 'dds$Condition'
+#' @param condition Character vector of conditions in DESeq2 object. Must be in order of columns (counts).
 #' @param title Character vector indicating title of plot. Defaults to "expression"
 #' @param compare List of character vectors (each of length 2) indicating pairwise comparisons. If NULL, all possible comparisons will be made. Default is NULL
 #' @return Generates a violin plot
@@ -49,7 +49,7 @@ count_plot<-function(counts, scaling="zscore", genes, condition, title="expressi
 	pwc<- x%>% rstatix::pairwise_t_test(Expression ~ group, comparisons=compare, p.adjust.method="BH")
 	pwc <- pwc %>% rstatix::add_xy_position(x="group")
 	#Now for the plot:
-	ggplot2::ggviolin(x, x="group", y="Expression", fill="group") +
+	ggpubr::ggviolin(x, x="group", y="Expression", fill="group") +
 	  ggplot2::geom_boxplot(width=0.1, fill="white") +
 		ggpubr::stat_pvalue_manual(pwc, label="p.adj", tip.length=0, step.increase=0.1) +
 	  ggplot2::labs(title=title, y=ylab, x="Condition") + ggplot2::theme_minimal()

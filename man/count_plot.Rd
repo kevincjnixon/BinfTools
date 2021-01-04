@@ -20,7 +20,7 @@ count_plot(
 
 \item{genes}{Character vector of genes to subset from counts. Must correspond with rownames(counts).}
 
-\item{condition}{Factor vector of conditions in DESeq2 object. Must be in order of columns (counts). - use 'dds$Condition'}
+\item{condition}{Character vector of conditions in DESeq2 object. Must be in order of columns (counts).}
 
 \item{title}{Character vector indicating title of plot. Defaults to "expression"}
 
