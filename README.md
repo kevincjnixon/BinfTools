@@ -1,3 +1,4 @@
+    #install.packages("devtools")
     #devtools::install_github("kevincjnixon/BinfTools")
     library(BinfTools)
 
