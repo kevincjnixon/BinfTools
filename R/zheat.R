@@ -42,7 +42,7 @@ zheat<-function(genes=NULL,bnorm=T, counts, conditions, con="WT", title="DEGs", 
   }
   #Order the heatmap rows based on average control z-score (control condition is dicated by con
   #Start by releveling the conditions so that con is first:
-  print(levels(conditions))
+  #print(levels(conditions))
   ind<-which(levels(conditions)==con)
   if(ind != 1){
 	x<-1:length(levels(conditions))
@@ -51,7 +51,7 @@ zheat<-function(genes=NULL,bnorm=T, counts, conditions, con="WT", title="DEGs", 
 	y<-levels(conditions)[x]
 	levels(conditions)<-y
   }
-  print(levels(conditions))
+  #print(levels(conditions))
   zmat<-zmat[order(rowMeans(zmat[,which(conditions==con)]), decreasing=T),]
   #Now reorder the zmat to match the order of conditions (control then RNF)
   tmp<-zmat[,which(conditions==levels(conditions)[1])]
@@ -62,7 +62,7 @@ zheat<-function(genes=NULL,bnorm=T, counts, conditions, con="WT", title="DEGs", 
   tmp=NULL
   #Get the absolute max value to centre the scale around 0:
   lim<-max(abs(zmat[is.finite(zmat)]))
-  print(lim)
+  #print(lim)
   #Check to see if 'genes' is null and if it's not, replace it with a vector of length rownames
   #Where genes specified in 'genes' are in the correct place, and all other values are " "
   if(!is.null(labgenes)){
