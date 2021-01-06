@@ -9,7 +9,7 @@
 
 fromLimma<-function(topTable, geneNames=rownames(topTable)){
   res<-data.frame(row.names=geneNames,
-                     baseMean=2^(topTable$AveExpr),
+                     baseMean=topTable$AveExpr,
                   log2FoldChange=topTable$logFC,
                      pvalue=topTable$P.Value,
                      padj=topTable$adj.P.Val)
