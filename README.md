@@ -1,5 +1,9 @@
+BinfTools
+=========
+
 Installation
 ============
+
     #install.packages("devtools")
     #devtools::install_github("kevincjnixon/BinfTools")
     library(BinfTools)
@@ -70,11 +74,11 @@ If you prefer to use Limma or EdgeR for analysis, the functions
 compatible with BinfTools functions.
 
     ### Converting Limma results:
-    res<-limma::topTable(fit, number=Inf)
-    res<-fromLimma(res)
+    #res<-limma::topTable(fit, number=Inf)
+    #res<-fromLimma(res)
     ###Converting EdgeR results:
-    res<-edgeR::topTags(de, n=Inf)
-    res<-fromEdgeR(res)
+    #res<-edgeR::topTags(de, n=Inf)
+    #res<-fromEdgeR(res)
 
 ### GenerateGSEA
 
@@ -93,7 +97,7 @@ Huber, and Anders 2014), however it is more customizable. See
     #Pull top significant genes to label and colour
     genes<-rownames(res[order(res$padj),])[1:5]
     #Make an MA plot
-    MA_Plot(res, title="MA Plot", p=0.05, FC=log(1.25,2), lab=genes, col=genes)
+    MA_Plot(res, title="MA Plot", p=0.05, FC=log(1.5,2), lab=genes, col=genes)
 
 <img src="README_files/figure-markdown_strict/MA_Plot-1.png" alt="MA Plot"  />
 <p class="caption">
@@ -101,20 +105,20 @@ MA Plot
 </p>
 
     #> $Down
-    #> [1] 401
+    #> [1] 294
     #> 
     #> $Up
-    #> [1] 373
+    #> [1] 188
     #> 
     #> $No_Change
-    #> [1] 4409
+    #> [1] 12512
 
 ### volcanoPlot()
 
 This function will generate a volcano plot from the *res* object. See
 *?volcanoPlot* to view all options
 
-    volcanoPlot(res, title="Volcano Plot", p=0.05, FC=log(1.25,2), lab=genes, col=genes)
+    volcanoPlot(res, title="Volcano Plot", p=0.05, FC=log(1.5,2), lab=genes, col=genes)
 
 <img src="README_files/figure-markdown_strict/volcano-1.png" alt="Volcano Plot diplaying upregulated (red) and downregulated (blue) genes"  />
 <p class="caption">
@@ -122,13 +126,13 @@ Volcano Plot diplaying upregulated (red) and downregulated (blue) genes
 </p>
 
     #> $Down
-    #> [1] 401
+    #> [1] 294
     #> 
     #> $Up
-    #> [1] 373
+    #> [1] 188
     #> 
     #> $No_Change
-    #> [1] 4409
+    #> [1] 12512
 
 ### GO\_GEM()
 
@@ -140,7 +144,7 @@ figures in a single .pdf displaying the top 10 enriched and top 10
 significant terms. See *?GO\_GEM* to view all options
 
     #Get downregulated gene names
-    genes<-rownames(subset(res, padj<0.05 & log2FoldChange < log(1.25, 2)))
+    genes<-rownames(subset(res, padj<0.05 & log2FoldChange < log(1.5, 2)))
     #create output directory
     dir.create("GO")
     #Run GO analysis for Biological Process and output to folder "GO/GO_analysis*"
@@ -163,7 +167,7 @@ This function will generate a heatmap of z-score normalized gene counts
 using pheatmap (Kolde 2019). See *?zheat* to view all options
 
     #Get the names of all differentially expressed genes
-    DEGs<-rownames(subset(res, padj<0.05 & abs(log2FoldChange)>log(1.25,2)))
+    DEGs<-rownames(subset(res, padj<0.05 & abs(log2FoldChange)>log(1.5,2)))
     #Pull top significant genes to label and colour
     top_genes<-rownames(res[order(res$padj),])[1:5]
     #Generate a heatmap
@@ -172,7 +176,7 @@ using pheatmap (Kolde 2019). See *?zheat* to view all options
     #> [1] "pulling certain genes..."
     #> [1] "KO" "WT"
     #> [1] "WT" "KO"
-    #> [1] 1.773253
+    #> [1] 1.740516
 
 <img src="README_files/figure-markdown_strict/heatmap-1.png" alt="Heatmap of DEGs"  />
 <p class="caption">
@@ -184,14 +188,14 @@ Heatmap of DEGs
 This function Will generate a violin plot of normalized gene expression
 for a specified group of genes. See *?count\_plot* to view all options.
 
-    #Check all upregulated genes
-    genes<-rownames(subset(res, padj<0.05 & log2FoldChange > log(1.25,2)))
+    #Check genes related to rhodopsin signaling from rhodopsin geneSet
+    genes<-unique(unlist(geneSet))
     #Compare gene expression between the two conditions using z-score normalized counts:
     count_plot(counts=norm_counts, scaling="zscore", genes=genes, condition=cond, title="Upregulated Genes", compare=list(c("WT","KO")))
 
-<img src="README_files/figure-markdown_strict/count_plot-1.png" alt="Violin plot comparing gene expression of upregulated genes between conditions"  />
+<img src="README_files/figure-markdown_strict/count_plot-1.png" alt="Violin plot comparing gene expression of rhodopsin genes genes between conditions"  />
 <p class="caption">
-Violin plot comparing gene expression of upregulated genes between
+Violin plot comparing gene expression of rhodopsin genes genes between
 conditions
 </p>
 
