@@ -4,7 +4,17 @@
 \alias{volcanoPlot}
 \title{Custom volcano Plot}
 \usage{
-volcanoPlot(res, title, p = NULL, pval = NULL, FC = 1, lab = NULL, col = NULL)
+volcanoPlot(
+  res,
+  title,
+  p = NULL,
+  pval = NULL,
+  FC = 1,
+  lab = NULL,
+  col = NULL,
+  fclim = NULL,
+  showNum = TRUE
+)
 }
 \arguments{
 \item{res}{A DESeq2 results object obtained from 'results(dds)' or a data.frame with the same column name values as a DESeq2 results object and rownames as genes}
@@ -20,6 +30,10 @@ volcanoPlot(res, title, p = NULL, pval = NULL, FC = 1, lab = NULL, col = NULL)
 \item{lab}{A character vector of genes to be labeled on the plot. Should correspond with rownames(res). Default is NULL.}
 
 \item{col}{A character vector of genes to be coloured orange on the plot. Should correspond with rownames(res). Default is NULL.}
+
+\item{fclim}{A number indicating the maximum log2FoldChange value desired on the volcano plot (x-axis limits). Points outside this limit will appear as diamonds on the limits.}
+
+\item{showNum}{A boolean indicating whether gene numbers should be displayed on the plot. Default is TRUE.}
 }
 \value{
 A volcano plot with x-axis indicating log2FoldChange expression and y-axis indicating -log10 pvalue. Blue dots are downregulated genes, red dots are upregulated genes.
