@@ -1,5 +1,5 @@
-BinfTools
-=========
+BinfTools - 
+===========
 
 Installation
 ============
