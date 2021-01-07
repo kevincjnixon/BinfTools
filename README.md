@@ -1,5 +1,5 @@
-BinfTools - 
-===========
+BinfTools
+=========
 
 Installation
 ============
@@ -191,7 +191,7 @@ for a specified group of genes. See *?count\_plot* to view all options.
     #Check genes related to rhodopsin signaling from rhodopsin geneSet
     genes<-unique(unlist(geneSet))
     #Compare gene expression between the two conditions using z-score normalized counts:
-    count_plot(counts=norm_counts, scaling="zscore", genes=genes, condition=cond, title="Upregulated Genes", compare=list(c("WT","KO")))
+    count_plot(counts=norm_counts, scaling="zscore", genes=genes, condition=cond, title="Rhodopsin Genes", compare=list(c("WT","KO")))
 
 <img src="README_files/figure-markdown_strict/count_plot-1.png" alt="Violin plot comparing gene expression of rhodopsin genes genes between conditions"  />
 <p class="caption">
