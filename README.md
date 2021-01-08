@@ -74,11 +74,11 @@ If you prefer to use Limma or EdgeR for analysis, the functions
 compatible with BinfTools functions.
 
     ### Converting Limma results:
-    #res<-limma::topTable(fit, number=Inf)
-    #res<-fromLimma(res)
+    lim_res<-limma::topTable(fit, number=Inf)
+    res<-fromLimma(lim_res)
     ###Converting EdgeR results:
-    #res<-edgeR::topTags(de, n=Inf)
-    #res<-fromEdgeR(res)
+    er_res<-edgeR::topTags(de, n=Inf)
+    res<-fromEdgeR(er_res)
 
 ### GenerateGSEA
 
