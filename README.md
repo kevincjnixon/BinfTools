@@ -1,5 +1,5 @@
-BinfTools - QuickStart Guide
-============================
+BinfTools - Quick Start Guide
+=============================
 
 Installation
 ============
@@ -74,11 +74,11 @@ If you prefer to use Limma or EdgeR for analysis, the functions
 compatible with BinfTools functions.
 
     ### Converting Limma results:
-    lim_res<-limma::topTable(fit, number=Inf)
-    res<-fromLimma(lim_res)
+    #res<-limma::topTable(fit, number=Inf)
+    #res<-fromLimma(res)
     ###Converting EdgeR results:
-    er_res<-edgeR::topTags(de, n=Inf)
-    res<-fromEdgeR(er_res)
+    #res<-edgeR::topTags(de, n=Inf)
+    #res<-fromEdgeR(res)
 
 ### GenerateGSEA
 
@@ -223,6 +223,54 @@ pathways in the EnrichmentMap (see Reimand et al. 2019). See
 Violin plot comparing normalized enrichment scores of pathways involved
 in rhodopsin signaling between conditions
 </p>
+
+getSym()
+--------
+
+Sometimes, we are working with gene IDs which, although useful, can be
+hard to interpret without knowing the gene symbol. *getSym()* is a
+function that uses gprofiler2’s *gconvert()* function (Kolberg and
+Raudvere 2020) to convert gene IDs in a results or normalized counts
+object to symbols for easy viewing in plots made by BinfTools. See
+*?getSym* to view all options.
+
+    #Convert the Flybase gene IDs in res to symbols and make a volcano plot labeling a gene of interest:
+    sym_res<-getSym(res, obType="res", species="dmelanogaster", target="FLYBASENAME_GENE")
+    #> [1] "Duplicate gene symbols detected. Keeping symbols with highest overall expression..."
+    #Now the rownames are gene symbols
+    head(sym_res)
+    #>                 baseMean log2FoldChange     lfcSE       stat       pvalue
+    #> lncRNA:Hsromega 641327.8     0.04110433 0.1506561  0.2728355 7.849796e-01
+    #> Ppr-Y           432134.5     0.47622268 0.6403392  0.7437038 4.570557e-01
+    #> CG13722         398830.4    -2.06396927 0.6065790 -3.4026389 6.673842e-04
+    #> Atpalpha        392797.5    -0.37112990 0.1487972 -2.4941987 1.262418e-02
+    #> lncRNA:CR42862  312021.5     0.63594308 0.1144918  5.5544835 2.784337e-08
+    #> Sh              248421.0     0.18979893 0.1957415  0.9696408 3.322256e-01
+    #>                         padj
+    #> lncRNA:Hsromega 9.137221e-01
+    #> Ppr-Y           7.204744e-01
+    #> CG13722         7.470955e-03
+    #> Atpalpha        7.262058e-02
+    #> lncRNA:CR42862  1.658761e-06
+    #> Sh              6.126105e-01
+    #Get the top significant genes for labeling
+    genes<-rownames(sym_res[order(sym_res$padj),])[1:5]
+    #Make a volcano plot
+    volcanoPlot(sym_res, title="Volcano Plot", p=0.05, FC=log(1.5,2), lab=genes)
+
+<img src="README_files/figure-markdown_strict/convertSymbols-1.png" alt="Volcano plot with gene symbols labeling the genes"  />
+<p class="caption">
+Volcano plot with gene symbols labeling the genes
+</p>
+
+    #> $Down
+    #> [1] 292
+    #> 
+    #> $Up
+    #> [1] 183
+    #> 
+    #> $No_Change
+    #> [1] 12339
 
 Other Dependencies Not Mentioned:
 ---------------------------------
