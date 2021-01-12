@@ -1,6 +1,8 @@
 BinfTools - Quick Start Guide
 =============================
+
 For more detailed information about all of the functions, see the [BinfTools Wiki](https://github.com/kevincjnixon/BinfTools/wiki)
+
 Installation
 ============
 
