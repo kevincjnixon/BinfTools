@@ -274,6 +274,11 @@ Volcano plot with gene symbols labeling the genes
     #> $No_Change
     #> [1] 12339
 
+Compare multiple results objects:
+---------------------------------
+
+For information of functions useful in comparing multiple results objects, check out the [BinfTools Wiki](https://github.com/kevincjnixon/BinfTools/wiki)
+
 Other Dependencies Not Mentioned:
 ---------------------------------
 
