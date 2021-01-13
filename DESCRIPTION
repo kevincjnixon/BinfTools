@@ -22,6 +22,7 @@ Imports:
   pheatmap,
   tidyr,
   GSVA,
+  SAGx,
   magrittr,
   dplyr
 Suggests: 
