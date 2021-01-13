@@ -277,7 +277,7 @@ Volcano plot with gene symbols labeling the genes
 Compare multiple results objects:
 ---------------------------------
 
-For information of functions useful in comparing multiple results objects, check out the [BinfTools Wiki](https://github.com/kevincjnixon/BinfTools/wiki)
+For information of functions useful in comparing multiple results objects, check out the [BinfTools Wiki](https://github.com/kevincjnixon/BinfTools/wiki/Comparing-Multiple-Results-Objects#clusfigs)
 
 Other Dependencies Not Mentioned:
 ---------------------------------
