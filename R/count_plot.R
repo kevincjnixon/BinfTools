@@ -13,7 +13,7 @@
 #' @return Generates a violin plot
 #' @export
 
-count_plot<-function(counts, scaling="zscore", genes, condition, title="expression", compare=NULL, col="Dark2){
+count_plot<-function(counts, scaling="zscore", genes, condition, title="expression", compare=NULL, col="Dark2"){
 	#Pull the normalized counts of genes
 	res<-counts[which(rownames(counts) %in% genes),]
 	ylab="z-score Normalized Expression"
