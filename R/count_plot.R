@@ -54,5 +54,4 @@ count_plot<-function(counts, scaling="zscore", genes, condition, title="expressi
 	  ggplot2::geom_boxplot(width=0.1, fill="white") +
 		ggpubr::stat_pvalue_manual(pwc, label="p.adj", tip.length=0, step.increase=0.1) +
 	  ggplot2::labs(title=title, y=ylab, x="Condition") + ggplot2::theme_minimal() + ggplot2::scale_fill_brewer(palette=col)
-
 }

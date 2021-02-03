@@ -9,7 +9,7 @@
 #' @param condition Character vector of conditions in the same order they appear as columns in 'counts'.
 #' @param title Character vector indicating the title of the plot
 #' @param compare List of character vectors (each of length 2) indicating the pairwise comparisons to be made between conditions. Leave NULL for all comparisons to be made
-#' @param Character indicating the RColorBrewer palette name to be used. Default is "Dark2".
+#' @param col Character indicating the RColorBrewer palette name to be used. Default is "Dark2".
 #' @return Violin plot of normalized enrichment scores for genesets between conditions
 #' @export
 
@@ -32,5 +32,4 @@ gsva_plot<-function(counts, geneset, method="ssgsea", condition, title="ssGSEA",
 		ggpubr::stat_pvalue_manual(pwc, label="p.adj", tip.length=0, step.increase=0.1) +
 	  ggplot2::labs(title=title, y="Normalized Enrichment Score", x="Condition") + ggplot2::theme_minimal() +
 	  ggplot2::scale_fill_brewer(palette=col)
-
 }

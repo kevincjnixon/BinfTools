@@ -26,8 +26,8 @@ count_plot(
 \item{title}{Character vector indicating title of plot. Defaults to "expression"}
 
 \item{compare}{List of character vectors (each of length 2) indicating pairwise comparisons. If NULL, all possible comparisons will be made. Default is NULL}
-  
- \item{col}{Character indicating RColorBrewer palette to be used. Default is "Dark2".}
+
+\item{col}{Character indicating the RColorBrewer palette name to be used. Default is "Dark2"}
 }
 \value{
 Generates a violin plot

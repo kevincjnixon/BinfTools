@@ -12,7 +12,10 @@ clusGO(
   corr = "fdr",
   iea = FALSE,
   prefix = "ClusGO",
-  ts = 10
+  ts = 10,
+  pdf = T,
+  fig = T,
+  returnGost = F
 )
 }
 \arguments{

@@ -19,7 +19,7 @@ gsva_plot(
 
 \item{geneset}{List with length > 1 of character vectors indicating gene sets of interest. Can be created using qusage::read.gmt("geneset.gmt")}
 
-\item{method}{Method to employ in estimation of gene-set enrichment scores. One of "ssgsea","gsva","zscore","plage". Default is "ssgsea".}
+\item{method}{Method to employ in estimation of gene-set enrichment scores. One of "ssgsea","gsva","zscore","plage". Default is "ssgsea}
 
 \item{condition}{Character vector of conditions in the same order they appear as columns in 'counts'.}
 
@@ -27,7 +27,7 @@ gsva_plot(
 
 \item{compare}{List of character vectors (each of length 2) indicating the pairwise comparisons to be made between conditions. Leave NULL for all comparisons to be made}
 
-\item{col}{Character indicating RColorBrewer palette to be used. Default is "Dark2".}
+\item{col}{Character indicating the RColorBrewer palette name to be used. Default is "Dark2".}
 }
 \value{
 Violin plot of normalized enrichment scores for genesets between conditions

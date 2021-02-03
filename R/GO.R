@@ -12,11 +12,15 @@
 #' @param iea Boolean values indicating if electronic annotations should be excluded. Default FALSE.
 #' @param prefix A character vector describing the path and prefix of the output files (should not include any file extensions)
 #' @param ts Number indicating the minimum term size - the minimum number of genes per term when generating the plot of most enriched terms. Default is 10.
+#' @param pdf Boolean indicating if bar plots should be exported to pdf. Default is TRUE.
+#' @param fig Boolean indicating if bar plots should be printed to R output. Default is TRUE.
+#' @param returnGost Boolean indicating if gost results should be returned for future use with gprofiler2 functions. Default is FALSE.
 #' @return Exports a table of analysis results in 'prefix.GO.txt', a gem file in 'prefix.gem', and a pdf with two figures: top ten enriched terms followed by top ten significant terms in 'prefix.top10.pdf'
 #' @export
 #'
 
-GO_GEM<-function(geneList,species="hsapiens",bg=NULL,source=NULL, corr="fdr", iea=FALSE, prefix="GO_analysis", ts=10){
+GO_GEM<-function(geneList,species="hsapiens",bg=NULL,source=NULL, corr="fdr", iea=FALSE, prefix="GO_analysis", ts=10,
+                 pdf=T, fig=T, returnGost=F){
   #ts is term size (for plotting, terms must have ts genes to make cutoff, default is 10)
   x<-gprofiler2::gost(geneList, organism=species, custom_bg=bg, sources=source, evcodes=TRUE, multi_query=FALSE, correction_method=corr, exclude_iea=iea)
   y<-x$result[,-14]
@@ -28,15 +32,18 @@ GO_GEM<-function(geneList,species="hsapiens",bg=NULL,source=NULL, corr="fdr", ie
   gem<-gem[,c("GO.ID","Description","p.Val","FDR","Phenotype","Genes")]
   write.table(gem, paste0(prefix,".gem.txt"), quote=FALSE, sep="\t", row.names = FALSE)
   y<-y[order(y$enrichment, decreasing=T),]
-  GO_plot(y, prefix, ts)
+  GO_plot(y, prefix, ts, pdf, fig)
   write.table(y, paste0(prefix,".GO.txt"), quote=FALSE, sep="\t", row.names=FALSE)
+  if(isTRUE(returnGost)){
+    return(x)
+  }
 }
 
 #' Generates GO figures
 #'
 #' Function that generates the top 10 term figures for GO_GEM()
 
-GO_plot<-function(GOres, prefix, ts){
+GO_plot<-function(GOres, prefix, ts, pdf, fig){
   tmp<-GOres[order(GOres$p_value),] #order by increasing p-value
   #Take the top ten terms (already sorted by enrihcment)
   GOres<-GOres[which(GOres$term_size >= ts),]
@@ -60,11 +67,15 @@ GO_plot<-function(GOres, prefix, ts){
     ggplot2::scale_y_continuous(name="Enrichment", sec.axis=ggplot2::sec_axis(~(. -a)/b, name="-Log10 P-value")) +
     ggplot2::theme_classic() + ggplot2::theme(axis.title.y=ggplot2::element_text(color="blue"), axis.title.y.right=ggplot2::element_text(color="orange"),
                             axis.text.x=ggplot2::element_text(angle=60, hjust=1))
-  pdf(paste0(prefix,".Top10.pdf"))
-  print(p)
-  print(q)
-  dev.off()
-  print(p)
-  print(q)
+  if(isTRUE(pdf)){
+    pdf(paste0(prefix,".Top10.pdf"))
+    print(p)
+    print(q)
+    dev.off()
+  }
+  if(isTRUE(fig)){
+    print(p)
+    print(q)
+  }
 }
 
