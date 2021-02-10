@@ -12,7 +12,7 @@ GO_GEM(
   corr = "fdr",
   iea = FALSE,
   prefix = "GO_analysis",
-  ts = 10,
+  ts = c(10, 500),
   pdf = T,
   fig = T,
   returnGost = F
@@ -33,7 +33,7 @@ GO_GEM(
 
 \item{prefix}{A character vector describing the path and prefix of the output files (should not include any file extensions)}
 
-\item{ts}{Number indicating the minimum term size - the minimum number of genes per term when generating the plot of most enriched terms. Default is 10.}
+\item{ts}{Vector of length 2 indicating the minimum and maximum term size - the minimum/maximum number of genes per term when generating the plot of most enriched/significant terms. Default is c(10,500).}
 
 \item{pdf}{Boolean indicating if bar plots should be exported to pdf. Default is TRUE.}
 

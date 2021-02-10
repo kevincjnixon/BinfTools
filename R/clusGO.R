@@ -7,7 +7,7 @@
 #' @return For each cluster, output from GO_GEM() is generated and output to "*prefix*_cluster_*n*"
 #' @export
 
-clusGO<-function(clusRes, species="hsapiens", bg=rownames(clusRes), source=NULL, corr="fdr", iea=FALSE, prefix="ClusGO", ts=10,
+clusGO<-function(clusRes, species="hsapiens", bg=rownames(clusRes), source=NULL, corr="fdr", iea=FALSE, prefix="ClusGO", ts=c(10,500),
                  pdf=T, fig=T, returnGost=F){
   clusRes<-clusRes[order(clusRes$cluster),]
   clusters<-unique(clusRes$cluster)

@@ -12,7 +12,7 @@ clusGO(
   corr = "fdr",
   iea = FALSE,
   prefix = "ClusGO",
-  ts = 10,
+  ts = c(10, 500),
   pdf = T,
   fig = T,
   returnGost = F

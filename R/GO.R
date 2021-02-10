@@ -11,7 +11,7 @@
 #' @param corr A character vector describing the correction method to use. One of 'gSCS', 'fdr', or 'bonferroni'. Default is 'fdr'
 #' @param iea Boolean values indicating if electronic annotations should be excluded. Default FALSE.
 #' @param prefix A character vector describing the path and prefix of the output files (should not include any file extensions)
-#' @param ts Number indicating the minimum term size - the minimum number of genes per term when generating the plot of most enriched terms. Default is 10.
+#' @param ts Vector of length 2 indicating the minimum and maximum term size - the minimum/maximum number of genes per term when generating the plot of most enriched/significant terms. Default is c(10,500).
 #' @param pdf Boolean indicating if bar plots should be exported to pdf. Default is TRUE.
 #' @param fig Boolean indicating if bar plots should be printed to R output. Default is TRUE.
 #' @param returnGost Boolean indicating if gost results should be returned for future use with gprofiler2 functions. Default is FALSE.
@@ -19,7 +19,7 @@
 #' @export
 #'
 
-GO_GEM<-function(geneList,species="hsapiens",bg=NULL,source=NULL, corr="fdr", iea=FALSE, prefix="GO_analysis", ts=10,
+GO_GEM<-function(geneList,species="hsapiens",bg=NULL,source=NULL, corr="fdr", iea=FALSE, prefix="GO_analysis", ts=c(10,500),
                  pdf=T, fig=T, returnGost=F){
   #ts is term size (for plotting, terms must have ts genes to make cutoff, default is 10)
   x<-gprofiler2::gost(geneList, organism=species, custom_bg=bg, sources=source, evcodes=TRUE, multi_query=FALSE, correction_method=corr, exclude_iea=iea)
@@ -46,7 +46,7 @@ GO_GEM<-function(geneList,species="hsapiens",bg=NULL,source=NULL, corr="fdr", ie
 GO_plot<-function(GOres, prefix, ts, pdf, fig){
   tmp<-GOres[order(GOres$p_value),] #order by increasing p-value
   #Take the top ten terms (already sorted by enrihcment)
-  GOres<-GOres[which(GOres$term_size >= ts),]
+  GOres<-GOres[which(GOres$term_size >= ts[1]),]
   GOres<-GOres[1:10,]
   ylim.prim<-c(0, max(GOres$enrichment)+1)
   ylim.sec<-c(0, max(-log10(GOres$p_value))+1)
@@ -59,7 +59,7 @@ GO_plot<-function(GOres, prefix, ts, pdf, fig){
     ggplot2::theme_classic() + ggplot2::theme(axis.title.y=ggplot2::element_text(color="blue"), axis.title.y.right=ggplot2::element_text(color="orange"),
                             axis.text.x=ggplot2::element_text(angle=60, hjust=1))
   #Now get the top ten significant terms with less than 500 genes/term (in tmp)
-  tmp<-tmp[which(tmp$term_size <=500),]
+  tmp<-tmp[which(tmp$term_size <=ts[2]),]
   tmp<-tmp[1:10,]
   q<- ggplot2::ggplot(tmp, ggplot2::aes(x=seq(1:length(term_name)), y=enrichment)) +
     ggplot2::geom_col(fill="blue", width=0.75) + ggplot2::geom_col(ggplot2::aes(x=seq(1:length(term_name)), y=a+(-log10(p_value))*b), fill="orange", width=0.375) +
