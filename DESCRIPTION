@@ -24,7 +24,8 @@ Imports:
   GSVA,
   SAGx,
   magrittr,
-  dplyr
+  dplyr,
+  forcats
 Suggests: 
     knitr
 VignetteBuilder: knitr
