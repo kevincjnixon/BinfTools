@@ -25,6 +25,7 @@ Imports:
   SAGx,
   magrittr,
   dplyr,
+  plyr,
   forcats
 Suggests: 
     knitr
