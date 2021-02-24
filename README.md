@@ -287,6 +287,8 @@ Other Dependencies Not Mentioned:
 -   rstatix (Kassambara 2020b)
 -   tidyr (Wickham 2020)
 -   dplyr (Wickham et al. 2020)
+-   plyr
+-   forcats
 
 References
 ==========
