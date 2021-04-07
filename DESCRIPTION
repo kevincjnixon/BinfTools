@@ -14,7 +14,6 @@ Encoding: UTF-8
 LazyData: true
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.1.1
-biocViews:
 Imports:
   gprofiler2,
   ggplot2,
@@ -26,7 +25,6 @@ Imports:
   SAGx,
   magrittr,
   dplyr,
-  plyr,
   forcats
 Suggests: 
     knitr

@@ -51,13 +51,14 @@ data_sum<-function(data, eb){
              eb=(sd(as.numeric(x[[col]]), na.rm=T)/sqrt(length(x[[col]]))))
     }
 	if(eb==0){ #We don't want any error bars
+		#message("eb=0. Error bars will not be showns...")
 		sum<-c(mean=mean(as.numeric(x[[col]]), na.rm=T),
 			  eb=rep(0, length(x[[col]])))
 	}
     return(sum)
   }
   if(eb==0){ #We don't want any error bars
-    message("eb=0. Error bars will not be shown...")
+	message("eb=0. Error bars will not be shown...")
   }
   data_sum<-plyr::ddply(data, c("group","gene"), .fun=summary_func, "expression", eb)
   #data_sum<-rename(data_sum, c("mean"="reads"))

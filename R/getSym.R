@@ -10,12 +10,12 @@
 #' @param object a data.frame object (results or normalized counts) with the rownames as the gene IDs to convert
 #' @param obType Character vector (one of 'res' or 'counts') indicating whether *object* is a results object, or normalized counts object, respectively.
 #' @param species Character vector indicating the species (e.g. "hsapiens" (*default*), "mmusculus").
-#' @param target Character vector indicating the current format of the gene IDs (e.g. "ENSG", "RefSeq","Entrez", see https://biit.cs.ut.ee/gprofiler/convert for all options). If IDs are ENSEMBL gene IDs with version nmbers (i.e. "ENSG0000****.1"), used "ENSGV".
+#' @param target Character vector indicating which format of the gene IDs to return (e.g. "HGNC", ENSG", "REFSEQ_MRNA","ENTREZGENE", see https://biit.cs.ut.ee/gprofiler/convert for all options).
 #' @param addCol Boolean indicating if an additional column named "SYMBOL" should be added, leaving the rownames as the original format. If FALSE (*default*), rownames of *object* will be replaced with gene symbols - duplicate gene symbols will be handled by keeping the symbol with the highest gene expression values.
 #' @return A data.frame object in the format indicated by *obType* with gene symbols as the rownames (if *addCol*=F) or gene symbols added as their own column named "SYMBOL".
 #' @export
 
-getSym<-function(object, obType=c("res","counts"), species="hsapiens", target="ENSG", addCol=F){
+getSym<-function(object, obType=c("res","counts"), species="hsapiens", target="HGNC", addCol=F){
   x<-as.data.frame(object)
   genes<-rownames(object)
   if(target=="ENSGV"){
@@ -24,7 +24,7 @@ getSym<-function(object, obType=c("res","counts"), species="hsapiens", target="E
   }
   if(obType=="res"){
     y<-gprofiler2::gconvert(genes, organism=species, target=target, mthreshold=1)
-    sym<-y$name
+    sym<-y$target
     if(isTRUE(addCol)){
       x$SYMBOL<-sym
     }else{

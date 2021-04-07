@@ -8,7 +8,7 @@ getSym(
   object,
   obType = c("res", "counts"),
   species = "hsapiens",
-  target = "ENSG",
+  target = "HGNC",
   addCol = F
 )
 }
@@ -19,7 +19,7 @@ getSym(
 
 \item{species}{Character vector indicating the species (e.g. "hsapiens" (\emph{default}), "mmusculus").}
 
-\item{target}{Character vector indicating the current format of the gene IDs (e.g. "ENSG", "RefSeq","Entrez", see https://biit.cs.ut.ee/gprofiler/convert for all options). If IDs are ENSEMBL gene IDs with version nmbers (i.e. "ENSG0000****.1"), used "ENSGV".}
+\item{target}{Character vector indicating which format of the gene IDs to return (e.g. "HGNC", ENSG", "REFSEQ_MRNA","ENTREZGENE", see https://biit.cs.ut.ee/gprofiler/convert for all options).}
 
 \item{addCol}{Boolean indicating if an additional column named "SYMBOL" should be added, leaving the rownames as the original format. If FALSE (\emph{default}), rownames of \emph{object} will be replaced with gene symbols - duplicate gene symbols will be handled by keeping the symbol with the highest gene expression values.}
 }
