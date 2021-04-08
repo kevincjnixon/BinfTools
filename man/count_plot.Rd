@@ -11,7 +11,8 @@ count_plot(
   condition,
   title = "expression",
   compare = NULL,
-  col = "Dark2"
+  col = "Dark2",
+  method = "ind"
 )
 }
 \arguments{
@@ -28,6 +29,8 @@ count_plot(
 \item{compare}{List of character vectors (each of length 2) indicating pairwise comparisons. If NULL, all possible comparisons will be made. Default is NULL}
 
 \item{col}{Character indicating the RColorBrewer palette name to be used. Default is "Dark2"}
+
+\item{method}{Character indicating what to plot. One of "ind", "mean", "geoMean", or "median". Defaults to "ind" for individual data points (one point per sample).}
 }
 \value{
 Generates a violin plot
