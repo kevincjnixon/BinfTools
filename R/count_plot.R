@@ -1,3 +1,17 @@
+rowGeoMean<-function(a){
+  x<-NULL
+  for(i in 1:nrow(a)){
+    x<-c(x, prod(a[i,]^(1/length(a[i,]))))
+  }
+  return(x)
+}
+rowMedian<-function(a){
+  x<-NULL
+  for(i in 1:nrow(a)){
+    x<-c(x, median(as.numeric(a[i,])))
+  }
+  return(x)
+}
 #' A function to make a violin plot of normalized counts
 #'
 #' This function takes normalized counts of specific genes from a DESeq2 counts
@@ -10,10 +24,11 @@
 #' @param title Character vector indicating title of plot. Defaults to "expression"
 #' @param compare List of character vectors (each of length 2) indicating pairwise comparisons. If NULL, all possible comparisons will be made. Default is NULL
 #' @param col Character indicating the RColorBrewer palette name to be used. Default is "Dark2"
+#' @param method Character indicating what to plot. One of "ind", "mean", "geoMean", or "median". Defaults to "ind" for individual data points (one point per sample).
 #' @return Generates a violin plot
 #' @export
 
-count_plot<-function(counts, scaling="zscore", genes, condition, title="expression", compare=NULL, col="Dark2"){
+count_plot<-function(counts, scaling="zscore", genes, condition, title="expression", compare=NULL, col="Dark2", method="ind"){
 	#Pull the normalized counts of genes
 	res<-counts[which(rownames(counts) %in% genes),]
 	ylab="z-score Normalized Expression"
@@ -26,7 +41,40 @@ count_plot<-function(counts, scaling="zscore", genes, condition, title="expressi
 		#zscore normalized counts
 		res<-as.data.frame(t(scale(t(res))))
 	}
-	#now we need to convert the results to a format acceptible for ggplot
+	#Check the method
+	if(method=="mean"){
+	  message("Calculaing mean across each condition...")
+	  tmp<-NULL
+	  for(i in 1:length(levels(factor(condition)))){
+	    tmp<-cbind(tmp,rowMeans(res[,which(condition %in% levels(factor(condition))[i])]))
+	  }
+	  colnames(tmp)<-as.character(levels(factor(condition)))
+	  res<-as.data.frame(tmp)
+	  condition<-as.character(levels(factor(condition)))
+	}
+	if(method=="geoMean"){
+	  message("Calculating geometric mean across each condition...")
+	  tmp<-NULL
+	  for(i in 1:length(levels(factor(condition)))){
+	    tmp<-cbind(tmp,rowGeoMean(res[,which(condition %in% levels(factor(condition))[i])]))
+	  }
+	  colnames(tmp)<-levels(factor(condition))
+	  res<-as.data.frame(tmp)
+	  condition<-as.character(levels(factor(condition)))
+	}
+	if(method=="median"){
+	  message("Calculating median across each condition...")
+	  tmp<-NULL
+	  for(i in 1:length(levels(factor(condition)))){
+	    tmp<-cbind(tmp,rowMedian(res[,which(condition %in% levels(factor(condition))[i])]))
+	  }
+	  colnames(tmp)<-levels(factor(condition))
+	  res<-as.data.frame(tmp)
+	  condition<-as.character(levels(factor(condition)))
+	} else {
+	  message("Using individual data points...")
+	}
+	#now we need to convert the results to a format acceptable for ggplot
 	times<-dim(res)[1]
 	conditions<-as.factor(c(rep(condition, each=times)))
 	x<-res %>% tidyr::gather(key="Sample", value="Expression") %>% dplyr::mutate(group=conditions) %>%
