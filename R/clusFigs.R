@@ -1,4 +1,3 @@
-#' @export
 clusHeatmap<-function(mat, gaps, title, annotdf){
   hmcol<-colorRampPalette(c("blue","grey","red"))(100)
   mat<-as.matrix(mat)
@@ -8,7 +7,6 @@ clusHeatmap<-function(mat, gaps, title, annotdf){
                      show_colnames = T, gaps_row=gaps, main=title, breaks=seq(from=-lim, to=lim, length.out=100))
 }
 
-#' @export
 clusBar<-function(mat, title, col){
   clus<-factor(mat$cluster)
   mat<-mat[,-(which(colnames(mat) %in% "cluster"))]
