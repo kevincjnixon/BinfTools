@@ -151,7 +151,7 @@ MA_Plot<-function(res, title, p=NULL, pval=NULL, FC=1, lab=NULL, col=NULL, fclim
   }
   #Now add in the gene labels if they were specified
   if(!is.null(lab)){
-    if(lab=="labDEG"){
+    if(lab[1]=="labDEG"){
       lab=c(DEdown,DEup)
     }
     labpoints<-res[lab,]
