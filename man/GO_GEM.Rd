@@ -19,7 +19,7 @@ GO_GEM(
 )
 }
 \arguments{
-\item{geneList}{A character vector of genes to query}
+\item{geneList}{A character vector or named list of genes to query. If a named list is provided, the name of each list element is appended to the prefix for GO output.}
 
 \item{species}{A character vector of the organism name to use. Concatenate the first letter of the name and family name. Default is 'hsapiens'}
 
