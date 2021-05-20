@@ -21,21 +21,58 @@
 
 GO_GEM<-function(geneList,species="hsapiens",bg=NULL,source=NULL, corr="fdr", iea=FALSE, prefix="GO_analysis", ts=c(10,500),
                  pdf=T, fig=T, returnGost=F){
-  #ts is term size (for plotting, terms must have ts genes to make cutoff, default is 10)
-  x<-gprofiler2::gost(geneList, organism=species, custom_bg=bg, sources=source, evcodes=TRUE, multi_query=FALSE, correction_method=corr, exclude_iea=iea)
-  y<-x$result[,-14]
-  y$enrichment <- (y$intersection_size/y$query_size)/(y$term_size/y$effective_domain_size)
-  gem<-x$result[,c("term_id","term_name","p_value","intersection")]
-  colnames(gem)<-c("GO.ID", "Description","p.Val","Genes")
-  gem$FDR<-gem$p.Val
-  gem$Phenotype="+1"
-  gem<-gem[,c("GO.ID","Description","p.Val","FDR","Phenotype","Genes")]
-  write.table(gem, paste0(prefix,".gem.txt"), quote=FALSE, sep="\t", row.names = FALSE)
-  y<-y[order(y$enrichment, decreasing=T),]
-  GO_plot(y, prefix, ts, pdf, fig)
-  write.table(y, paste0(prefix,".GO.txt"), quote=FALSE, sep="\t", row.names=FALSE)
-  if(isTRUE(returnGost)){
-    return(x)
+  GOfun<-function(genes, spec=species, cbg=bg, dsource=source, corrm=corr, exiea=iea, prefix=pre, termsz=ts, prpdf=pdf, prfig=fig, giveGost=returnGost){
+    #ts is term size (for plotting, terms must have ts genes to make cutoff, default is 10)
+    x<-gprofiler2::gost(genes, organism=spec, custom_bg=cbg, sources=dsource, evcodes=TRUE, multi_query=FALSE, correction_method=corrm, exclude_iea=exiea)
+    y<-x$result[,-14]
+    y$enrichment <- (y$intersection_size/y$query_size)/(y$term_size/y$effective_domain_size)
+    gem<-x$result[,c("term_id","term_name","p_value","intersection")]
+    colnames(gem)<-c("GO.ID", "Description","p.Val","Genes")
+    gem$FDR<-gem$p.Val
+    gem$Phenotype="+1"
+    gem<-gem[,c("GO.ID","Description","p.Val","FDR","Phenotype","Genes")]
+    write.table(gem, paste0(prefix,".gem.txt"), quote=FALSE, sep="\t", row.names = FALSE)
+    y<-y[order(y$enrichment, decreasing=T),]
+    GO_plot(y, prefix, termsz, prpdf, prfig)
+    write.table(y, paste0(prefix,".GO.txt"), quote=FALSE, sep="\t", row.names=FALSE)
+    if(isTRUE(giveGost)){
+      return(x)
+    }
+  }
+  if(is.list(geneList)){
+    message("geneList is list of character vectors...")
+    if(isTRUE(returnGost)){
+      gostList<-list()
+      for(i in 1:length(geneList)){
+        pre<-paste0(prefix,names(geneList)[i])
+        message("Analyzing ",names(geneList)[i]," and saving as: ",pre,"...")
+        gostList[[i]]<-tryCatch({GOfun(geneList[[i]], prefix=pre)},
+                                error=function(e){
+                                  message("No significant results for ",names(geneList)[i]," returning NA.")
+                                  return(NA)
+                                })
+        names(gostList)[i]<-names(geneList)[i]
+      }
+      return(gostList)
+    } else {
+      for(i in 1:length(geneList)){
+        pre<-paste0(prefix,names(geneList)[i])
+        message("Analyzing ",names(geneList)[i]," and saving as: ",pre,"...")
+        tryCatch({GOfun(geneList[[i]], prefix=pre)},
+                 error=function(e){
+                   message("No significant results for ",names(geneList)[i],"...")
+                 })
+      }
+    }
+  } else {
+    message("Single character list of genes provided...")
+    pre<-prefix
+    if(isTRUE(returnGost)){
+      x<-GOfun(geneList, prefix=pre)
+      return(x)
+    } else {
+      GOfun(geneList, prefix=pre)
+    }
   }
 }
 
