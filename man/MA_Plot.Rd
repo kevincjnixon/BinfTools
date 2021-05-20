@@ -13,7 +13,8 @@ MA_Plot(
   lab = NULL,
   col = NULL,
   fclim = NULL,
-  showNum = TRUE
+  showNum = TRUE,
+  returnDEG = F
 )
 }
 \arguments{
@@ -27,13 +28,15 @@ MA_Plot(
 
 \item{FC}{A number indicating the log2FoldChange threshold where abs(log2FC)>FC are significant genes. Default is 1 - can be 0 if not using fold-change threshold.}
 
-\item{lab}{A character vector of genes to be labeled on the plot. Should correspond with rownames(res). Default is NULL.}
+\item{lab}{A character vector of genes to be labeled on the plot. Should correspond with rownames(res). Default is NULL. Enter 'labDEG' to label all DEGs given thresholds.}
 
 \item{col}{A character vector of genes to be coloured orange on the plot. Should correspond with rownames(res). Default is NULL.}
 
 \item{fclim}{A number indicating the maximum log2FoldChange value desired on the volcano plot (x-axis limits). Points outside this limit will appear as diamonds on the limits.}
 
 \item{showNum}{A boolean indicating whether gene numbers should be displayed on the plot. Default is TRUE.}
+
+\item{returnDEG}{A boolean indicating whether DEGs (using given thresholds) should be returned as a list (down, up)}
 }
 \value{
 An MA plot with x-axis indicating gene expression 'baseMean' and y-axis indicating log2FoldChange. Blue dots are downregulated genes, red dots are upregulated genes.

@@ -7,15 +7,16 @@
 #'@param p A number indicating the threshold for 'padj' where padj<p are significant genes. Should not be used if using 'pval'
 #'@param pval A number indicating the threshold for 'pvalue' where pvalue<pval are significant genes. Should not be used if using 'p'
 #'@param FC A number indicating the log2FoldChange threshold where abs(log2FC)>FC are significant genes. Default is 1 - can be 0 if not using fold-change threshold.
-#'@param lab A character vector of genes to be labeled on the plot. Should correspond with rownames(res). Default is NULL.
+#'@param lab A character vector of genes to be labeled on the plot. Should correspond with rownames(res). Default is NULL. Enter 'labDEG' to label all DEGs given thresholds.
 #'@param col A character vector of genes to be coloured orange on the plot. Should correspond with rownames(res). Default is NULL.
 #'@param fclim A number indicating the maximum log2FoldChange value desired on the volcano plot (x-axis limits). Points outside this limit will appear as diamonds on the limits.
 #'@param showNum A boolean indicating whether gene numbers should be displayed on the plot. Default is TRUE.
+#'@param returnDEG A boolean indicating whether DEGs (using given thresholds) should be returned as a list (down, up)
 #'@return A volcano plot with x-axis indicating log2FoldChange expression and y-axis indicating -log10 pvalue. Blue dots are downregulated genes, red dots are upregulated genes.
 #' @export
 #'
 
-volcanoPlot<-function(res, title, p=NULL, pval=NULL, FC=1, lab=NULL, col=NULL, fclim=NULL, showNum=TRUE){
+volcanoPlot<-function(res, title, p=NULL, pval=NULL, FC=1, lab=NULL, col=NULL, fclim=NULL, showNum=TRUE, returnDEG=F){
   #Function to create a volcano plot from a results table (res)
   #p and pval are mutually exclusive and describe the adjusted pvalue or unadjusted pvalue thresholds of DEGs, respectively
   #FC is the absolute log2 fold-change threshold for a DEG
@@ -135,6 +136,9 @@ volcanoPlot<-function(res, title, p=NULL, pval=NULL, FC=1, lab=NULL, col=NULL, f
   numdown<-dim(down)[1]+dim(subset(zeroes, log2FoldChange < -FC))[1]
   numup<-dim(up)[1]+dim(subset(zeroes, log2FoldChange > FC))[1]
   numnc<-dim(nc)[1]+dim(subset(zeroes, abs(log2FoldChange)<FC))[1]+pNA
+  #Get the DEGs
+  DEdown <- rownames(down)
+  DEup <- rownames(up)
   #Print the numbers of genes on the plot
   if(isTRUE(showNum)){
     text(-(maxvalx/2), max(c(10,max(na.omit(-log(res$pvalue,10))))), numdown, col = "blue")
@@ -144,10 +148,18 @@ volcanoPlot<-function(res, title, p=NULL, pval=NULL, FC=1, lab=NULL, col=NULL, f
   }
   #Now add in the gene labels if they were specified
   if(!is.null(lab)){
+    if(lab=="labDEG"){
+      lab=c(DEdown,DEup)
+    }
     labpoints<-res[lab,]
     text(labpoints$log2FoldChange, -log(labpoints$pvalue,10), labels=rownames(labpoints), cex=0.75, font=2,
          pos=4, col="orange")
   }
   #Return a list of the numbers of genes (down, then up, then no change)
-  return(list(Down=numdown,Up=numup,No_Change=numnc))
+  if(isFALSE(returnDEG)){
+    return(list(Down=numdown,Up=numup,No_Change=numnc))
+  }
+  if(isTRUE(returnDEG)){
+    return(list(Down=DEdown, Up=DEup))
+  }
 }
