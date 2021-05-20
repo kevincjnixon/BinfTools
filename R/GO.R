@@ -4,7 +4,7 @@
 #' and export a complete results table, a .gem file for use with EnrichmentMap Cytoscape app,
 #' and a pdf of the top enriched and significant terms.
 #'
-#' @param geneList A character vector of genes to query
+#' @param geneList A character vector or named list of genes to query. If a named list is provided, the name of each list element is appended to the prefix for GO output.
 #' @param species A character vector of the organism name to use. Concatenate the first letter of the name and family name. Default is 'hsapiens'
 #' @param bg A character vector describing the genes making up the background. Default NULL
 #' @param source A vector of data sources to use. Currently: GO (GO:BP, GO:MF, GO:CC), KEGG, REAC, TF, MIRNA, CORUM, HP, HPA, WP.
