@@ -89,6 +89,7 @@ GO_plot<-function(GOres, prefix, ts, pdf, fig){
   ylim.sec<-c(0, max(-log10(GOres$p_value))+1)
   b<-diff(ylim.prim)/diff(ylim.sec)
   a<-b*(ylim.prim[1]=ylim.sec[1])
+  subt<-strsplit(prefix, split="/", fixed=T)[[1]][length(strsplit(prefix, split="/", fixed=T)[[1]])]
   p<- ggplot2::ggplot(GOres, ggplot2::aes(x=seq(1:length(term_name)), y=enrichment)) +
     ggplot2::geom_col(fill="blue", width=0.75) + ggplot2::geom_col(ggplot2::aes(x=seq(1:length(term_name)), y=a+(-log10(p_value))*b), fill="orange", width=0.375) +
     ggplot2::scale_x_continuous(name="GO Term", breaks=1:10, labels=GOres$term_name) +
@@ -96,7 +97,7 @@ GO_plot<-function(GOres, prefix, ts, pdf, fig){
     ggplot2::theme_classic() + ggplot2::theme(axis.title.y=ggplot2::element_text(color="blue"), axis.title.y.right=ggplot2::element_text(color="orange"),
                             axis.text.x=ggplot2::element_text(angle=60, hjust=1)) +
     ggplot2::labs(title=paste0("Top Ten Enriched terms (>",ts[1],"genes/term)"),
-                  subtitle=prefix)
+                  subtitle=subt)
   #Now get the top ten significant terms with less than 500 genes/term (in tmp)
   tmp<-tmp[which(tmp$term_size <=ts[2]),]
   tmp<-tmp[1:10,]
@@ -107,7 +108,7 @@ GO_plot<-function(GOres, prefix, ts, pdf, fig){
     ggplot2::theme_classic() + ggplot2::theme(axis.title.y=ggplot2::element_text(color="blue"), axis.title.y.right=ggplot2::element_text(color="orange"),
                             axis.text.x=ggplot2::element_text(angle=60, hjust=1))+
     ggplot2::labs(title=paste0("Top Ten Significant terms (<",ts[2],"genes/term)"),
-                  subtitle=prefix)
+                  subtitle=subt)
   if(isTRUE(pdf)){
     pdf(paste0(prefix,".Top10.pdf"))
     print(p)
