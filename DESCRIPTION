@@ -25,7 +25,8 @@ Imports:
   SAGx,
   magrittr,
   dplyr,
-  forcats
+  forcats,
+  plotly
 Suggests: 
     knitr
 VignetteBuilder: knitr
