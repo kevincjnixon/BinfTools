@@ -69,7 +69,7 @@ interMA<-function(res, title="MA Plot", p=NULL, pval=NULL, FC=1){
   q<-quantile(log10(res$baseMean))
   names(q)<-c()
   pal<-c("blue","black","red")
-  fig<-plotly::plot_ly(res, type="scatter", x=~log10(baseMean), y=~log2FoldChange,
+  fig<-plotly::plot_ly(res, type="scatter", mode="markers", x=~log10(baseMean), y=~log2FoldChange,
                        text=~rownames(res), color=~colour, colors=pal) %>%
     plotly::layout(shapes=list(hline(-FC), hline(FC))) %>% #, vline(q[1]),
                                #vline(q[2]), vline(q[3]), vline(q[4]), vline(q[5]))) %>%
@@ -157,7 +157,7 @@ interVP<-function(res, title="Volcano Plot", p=NULL, pval=NULL, FC=1){
   q<-quantile(log10(res$baseMean))
   names(q)<-c()
   pal<-c("blue","black","red")
-  fig<-plotly::plot_ly(res, type="scatter", x=~log2FoldChange, y=~-log10(pvalue),
+  fig<-plotly::plot_ly(res, type="scatter", mode="markers", x=~log2FoldChange, y=~-log10(pvalue),
                        text=~rownames(res), color=~colour, colors=pal) %>%
     plotly::layout(shapes=list(vline(-FC), vline(FC), hline(sig))) %>% #, vline(q[1]),
     #vline(q[2]), vline(q[3]), vline(q[4]), vline(q[5]))) %>%
