@@ -101,7 +101,7 @@ interVP<-function(res, title="Volcano Plot", p=NULL, pval=NULL, FC=1){
   sig<-NULL
   if(!is.null(p)){
     #Set sig to the p-value threshold
-    sig<--log(res[which(res$padj == max(subset(res, padj<0.05)$padj)),]$pvalue[1],10)
+    sig<--log(res[which(res$padj == max(subset(res, padj<p)$padj)),]$pvalue[1],10)
     for(i in 1:nrow(res)){
       if(!is.na(res$padj[i])){
         if(res$log2FoldChange[i] >= FC && res$padj[i]<p){
