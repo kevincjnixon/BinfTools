@@ -12,11 +12,12 @@
 #'@param fclim A number indicating the maximum log2FoldChange value desired on the volcano plot (x-axis limits). Points outside this limit will appear as diamonds on the limits.
 #'@param showNum A boolean indicating whether gene numbers should be displayed on the plot. Default is TRUE.
 #'@param returnDEG A boolean indicating whether DEGs (using given thresholds) should be returned as a list (down, up)
+#'@param expScale A boolean indicating if points should be scaled using average expression (baseMean) - higher expressed = larger point. Default=FALSE.
 #'@return A volcano plot with x-axis indicating log2FoldChange expression and y-axis indicating -log10 pvalue. Blue dots are downregulated genes, red dots are upregulated genes.
 #' @export
 #'
 
-volcanoPlot<-function(res, title, p=NULL, pval=NULL, FC=1, lab=NULL, col=NULL, fclim=NULL, showNum=TRUE, returnDEG=F){
+volcanoPlot<-function(res, title, p=NULL, pval=NULL, FC=1, lab=NULL, col=NULL, fclim=NULL, showNum=TRUE, returnDEG=F, expScale=F){
   #Function to create a volcano plot from a results table (res)
   #p and pval are mutually exclusive and describe the adjusted pvalue or unadjusted pvalue thresholds of DEGs, respectively
   #FC is the absolute log2 fold-change threshold for a DEG
@@ -98,11 +99,21 @@ volcanoPlot<-function(res, title, p=NULL, pval=NULL, FC=1, lab=NULL, col=NULL, f
       }
     }
   }
+  #Set a column for point sizes:
+  nc$cex<-rep(0.6, nrow(nc))
+  up$cex<-rep(0.6, nrow(up))
+  down$cex<-rep(0.6, nrow(down))
+  cex_scale<-(diff(range(log10(res$baseMean[!is.na(res$baseMean)]))))
+  if(isTRUE(expScale)){
+    nc$cex<- log10(nc$baseMean)/cex_scale
+    up$cex<- log10(up$baseMean)/cex_scale
+    down$cex<- log10(down$baseMean)/cex_scale
+  }
   #Plot the points, start with nc (black), then down (blue), and up (red)
-  plot(nc$log2FoldChange,-log(nc$pvalue,10), pch=16, cex=0.6, main=title, xlab=expression(log[2](FoldChange)), ylab=expression(-log[10](pvalue)),
+  plot(nc$log2FoldChange,-log(nc$pvalue,10), pch=16, cex=nc$cex, main=title, xlab=expression(log[2](FoldChange)), ylab=expression(-log[10](pvalue)),
        ylim=c(0, max(c(10,max(na.omit(-log(res$pvalue,10)))))), xlim=c(-maxvalx, maxvalx), col=rgb(0,0,0,0.5))
-  points(down$log2FoldChange,-log(down$pvalue,10), pch=16, cex=0.6, col=rgb(0,0,1,0.75))
-  points(up$log2FoldChange, -log(up$pvalue,10),pch=16, cex=0.6, col=rgb(1,0,0,0.75))
+  points(down$log2FoldChange,-log(down$pvalue,10), pch=16, cex=down$cex, col=rgb(0,0,1,0.75))
+  points(up$log2FoldChange, -log(up$pvalue,10),pch=16, cex=up$cex, col=rgb(1,0,0,0.75))
   #Add in the extreme points (if necessary)
   if(length(extremes) >1){
     #Make sure if they are DEGs, they're coloured properly:
@@ -130,7 +141,11 @@ volcanoPlot<-function(res, title, p=NULL, pval=NULL, FC=1, lab=NULL, col=NULL, f
   abline(h=c(sig),lty=c(2))
   if(!is.null(col)){
     colpoints<-res[col,]
-    points(colpoints$log2FoldChange, -log(colpoints$pvalue,10), pch=16, cex=0.6, col="orange")
+    colpoints$cex<-rep(0.6, nrow(colpoints))
+    if(isTRUE(expScale)){
+      colpoints$cex<- log10(colpoints$baseMean)/cex_scale
+    }
+    points(colpoints$log2FoldChange, -log(colpoints$pvalue,10), pch=16, cex=colpoints$cex, col="orange")
   }
   #Now calculate number of DEGs (including padj=0)
   numdown<-dim(down)[1]+dim(subset(zeroes, log2FoldChange < -FC))[1]

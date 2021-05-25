@@ -13,11 +13,12 @@
 #'@param fclim A number indicating the maximum log2FoldChange value desired on the volcano plot (x-axis limits). Points outside this limit will appear as diamonds on the limits.
 #'@param showNum A boolean indicating whether gene numbers should be displayed on the plot. Default is TRUE.
 #'@param returnDEG A boolean indicating whether DEGs (using given thresholds) should be returned as a list (down, up)
+#'@param sigScale A boolean indicating if the point size should be scaled by significance (more significant = larger point). Default=FALSE.
 #'@return An MA plot with x-axis indicating gene expression 'baseMean' and y-axis indicating log2FoldChange. Blue dots are downregulated genes, red dots are upregulated genes.
 #' @export
 
 
-MA_Plot<-function(res, title, p=NULL, pval=NULL, FC=1, lab=NULL, col=NULL, fclim=NULL, showNum=TRUE, returnDEG=F){
+MA_Plot<-function(res, title, p=NULL, pval=NULL, FC=1, lab=NULL, col=NULL, fclim=NULL, showNum=TRUE, returnDEG=F, sigScale=F){
   #Function to create an MA plot from a results table (res)
   #p and pval are mutually exclusive and describe the adjusted pvalue or unadjusted pvalue thresholds of DEGs, respectively
   #FC is the absolute log2 fold-change threshold for a DEG
@@ -102,11 +103,21 @@ MA_Plot<-function(res, title, p=NULL, pval=NULL, FC=1, lab=NULL, col=NULL, fclim
   #Figure out the limits of the x-axis
   maxvalx<-max(log(res$baseMean,10))
   minvalx<-min(log(res$baseMean,10))
+  #Set a column for point sizes:
+  nc$cex<-rep(0.6, nrow(nc))
+  up$cex<-rep(0.6, nrow(up))
+  down$cex<-rep(0.6, nrow(down))
+  cex_scale<-(diff(range(-log10(res$pvalue[!is.na(res$pvalue)])))/4)
+  if(isTRUE(sigScale)){
+    nc$cex<- -log10(nc$pvalue)/cex_scale
+    up$cex<- -log10(up$pvalue)/cex_scale
+    down$cex<- -log10(down$pvalue)/cex_scale
+  }
   #Plot the points, start with nc (black), then down (blue), and up (red)
-  plot(nc$log2FoldChange ~ log(nc$baseMean,10), pch=16, cex=0.6, main=title, ylab=expression(log[2](FoldChange)), xlab=expression(log[10](Expression)),
+  plot(nc$log2FoldChange ~ log(nc$baseMean,10), pch=16, cex=nc$cex, main=title, ylab=expression(log[2](FoldChange)), xlab=expression(log[10](Expression)),
        ylim=c(-maxvaly, maxvaly), xlim=c(minvalx, maxvalx), col=rgb(0.3,0.3,0.3,0.9))
-  points(down$log2FoldChange ~ log(down$baseMean,10), pch=16, cex=0.6, col=rgb(0,0,1,0.75))
-  points(up$log2FoldChange ~ log(up$baseMean,10),pch=16, cex=0.6, col=rgb(1,0,0,0.75))
+  points(down$log2FoldChange ~ log(down$baseMean,10), pch=16, cex=down$cex, col=rgb(0,0,1,0.75))
+  points(up$log2FoldChange ~ log(up$baseMean,10),pch=16, cex=up$cex, col=rgb(1,0,0,0.75))
   #Add in the extreme points (if necessary)
   if(length(extremes) >1){
     #Make sure if they are DEGs, they're coloured properly:
@@ -133,7 +144,11 @@ MA_Plot<-function(res, title, p=NULL, pval=NULL, FC=1, lab=NULL, col=NULL, fclim
   }
   if(!is.null(col)){
     colpoints<-res[col,]
-    points(colpoints$log2FoldChange ~ log(colpoints$baseMean,10), pch=16, cex=0.6, col="orange")
+    colpoints$cex=rep(0.6, nrow(colpoints))
+    if(isTRUE(sigScale)){
+      colpoints$cex<- -log10(colpoints$pvalue)/cex_scale
+    }
+    points(colpoints$log2FoldChange ~ log(colpoints$baseMean,10), pch=16, cex=colpoints$cex, col="orange")
   }
   #Now calculate number of DEGs (including padj=0)
   numdown<-dim(down)[1]+dim(subset(zeroes, log2FoldChange < -FC))[1]
