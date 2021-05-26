@@ -155,19 +155,22 @@ exploreData<-function(res, counts, cond){
     })
     get.gmt<-shiny::reactive({
       x<-res[[which(names(res) %in% input$data)]]
-      DEG<-unique(unlist(get.DEG()))
+      DEG<-get.DEG()
       #print(lapply(DEG, head))
       y<-BinfTools::GO_GEM(DEG, species=input$species, bg=rownames(x),
                         source=input$source, prefix=paste(input$data,input$source, sep="_"),
                         pdf=F, fig=F, writeRes=F, writeGem=F, returnRes=F, returnGost=T)
       if(input$species=="hsapiens"){
-        return(BinfTools::customGMT(y, input$target, gp_hs))
+        return(c(BinfTools::customGMT(y$Up, input$target, gp_hs),
+                 BinfTools::customGMT(y$Down, input$target, gp_hs)))
       }
       if(input$species=="mmusculus"){
-        return(BinfTools::customGMT(y, input$target, gp_mm))
+        return(c(BinfTools::customGMT(y$Up, input$target, gp_mm),
+                 BinfTools::customGMT(y$Down, input$target, gp_mm)))
       }
       if(input$species=="dmelanogaster"){
-        return(BinfTools::customGMT(y, input$target, gp_dm))
+        return(c(BinfTools::customGMT(y$Up, input$target, gp_dm),
+                 BinfTools::customGMT(y$Down, input$target, gp_dm)))
       }
     })
     output$volcanoPlot <- shiny::renderPlot({
