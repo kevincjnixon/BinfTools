@@ -4,7 +4,7 @@
 \alias{GO_plot}
 \title{Generates GO figures}
 \usage{
-GO_plot(GOres, prefix, ts, pdf, fig)
+GO_plot(GOres, prefix, ts, pdf, fig, print = c("both", "sig", "enr"))
 }
 \description{
 Function that generates the top 10 term figures for GO_GEM()
