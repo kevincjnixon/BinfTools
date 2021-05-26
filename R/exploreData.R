@@ -23,13 +23,13 @@
 
 exploreData<-function(res, counts, cond){
   require(gpGeneSets, quietly = T)
-  if(!is.list(res)){
+  if(class(res)!="list"){
     res<-list(data=res)
   }
-  if(!is.list(counts)){
+  if(class(counts)!="list"){
     counts<-list(data=counts)
   }
-  if(!is.list(cond)){
+  if(classs(cond)!="list"){
     cond<-list(data=cond)
   }
   # Define UI for app that draws a histogram ----
