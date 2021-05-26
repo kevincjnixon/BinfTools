@@ -29,7 +29,7 @@ exploreData<-function(res, counts, cond){
   if(class(counts)!="list"){
     counts<-list(data=counts)
   }
-  if(classs(cond)!="list"){
+  if(class(cond)!="list"){
     cond<-list(data=cond)
   }
   # Define UI for app that draws a histogram ----
