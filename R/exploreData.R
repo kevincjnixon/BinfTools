@@ -44,41 +44,43 @@ exploreData<-function(res, counts, cond){
       # Sidebar panel for inputs ----
       shiny::sidebarPanel(
         shiny::selectInput(inputId="data",
-                      label="Dataset",
-                      choices=names(res),
-                      selected=names(res)[1]),
+                           label="Dataset",
+                           choices=names(res),
+                           selected=names(res)[1]),
         shiny::selectInput(inputId="control",
                            label="Select control condition:",
                            choices=unique(unlist(cond)),
                            selected=unique(unlist(cond))[1]),
         # Input: Numeric input for the log2FoldChange Threshold ----
         shiny::numericInput(inputId = "FC",
-                     label = "Absolute log2FoldChange Threshold:",
-                     min = 0,
-                     max = NA,
-                     value = log2(1.5)),
+                            label = "Absolute log2FoldChange Threshold:",
+                            min = 0,
+                            max = NA,
+                            value = log2(1.5)),
         # Radio buttons to determine if adjusted or raw p-value should be used
         shiny::radioButtons(inputId= "sig",
-                     label="P-value column:",
-                     choices=c("padj","pvalue"),
-                     selected="padj"),
+                            label="P-value column:",
+                            choices=c("padj","pvalue"),
+                            selected="padj"),
 
         #Input: Numeric input for the
         shiny::numericInput(inputId="p",
-                     label = "P-value threshold:",
-                     min=0,
-                     max=1,
-                     value=0.05),
+                            label = "P-value threshold:",
+                            min=0,
+                            max=1,
+                            value=0.05),
         #Input: Text input for genes to colour
-        shiny::textInput(inputId="colGene",
-                  label="Gene to colour/label:",
-                  value="",
-                  placeholder = rownames(res[[1]])[1]),
-
+        # shiny::textInput(inputId="colGene",
+        #                  label="Gene to colour/label:",
+        #                  value="",
+        #                  placeholder = rownames(res[[1]])[1]),
+        shiny::textInput(inputId="genes",
+                         label="Enter genes of interest:",
+                         value=""),
         shiny::radioButtons(inputId="scale",
-                     label="Scale point sizes?",
-                     choices=c("Yes","No"),
-                     selected="No"),
+                            label="Scale point sizes?",
+                            choices=c("Yes","No"),
+                            selected="No"),
         shiny::radioButtons(inputId="species",
                             label="Species:",
                             choices=c("hsapiens","mmusculus", "dmelanogaster"),
@@ -99,7 +101,15 @@ exploreData<-function(res, counts, cond){
         shiny::selectInput(inputId="method",
                            label="Count plot method:",
                            choices=c("ind","mean","geoMean","median"),
-                           selected="ind")
+                           selected="ind"),
+        shiny::radioButtons(inputId="norm",
+                            label="Normalize to control?",
+                            choices=c("Yes","No"),
+                            selected="No"),
+        shiny::selectInput(inputId="eb",
+                           label="Error bar options:",
+                           choices=c("sd","se","none"),
+                           selected="sd")
       ),
 
       # Main panel for displaying outputs ----
@@ -120,6 +130,11 @@ exploreData<-function(res, counts, cond){
                                              shiny::column(12, shiny::plotOutput(outputId="gsva")),
                                              shiny::column(12, shiny::plotOutput(outputId="heatmap")),
                                              shiny::column(12, shiny::plotOutput(outputId="countPlot"))
+                                           )),
+                           shiny::tabPanel("Gene Expression",
+                                           shiny::fluidRow(
+                                             shiny::column(12, shiny::plotOutput(outputId="geneExp")),
+                                             shiny::column(12, shiny::plotOutput(outputId="geneHeat"))
                                            ))
         )
         # Output: Histogram ----
@@ -133,16 +148,26 @@ exploreData<-function(res, counts, cond){
 
   server <- function(input, output) {
 
+    geneList<-reactiveValues()
+    geneList$genes<-NULL
+
+    observeEvent(input$genes, {
+      x<-res[[which(names(res) %in% input$data)]]
+      geneList$genes<-c(geneList$genes, input$genes)
+      #geneList$genes<-geneList[which(geneList$genes %in% rownames(x))]
+      #print(geneList$genes)
+    })
+
     get.DEG<-shiny::reactive({
       x<-res[[which(names(res) %in% input$data)]]
       #print(head(x))
       if(input$sig=="padj"){
         return(list(Up=rownames(subset(x, log2FoldChange >= input$FC & padj < input$p)),
-             Down=rownames(subset(x, log2FoldChange <= -input$FC & padj < input$p))))
+                    Down=rownames(subset(x, log2FoldChange <= -input$FC & padj < input$p))))
       }
       if(input$sig=="pvalue"){
         return(list(Up=rownames(subset(x, log2FoldChange >= input$FC & pvalue < input$p)),
-             Down=rownames(subset(x, log2FoldChange <= -input$FC & pvalue < input$p))))
+                    Down=rownames(subset(x, log2FoldChange <= -input$FC & pvalue < input$p))))
       }
     })
     GO_res<-shiny::reactive({
@@ -150,16 +175,16 @@ exploreData<-function(res, counts, cond){
       DEG<-get.DEG()
       #print(lapply(DEG, head))
       BinfTools::GO_GEM(DEG, species=input$species, bg=rownames(x),
-                                source=input$source, prefix=paste(input$data,input$source, sep="_"),
-                                pdf=F, fig=F, writeRes=F, writeGem=F, returnRes=T)
+                        source=input$source, prefix=paste(input$data,input$source, sep="_"),
+                        pdf=F, fig=F, writeRes=F, writeGem=F, returnRes=T)
     })
     get.gmt<-shiny::reactive({
       x<-res[[which(names(res) %in% input$data)]]
       DEG<-get.DEG()
       #print(lapply(DEG, head))
       y<-BinfTools::GO_GEM(DEG, species=input$species, bg=rownames(x),
-                        source=input$source, prefix=paste(input$data,input$source, sep="_"),
-                        pdf=F, fig=F, writeRes=F, writeGem=F, returnRes=F, returnGost=T)
+                           source=input$source, prefix=paste(input$data,input$source, sep="_"),
+                           pdf=F, fig=F, writeRes=F, writeGem=F, returnRes=F, returnGost=T)
       if(input$species=="hsapiens"){
         return(c(BinfTools::customGMT(y$Up, input$target, gp_hs),
                  BinfTools::customGMT(y$Down, input$target, gp_hs)))
@@ -184,14 +209,18 @@ exploreData<-function(res, counts, cond){
       } else{
         scale<-F
       }
-
+      ge<-unique(geneList$genes)
+      ge<-ge[ge!=""]
+      if(length(ge)==0){
+        ge<-NULL
+      }
       if(input$sig=="padj"){
         BinfTools::volcanoPlot(x, title="Volcano", p=input$p, FC=input$FC,
-                               lab=input$colGene, col=input$colGene, expScale=scale, returnDEG=F)
+                               lab=ge, col=ge, expScale=scale, returnDEG=F)
       }
       if(input$sig=="pvalue"){
         BinfTools::volcanoPlot(x, title="Volcano", pval=input$p, FC=input$FC,
-                               lab=input$colGene, col=input$colGene, expScale=scale, returnDEG=F)
+                               lab=ge, col=ge, expScale=scale, returnDEG=F)
       }
 
 
@@ -206,14 +235,18 @@ exploreData<-function(res, counts, cond){
       } else{
         scale<-F
       }
-
+      ge<-unique(geneList$genes)
+      ge<-ge[ge!=""]
+      if(length(ge)==0){
+        ge<-NULL
+      }
       if(input$sig=="padj"){
-        BinfTools::MA_Plot(x, "MA Plot", p=input$p, FC=input$FC, col=input$colGene,
-                           lab=input$colGene, sigScale=scale)
+        BinfTools::MA_Plot(x, "MA Plot", p=input$p, FC=input$FC, col=ge,
+                           lab=ge, sigScale=scale)
       }
       if(input$sig=="pvalue"){
-        BinfTools::MA_Plot(x, "MA Plot", pval=input$p, FC=input$FC, col=input$colGene,
-                           lab=input$colGene, sigScale=scale)
+        BinfTools::MA_Plot(x, "MA Plot", pval=input$p, FC=input$FC, col=ge,
+                           lab=ge, sigScale=scale)
       }
 
     })
@@ -236,8 +269,13 @@ exploreData<-function(res, counts, cond){
     output$heatmap<-shiny::renderPlot({
       x<-counts[[which(names(counts) %in% input$data)]]
       co<-cond[[which(names(cond) %in% input$data)]]
+      ge<-unique(geneList$genes)
+      ge<-ge[ge!=""]
+      if(length(ge)==0){
+        ge<-""
+      }
       gmt<-unique(unlist(get.gmt()))
-      BinfTools::zheat(genes=gmt, counts=x, conditions=co, con=input$control, title=paste0("Gene expression - ", input$target), labgenes=input$colGene)
+      BinfTools::zheat(genes=gmt, counts=x, conditions=co, con=input$control, title=paste0("Gene expression - ", input$target), labgenes=ge)
     })
     output$countPlot<-shiny::renderPlot({
       x<-counts[[which(names(counts) %in% input$data)]]
@@ -245,6 +283,37 @@ exploreData<-function(res, counts, cond){
       gmt<-unique(unlist(get.gmt()))
       BinfTools::count_plot(x, genes=gmt, condition=co, title=paste0("Gene expression - ",input$target),
                             method=input$method)
+    })
+    output$geneExp<-shiny::renderPlot({
+      x<-counts[[which(names(counts) %in% input$data)]]
+      co<-cond[[which(names(cond) %in% input$data)]]
+      toNorm<-input$norm
+      if(toNorm=="Yes"){
+        toNorm<-input$control
+      } else {
+        toNorm<-NULL
+      }
+      err<-input$eb
+      if(err=="none"){
+        err<-0
+      }
+      ge<-unique(geneList$genes)
+      ge<-ge[ge!=""]
+      #print(ge[which(ge %in% rownames(x))])
+      BinfTools::barGene(genes=ge[which(ge %in% rownames(x))], counts=x, conditions=co,
+                         title=paste0("Gene expression - ", input$data),
+                         norm=toNorm,
+                         eb=err)
+    })
+    output$geneHeat<-shiny::renderPlot({
+      x<-counts[[which(names(counts) %in% input$data)]]
+      co<-cond[[which(names(cond) %in% input$data)]]
+      ge<-unique(geneList$genes)
+      ge<-ge[ge!=""]
+      #print(ge[which(ge %in% rownames(x))])
+      BinfTools::zheat(genes=ge[which(ge %in% rownames(x))], counts=x, conditions=co,
+                       con=input$control, title=paste0("Gene expression - ", input$data),
+                       labgenes=NULL)
     })
   }
 
