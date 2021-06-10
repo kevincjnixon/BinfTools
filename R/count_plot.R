@@ -28,7 +28,7 @@ rowMedian<-function(a){
 #' @return Generates a violin plot
 #' @export
 
-count_plot<-function(counts, scaling="zscore", genes, condition, title="expression", compare=NULL, col="Dark2", method="ind"){
+count_plot<-function(counts, scaling="zscore", genes, condition, title="expression", compare=NULL, col="Dark2", method="ind", pair=F){
 	#Pull the normalized counts of genes
 	res<-counts[which(rownames(counts) %in% genes),]
 	ylab="z-score Normalized Expression"
@@ -95,7 +95,7 @@ count_plot<-function(counts, scaling="zscore", genes, condition, title="expressi
 	}
 	x<-as.data.frame(x)
 	#Pairwise comparison
-	pwc<- x%>% rstatix::pairwise_t_test(Expression ~ group, comparisons=compare, p.adjust.method="BH")
+	pwc<- x%>% rstatix::pairwise_t_test(Expression ~ group, comparisons=compare, p.adjust.method="BH", paired=pair)
 	pwc <- pwc %>% rstatix::add_xy_position(x="group")
 	#Now for the plot:
 	ggpubr::ggviolin(x, x="group", y="Expression", fill="group") +
