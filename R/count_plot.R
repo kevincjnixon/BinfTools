@@ -34,8 +34,8 @@ count_plot<-function(counts, scaling="zscore", genes, condition, title="expressi
 	ylab="z-score Normalized Expression"
 	if(scaling=="log10"){
 		#Log10 of counts
-		res<-as.data.frame(log(res, 10))
-		ylab=expression(log[10](NormalizedExpression))
+		res<-as.data.frame(log(1+res, 10))
+		ylab=expression(log[10](1+NormalizedExpression))
 	}
 	if(scaling=="zscore"){
 		#zscore normalized counts
