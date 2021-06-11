@@ -28,14 +28,14 @@ rowMedian<-function(a){
 #' @return Generates a violin plot
 #' @export
 
-count_plot<-function(counts, scaling="zscore", genes, condition, title="expression", compare=NULL, col="Dark2", method="ind", pair=F){
+count_plot<-function(counts, scaling="zscore", genes, condition, title="expression", compare=NULL, col="Dark2", method="ind", pair=F, pc=1){
 	#Pull the normalized counts of genes
 	res<-counts[which(rownames(counts) %in% genes),]
 	ylab="z-score Normalized Expression"
 	if(scaling=="log10"){
 		#Log10 of counts
-		res<-as.data.frame(log(1+res, 10))
-		ylab=expression(log[10](1+NormalizedExpression))
+		res<-as.data.frame(log(pc+res, 10))
+		ylab=expression(log[10](NormalizedExpression))
 	}
 	if(scaling=="zscore"){
 		#zscore normalized counts
