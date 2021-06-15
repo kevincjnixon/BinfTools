@@ -12,6 +12,19 @@ rowMedian<-function(a){
   }
   return(x)
 }
+
+perMean<-function(counts, condition){
+  counts<-counts/rowMeans(counts)
+  head(counts)
+  res<-NULL
+  for(i in 1:length(levels(factor(condition)))){
+    print(which(condition %in% levels(factor(condition))[i]))
+    res<-cbind(res, rowMeans(counts[,which(condition %in% levels(factor(condition))[i])]))
+  }
+  colnames(res)<-levels(factor(condition))
+  res<-as.data.frame(res)
+  return(res)
+}
 #' A function to make a violin plot of normalized counts
 #'
 #' This function takes normalized counts of specific genes from a DESeq2 counts
@@ -41,6 +54,9 @@ count_plot<-function(counts, scaling="zscore", genes, condition, title="expressi
 		#zscore normalized counts
 		res<-as.data.frame(t(scale(t(res))))
 	}
+	if(scaling=="none"){
+		message("No scaling method selected...")
+	}
 	#Check the method
 	if(method=="mean"){
 	  message("Calculaing mean across each condition...")
@@ -61,6 +77,11 @@ count_plot<-function(counts, scaling="zscore", genes, condition, title="expressi
 	  colnames(tmp)<-levels(factor(condition))
 	  res<-as.data.frame(tmp)
 	  condition<-as.character(levels(factor(condition)))
+	}
+	if(method=="perMean"){
+		message("Calculating percent mean for each condition...")
+		res<-perMean(res, condition)
+		condition<-as.character(levels(factor(condition)))
 	}
 	if(method=="median"){
 	  message("Calculating median across each condition...")
