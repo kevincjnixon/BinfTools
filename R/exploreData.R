@@ -98,9 +98,13 @@ exploreData<-function(res, counts, cond){
                          label="Pathway Keyword (GO only):",
                          value="",
                          placeholder="Interleukin"),
+        shint::selectInput(inputId="scale",
+                           label="Count plot scaling:",
+                           choices=c("none","log10", "zscore"),
+                           selected="zscore"),
         shiny::selectInput(inputId="method",
                            label="Count plot method:",
-                           choices=c("ind","mean","geoMean","median"),
+                           choices=c("ind","mean","geoMean","median","perMean"),
                            selected="ind"),
         shiny::radioButtons(inputId="norm",
                             label="Normalize to control?",
@@ -282,7 +286,7 @@ exploreData<-function(res, counts, cond){
       co<-cond[[which(names(cond) %in% input$data)]]
       gmt<-unique(unlist(get.gmt()))
       BinfTools::count_plot(x, genes=gmt, condition=co, title=paste0("Gene expression - ",input$target),
-                            method=input$method)
+                            scaling=input$scale, method=input$method)
     })
     output$geneExp<-shiny::renderPlot({
       x<-counts[[which(names(counts) %in% input$data)]]
