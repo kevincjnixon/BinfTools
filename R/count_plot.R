@@ -41,7 +41,7 @@ perMean<-function(counts, condition){
 #' @return Generates a violin plot
 #' @export
 
-count_plot<-function(counts, scaling="zscore", genes, condition, title="expression", compare=NULL, col="Dark2", method="ind", pair=F, pc=1){
+count_plot<-function(counts, scaling="zscore", genes, condition, title="expression", compare=NULL, col="Dark2", method="ind", pair=F, pc=1, yax=NULL){
 	#Pull the normalized counts of genes
 	res<-counts[which(rownames(counts) %in% genes),]
 	ylab="z-score Normalized Expression"
@@ -120,6 +120,9 @@ count_plot<-function(counts, scaling="zscore", genes, condition, title="expressi
 	pwc<- x%>% rstatix::pairwise_t_test(Expression ~ group, comparisons=compare, p.adjust.method="BH", paired=pair)
 	pwc <- pwc %>% rstatix::add_xy_position(x="group")
 	#Now for the plot:
+	if(!is.null(yax)){
+		ylab<-yax
+	}
 	ggpubr::ggviolin(x, x="group", y="Expression", fill="group") +
 	  ggplot2::geom_boxplot(width=0.1, fill="white") +
 		ggpubr::stat_pvalue_manual(pwc, label="p.adj", tip.length=0, step.increase=0.1) +
