@@ -41,7 +41,7 @@ perMean<-function(counts, condition){
 #' @return Generates a violin plot
 #' @export
 
-count_plot<-function(counts, scaling="zscore", genes, condition, title="expression", compare=NULL, col="Dark2", method="ind", pair=F, pc=1, yax=NULL){
+count_plot<-function(counts, scaling="zscore", genes, condition, title="expression", compare=NULL, col="Dark2", method="ind", pair=F, pc=1, yax=NULL, showStat=T){
 	#Pull the normalized counts of genes
 	res<-counts[which(rownames(counts) %in% genes),]
 	ylab="z-score Normalized Expression"
@@ -123,8 +123,11 @@ count_plot<-function(counts, scaling="zscore", genes, condition, title="expressi
 	if(!is.null(yax)){
 		ylab<-yax
 	}
-	ggpubr::ggviolin(x, x="group", y="Expression", fill="group") +
+	p<- ggpubr::ggviolin(x, x="group", y="Expression", fill="group") +
 	  ggplot2::geom_boxplot(width=0.1, fill="white") +
-		ggpubr::stat_pvalue_manual(pwc, label="p.adj", tip.length=0, step.increase=0.1) +
 	  ggplot2::labs(title=title, y=ylab, x="Condition") + ggplot2::theme_minimal() + ggplot2::scale_fill_brewer(palette=col)
+	if(isTRUE(showStat)){
+		p <- p + ggpubr::stat_pvalue_manual(pwc, label="p.adj", tip.length=0, step.increase=0.1)
+	}
+	print(p)
 }
