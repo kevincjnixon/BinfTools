@@ -18,7 +18,7 @@ perMean<-function(counts, condition){
   head(counts)
   res<-NULL
   for(i in 1:length(levels(factor(condition)))){
-    print(which(condition %in% levels(factor(condition))[i]))
+    #print(which(condition %in% levels(factor(condition))[i]))
     res<-cbind(res, rowMeans(counts[,which(condition %in% levels(factor(condition))[i])]))
   }
   colnames(res)<-levels(factor(condition))
