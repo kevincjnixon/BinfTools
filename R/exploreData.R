@@ -98,7 +98,7 @@ exploreData<-function(res, counts, cond){
                          label="Pathway Keyword (GO only):",
                          value="",
                          placeholder="Interleukin"),
-        shint::selectInput(inputId="scale",
+        shiny::selectInput(inputId="scale",
                            label="Count plot scaling:",
                            choices=c("none","log10", "zscore"),
                            selected="zscore"),
