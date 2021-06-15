@@ -56,6 +56,7 @@ count_plot<-function(counts, scaling="zscore", genes, condition, title="expressi
 	}
 	if(scaling=="none"){
 		message("No scaling method selected...")
+		ylab="Normalized Expression"
 	}
 	#Check the method
 	if(method=="mean"){
