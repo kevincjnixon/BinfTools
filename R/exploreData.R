@@ -17,7 +17,8 @@
 #'        Pathway Enrichment Sources: Select data source for pathway enrichment analysis
 #'        Print top 10 terms: sig= top 10 significant terms from pathway enrichment. enr= top 10 enriched terms from pathway enrichment
 #'        Pathway Keyword (GO only): Type in a key word for targeted analysis. Must have no spaces. Term names containing this string (even as part of a word) will be included for targeted analysis
-#'        Count plot method: ind= use values from individual samples, mean= use average from samples in each condition, geoMean= use geometric mean from samples in each condition, median= use median from samples in each condition
+#'        Count plot scaling: "none" = use valuse as is, "log10"= plot as log10(1+normcounts), "zscore"= plot z-score normcounts
+#'        Count plot method: ind= use values from individual samples, mean= use average from samples in each condition, geoMean= use geometric mean from samples in each condition, median= use median from samples in each condition, perMean= percent mean of samples in each condition
 #'
 #' @export
 

@@ -12,13 +12,17 @@ count_plot(
   title = "expression",
   compare = NULL,
   col = "Dark2",
-  method = "ind"
+  method = "ind",
+  pair = F,
+  pc = 1,
+  yax = NULL,
+  showStat = T
 )
 }
 \arguments{
 \item{counts}{Normalized counts from a DESeq2 object - use 'counts(dds, normalized=T)'}
 
-\item{scaling}{Method used to scale counts per gene across samples. Either 'zscore' or 'log10'. Default is 'zscore'}
+\item{scaling}{Method used to scale counts per gene across samples. 'zscore', 'log10', or 'none'. Default is 'zscore'}
 
 \item{genes}{Character vector of genes to subset from counts. Must correspond with rownames(counts).}
 
@@ -30,7 +34,15 @@ count_plot(
 
 \item{col}{Character indicating the RColorBrewer palette name to be used. Default is "Dark2"}
 
-\item{method}{Character indicating what to plot. One of "ind", "mean", "geoMean", or "median". Defaults to "ind" for individual data points (one point per sample).}
+\item{method}{Character indicating what to plot. One of "ind", "mean", "geoMean", or "median", or "perMean". Defaults to "ind" for individual data points (one point per sample).}
+
+\item{pair}{Boolean indicating if t-test should be independent (F; default) or paired (T).}
+
+\item{pc}{Numeric indicating the pseudocount to be added when scaling="log10". Default=1.}
+
+\item{yax}{Character indicating the y-axis label. Leave NULL if going with default axis label.}
+
+\item{showStat}{Boolean indicating if statistics should be plotted.}
 }
 \value{
 Generates a violin plot
