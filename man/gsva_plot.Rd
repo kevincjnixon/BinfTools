@@ -11,7 +11,8 @@ gsva_plot(
   condition,
   title = "ssGSEA",
   compare = NULL,
-  col = "Dark2"
+  col = "Dark2",
+  style = "violin"
 )
 }
 \arguments{
@@ -28,11 +29,13 @@ gsva_plot(
 \item{compare}{List of character vectors (each of length 2) indicating the pairwise comparisons to be made between conditions. Leave NULL for all comparisons to be made}
 
 \item{col}{Character indicating the RColorBrewer palette name to be used. Default is "Dark2".}
+
+\item{style}{Character indicating the style of plot ("violin" or "box"). Defaults to "violin".}
 }
 \value{
-Violin plot of normalized enrichment scores for genesets between conditions
+Violin or box plot of normalized enrichment scores for genesets between conditions
 }
 \description{
 A function to run an ssGSEA analysis using normalized counts and create
-a violin plot with pairwise comparisons
+a plot with pairwise comparisons
 }

@@ -25,10 +25,10 @@ perMean<-function(counts, condition){
   res<-as.data.frame(res)
   return(res)
 }
-#' A function to make a violin plot of normalized counts
+#' A function to make a plot of normalized counts
 #'
 #' This function takes normalized counts of specific genes from a DESeq2 counts
-#' object, scales them, and creates a violin plot with pairwise t-tests by condition
+#' object, scales them, and creates a plot with pairwise t-tests by condition
 #'
 #' @param counts Normalized counts from a DESeq2 object - use 'counts(dds, normalized=T)'
 #' @param scaling Method used to scale counts per gene across samples. 'zscore', 'log10', or 'none'. Default is 'zscore'
@@ -42,10 +42,11 @@ perMean<-function(counts, condition){
 #' @param pc Numeric indicating the pseudocount to be added when scaling="log10". Default=1.
 #' @param yax Character indicating the y-axis label. Leave NULL if going with default axis label.
 #' @param showStat Boolean indicating if statistics should be plotted.
-#' @return Generates a violin plot
+#' @param style Character indicating the style of plot ("violin" or "box"). Defaults to "violin".
+#' @return Generates a violin or box plot
 #' @export
 
-count_plot<-function(counts, scaling="zscore", genes, condition, title="expression", compare=NULL, col="Dark2", method="ind", pair=F, pc=1, yax=NULL, showStat=T){
+count_plot<-function(counts, scaling="zscore", genes, condition, title="expression", compare=NULL, col="Dark2", method="ind", pair=F, pc=1, yax=NULL, showStat=T, style="violin"){
   #Pull the normalized counts of genes
   res<-counts[which(rownames(counts) %in% genes),]
   ylab="z-score Normalized Expression"
@@ -127,9 +128,15 @@ count_plot<-function(counts, scaling="zscore", genes, condition, title="expressi
   if(!is.null(yax)){
     ylab<-yax
   }
-  p<- ggpubr::ggviolin(x, x="group", y="Expression", fill="group") +
-    ggplot2::geom_boxplot(width=0.1, fill="white") +
-    ggplot2::labs(title=title, y=ylab, x="Condition") + ggplot2::theme_minimal() + ggplot2::scale_fill_brewer(palette=col)
+  p<-NULL
+  if(style=="violin"){
+    p<- ggpubr::ggviolin(x, x="group", y="Expression", fill="group") +
+      ggplot2::geom_boxplot(width=0.1, fill="white") +
+      ggplot2::labs(title=title, y=ylab, x="Condition") + ggplot2::theme_minimal() + ggplot2::scale_fill_brewer(palette=col)
+  } else {
+    p<- ggpubr::ggboxplot(x, x="group", y="Expression", fill="group") +
+      ggplot2::labs(title=title, y=ylab, x="Condition") + ggplot2::theme_minimal() + ggplot2::scale_fill_brewer(palette=col)
+  }
   if(isTRUE(showStat)){
     p <- p + ggpubr::stat_pvalue_manual(pwc, label="p.adj", tip.length=0, step.increase=0.1)
   }

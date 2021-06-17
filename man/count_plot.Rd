@@ -2,7 +2,7 @@
 % Please edit documentation in R/count_plot.R
 \name{count_plot}
 \alias{count_plot}
-\title{A function to make a violin plot of normalized counts}
+\title{A function to make a plot of normalized counts}
 \usage{
 count_plot(
   counts,
@@ -16,7 +16,8 @@ count_plot(
   pair = F,
   pc = 1,
   yax = NULL,
-  showStat = T
+  showStat = T,
+  style = "violin"
 )
 }
 \arguments{
@@ -43,11 +44,13 @@ count_plot(
 \item{yax}{Character indicating the y-axis label. Leave NULL if going with default axis label.}
 
 \item{showStat}{Boolean indicating if statistics should be plotted.}
+
+\item{style}{Character indicating the style of plot ("violin" or "box"). Defaults to "violin".}
 }
 \value{
-Generates a violin plot
+Generates a violin or box plot
 }
 \description{
 This function takes normalized counts of specific genes from a DESeq2 counts
-object, scales them, and creates a violin plot with pairwise t-tests by condition
+object, scales them, and creates a plot with pairwise t-tests by condition
 }
