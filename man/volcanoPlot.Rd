@@ -15,7 +15,9 @@ volcanoPlot(
   fclim = NULL,
   showNum = TRUE,
   returnDEG = F,
-  expScale = F
+  expScale = F,
+  upcol = NULL,
+  dncol = NULL
 )
 }
 \arguments{
@@ -39,7 +41,10 @@ volcanoPlot(
 
 \item{returnDEG}{A boolean indicating whether DEGs (using given thresholds) should be returned as a list (down, up)}
 
-\item{expScale}{A boolean indicating if points should be scaled using average expression (baseMean) - higher expressed = larger point. Default=FALSE.}
+\item{expScale}{A boolean indicating if points should be scaled using average expression (baseMean) - higher expressed = larger point. Default=FALSE.
+#'@param upcol A character vector indicating the colour (colour name or hexadecimal) of 'upregulated' genes. leave NULL for default red.}
+
+\item{dncol}{A character vector indicating the colour (colour name or hexadecimal) of 'downregulated' genes. leave NULL for default blue.}
 }
 \value{
 A volcano plot with x-axis indicating log2FoldChange expression and y-axis indicating -log10 pvalue. Blue dots are downregulated genes, red dots are upregulated genes.

@@ -14,11 +14,13 @@
 #'@param showNum A boolean indicating whether gene numbers should be displayed on the plot. Default is TRUE.
 #'@param returnDEG A boolean indicating whether DEGs (using given thresholds) should be returned as a list (down, up)
 #'@param sigScale A boolean indicating if the point size should be scaled by significance (more significant = larger point). Default=FALSE.
+#'@param upcol A character vector indicating the colour (colour name or hexadecimal) of 'upregulated' genes. leave NULL for default red.
+#'@param dncol A character vector indicating the colour (colour name or hexadecimal) of 'downregulated' genes. leave NULL for default blue.
 #'@return An MA plot with x-axis indicating gene expression 'baseMean' and y-axis indicating log2FoldChange. Blue dots are downregulated genes, red dots are upregulated genes.
 #' @export
 
 
-MA_Plot<-function(res, title, p=NULL, pval=NULL, FC=1, lab=NULL, col=NULL, fclim=NULL, showNum=TRUE, returnDEG=F, sigScale=F){
+MA_Plot<-function(res, title, p=NULL, pval=NULL, FC=1, lab=NULL, col=NULL, fclim=NULL, showNum=TRUE, returnDEG=F, sigScale=F, upcol=NULL, dncol=NULL){
   #Function to create an MA plot from a results table (res)
   #p and pval are mutually exclusive and describe the adjusted pvalue or unadjusted pvalue thresholds of DEGs, respectively
   #FC is the absolute log2 fold-change threshold for a DEG
@@ -113,20 +115,26 @@ MA_Plot<-function(res, title, p=NULL, pval=NULL, FC=1, lab=NULL, col=NULL, fclim
     up$cex<- -log10(up$pvalue)/cex_scale
     down$cex<- -log10(down$pvalue)/cex_scale
   }
+  if(is.null(upcol)){
+    upcol <- rgb(1,0,0,0.75)
+  }
+  if(is.null(dncol)){
+    dncol <- rgb(0,0,1,0.75)
+  }
   #Plot the points, start with nc (black), then down (blue), and up (red)
   plot(nc$log2FoldChange ~ log(nc$baseMean,10), pch=16, cex=nc$cex, main=title, ylab=expression(log[2](FoldChange)), xlab=expression(log[10](Expression)),
        ylim=c(-maxvaly, maxvaly), xlim=c(minvalx, maxvalx), col=rgb(0.3,0.3,0.3,0.9))
-  points(down$log2FoldChange ~ log(down$baseMean,10), pch=16, cex=down$cex, col=rgb(0,0,1,0.75))
-  points(up$log2FoldChange ~ log(up$baseMean,10),pch=16, cex=up$cex, col=rgb(1,0,0,0.75))
+  points(down$log2FoldChange ~ log(down$baseMean,10), pch=16, cex=down$cex, col=dncol)
+  points(up$log2FoldChange ~ log(up$baseMean,10),pch=16, cex=up$cex, col=upcol)
   #Add in the extreme points (if necessary)
   if(length(extremes) >1){
     #Make sure if they are DEGs, they're coloured properly:
     tmp<-extremes[which(rownames(extremes)%in% rownames(nc)),]
     points(tmp$log2FoldChange ~ -log(tmp$baseMean,10), pch=18, cex=1, col=rgb(0,0,0,0.5))
     tmp<-extremes[which(rownames(extremes) %in% rownames(down)),]
-    points(tmp$log2FoldChange ~ -log(tmp$baseMean,10), pch=18, cex=1, col=rgb(0,0,1,0.5))
+    points(tmp$log2FoldChange ~ -log(tmp$baseMean,10), pch=18, cex=1, col=dncol)
     tmp<-extremes[which(rownames(extremes) %in% rownames(up)),]
-    points(tmp$log2FoldChange ~ -log(tmp$baseMean,10), pch=18, cex=1, col=rgb(1,0,0,0.5))
+    points(tmp$log2FoldChange ~ -log(tmp$baseMean,10), pch=18, cex=1, col=upcol)
     #Check to see if any extremems need to be labelled or coloured:
     if(!is.null(lab)){
       labpoints<-extremes[lab,]
@@ -159,8 +167,8 @@ MA_Plot<-function(res, title, p=NULL, pval=NULL, FC=1, lab=NULL, col=NULL, fclim
   DEup <- rownames(up)
   #Print the numbers of genes on the plot
   if(isTRUE(showNum)){
-    text(maxvalx, maxvaly/2, numup, col = "red")
-    text(maxvalx, -maxvaly/2, numdown, col= "blue")
+    text(maxvalx, maxvaly/2, numup, col = upcol)
+    text(maxvalx, -maxvaly/2, numdown, col= dncol)
     text(minvalx, maxvaly, numnc, col="black", pos=4)
     text(minvalx, -maxvaly, paste("Total:",(dim(res)[1])+dim(zeroes)[1]+pNA), col="purple", pos=4)
   }

@@ -13,11 +13,13 @@
 #'@param showNum A boolean indicating whether gene numbers should be displayed on the plot. Default is TRUE.
 #'@param returnDEG A boolean indicating whether DEGs (using given thresholds) should be returned as a list (down, up)
 #'@param expScale A boolean indicating if points should be scaled using average expression (baseMean) - higher expressed = larger point. Default=FALSE.
+#'#'@param upcol A character vector indicating the colour (colour name or hexadecimal) of 'upregulated' genes. leave NULL for default red.
+#'@param dncol A character vector indicating the colour (colour name or hexadecimal) of 'downregulated' genes. leave NULL for default blue.
 #'@return A volcano plot with x-axis indicating log2FoldChange expression and y-axis indicating -log10 pvalue. Blue dots are downregulated genes, red dots are upregulated genes.
 #' @export
 #'
 
-volcanoPlot<-function(res, title, p=NULL, pval=NULL, FC=1, lab=NULL, col=NULL, fclim=NULL, showNum=TRUE, returnDEG=F, expScale=F){
+volcanoPlot<-function(res, title, p=NULL, pval=NULL, FC=1, lab=NULL, col=NULL, fclim=NULL, showNum=TRUE, returnDEG=F, expScale=F, upcol=NULL, dncol=NULL){
   #Function to create a volcano plot from a results table (res)
   #p and pval are mutually exclusive and describe the adjusted pvalue or unadjusted pvalue thresholds of DEGs, respectively
   #FC is the absolute log2 fold-change threshold for a DEG
@@ -109,20 +111,28 @@ volcanoPlot<-function(res, title, p=NULL, pval=NULL, FC=1, lab=NULL, col=NULL, f
     up$cex<- log10(up$baseMean)/cex_scale
     down$cex<- log10(down$baseMean)/cex_scale
   }
+
+  if(is.null(upcol)){
+    upcol <- rgb(1,0,0,0.75)
+  }
+  if(is.null(dncol)){
+    dncol <- rgb(0,0,1,0.75)
+  }
+
   #Plot the points, start with nc (black), then down (blue), and up (red)
   plot(nc$log2FoldChange,-log(nc$pvalue,10), pch=16, cex=nc$cex, main=title, xlab=expression(log[2](FoldChange)), ylab=expression(-log[10](pvalue)),
        ylim=c(0, max(c(10,max(na.omit(-log(res$pvalue,10)))))), xlim=c(-maxvalx, maxvalx), col=rgb(0,0,0,0.5))
-  points(down$log2FoldChange,-log(down$pvalue,10), pch=16, cex=down$cex, col=rgb(0,0,1,0.75))
-  points(up$log2FoldChange, -log(up$pvalue,10),pch=16, cex=up$cex, col=rgb(1,0,0,0.75))
+  points(down$log2FoldChange,-log(down$pvalue,10), pch=16, cex=down$cex, col=dncol)
+  points(up$log2FoldChange, -log(up$pvalue,10),pch=16, cex=up$cex, col=upcol)
   #Add in the extreme points (if necessary)
   if(length(extremes) >1){
     #Make sure if they are DEGs, they're coloured properly:
     tmp<-extremes[which(rownames(extremes)%in% rownames(nc)),]
     points(tmp$log2FoldChange, -log(tmp$pvalue,10), pch=18, cex=1, col=rgb(0,0,0,0.5))
     tmp<-extremes[which(rownames(extremes) %in% rownames(down)),]
-    points(tmp$log2FoldChange, -log(tmp$pvalue,10), pch=18, cex=1, col=rgb(0,0,1,0.5))
+    points(tmp$log2FoldChange, -log(tmp$pvalue,10), pch=18, cex=1, col=dncol)
     tmp<-extremes[which(rownames(extremes) %in% rownames(up)),]
-    points(tmp$log2FoldChange, -log(tmp$pvalue,10), pch=18, cex=1, col=rgb(1,0,0,0.5))
+    points(tmp$log2FoldChange, -log(tmp$pvalue,10), pch=18, cex=1, col=upcol)
     #Check to see if any extremems need to be labelled or coloured:
     if(!is.null(lab)){
       labpoints<-extremes[lab,]
@@ -156,8 +166,8 @@ volcanoPlot<-function(res, title, p=NULL, pval=NULL, FC=1, lab=NULL, col=NULL, f
   DEup <- rownames(up)
   #Print the numbers of genes on the plot
   if(isTRUE(showNum)){
-    text(-(maxvalx/2), max(c(10,max(na.omit(-log(res$pvalue,10))))), numdown, col = "blue")
-    text((maxvalx/2), max(c(10,max(na.omit(-log(res$pvalue,10))))), numup, col= "red")
+    text(-(maxvalx/2), max(c(10,max(na.omit(-log(res$pvalue,10))))), numdown, col = dncol)
+    text((maxvalx/2), max(c(10,max(na.omit(-log(res$pvalue,10))))), numup, col= upcol)
     text(-maxvalx, 0, numnc, col="black", adj=c(0,0))
     text(maxvalx, 0, paste("Total:",(dim(res)[1])+dim(zeroes)[1]+pNA), col="purple", pos=2)
   }

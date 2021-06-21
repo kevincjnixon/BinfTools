@@ -15,7 +15,9 @@ MA_Plot(
   fclim = NULL,
   showNum = TRUE,
   returnDEG = F,
-  sigScale = F
+  sigScale = F,
+  upcol = NULL,
+  dncol = NULL
 )
 }
 \arguments{
@@ -40,6 +42,10 @@ MA_Plot(
 \item{returnDEG}{A boolean indicating whether DEGs (using given thresholds) should be returned as a list (down, up)}
 
 \item{sigScale}{A boolean indicating if the point size should be scaled by significance (more significant = larger point). Default=FALSE.}
+
+\item{upcol}{A character vector indicating the colour (colour name or hexadecimal) of 'upregulated' genes. leave NULL for default red.}
+
+\item{dncol}{A character vector indicating the colour (colour name or hexadecimal) of 'downregulated' genes. leave NULL for default blue.}
 }
 \value{
 An MA plot with x-axis indicating gene expression 'baseMean' and y-axis indicating log2FoldChange. Blue dots are downregulated genes, red dots are upregulated genes.
