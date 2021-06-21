@@ -130,7 +130,7 @@ exploreData<-function(res, counts, cond){
                                              shiny::column(12, shiny::plotOutput(outputId="GO_up")),
                                              shiny::column(12, shiny::plotOutput(outputId="GO_down"))
                                            )),
-                           shiny::tabPanel("Targeted Pathway Analysis",
+                           shiny::tabPanel("Targeted Pathay Analysis",
                                            shiny::fluidRow(
                                              shiny::column(12, shiny::plotOutput(outputId="gsva")),
                                              shiny::column(12, shiny::plotOutput(outputId="heatmap")),

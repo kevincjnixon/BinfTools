@@ -38,7 +38,7 @@ clusBar<-function(mat, title, col){
                            width=0.2) +
     ggplot2::labs(title=title, ylab="Average log2 Fold-Change", xlab="Cluster") +
     ggplot2::guides(fill=ggplot2::guide_legend(title="Comparison")) +
-    ggplot2::theme_minimal() + ggplot2::scale_fill_brewer(palette=col)
+    ggplot2::theme_minimal() + ggplot2::scale_fill_manual(values=colPal(col))
 
   print(p)
   return(x)
@@ -53,7 +53,7 @@ clusBar<-function(mat, title, col){
 #' @param resList A list of results data frames. names(resList) will be used
 #' @param numClus Number of k-means clusters to cluster the results
 #' @param title Character indicating the titles of the plots to be made
-#' @param col Character indicating the RColorBrewer palette name to be used for the bar plot. Default is "Dark2"
+#' @param col Character indicating the RColorBrewer palette name or list of colours (hex, name, rgb()) to be used for the bar plot. Default is "Dark2"
 #' @return A data frame of log2FoldChanges for each comparison as columns (rows are genes) and a column named "cluster" indicating the cluster each gene belongs to. Two figures: a Heatmap of log2FoldChange of each gene ordered into clusters and a bar plot of the average log2FoldChange in each cluster (+/- SD) by comparison.
 #' @export
 

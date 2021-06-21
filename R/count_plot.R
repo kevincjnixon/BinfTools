@@ -36,7 +36,7 @@ perMean<-function(counts, condition){
 #' @param condition Character vector of conditions in DESeq2 object. Must be in order of columns (counts).
 #' @param title Character vector indicating title of plot. Defaults to "expression"
 #' @param compare List of character vectors (each of length 2) indicating pairwise comparisons. If NULL, all possible comparisons will be made. Default is NULL
-#' @param col Character indicating the RColorBrewer palette name to be used. Default is "Dark2"
+#' @param col Character indicating the RColorBrewer palette name or list of colours (hex, name, rgb()) to be used. Default is "Dark2"
 #' @param method Character indicating what to plot. One of "ind", "mean", "geoMean", or "median", or "perMean". Defaults to "ind" for individual data points (one point per sample).
 #' @param pair Boolean indicating if t-test should be independent (F; default) or paired (T).
 #' @param pc Numeric indicating the pseudocount to be added when scaling="log10". Default=1.
@@ -132,10 +132,10 @@ count_plot<-function(counts, scaling="zscore", genes, condition, title="expressi
   if(style=="violin"){
     p<- ggpubr::ggviolin(x, x="group", y="Expression", fill="group") +
       ggplot2::geom_boxplot(width=0.1, fill="white") +
-      ggplot2::labs(title=title, y=ylab, x="Condition") + ggplot2::theme_minimal() + ggplot2::scale_fill_brewer(palette=col)
+      ggplot2::labs(title=title, y=ylab, x="Condition") + ggplot2::theme_minimal() + ggplot2::scale_fill_manual(values=colPal(col))
   } else {
     p<- ggpubr::ggboxplot(x, x="group", y="Expression", fill="group") +
-      ggplot2::labs(title=title, y=ylab, x="Condition") + ggplot2::theme_minimal() + ggplot2::scale_fill_brewer(palette=col)
+      ggplot2::labs(title=title, y=ylab, x="Condition") + ggplot2::theme_minimal() + ggplot2::scale_fill_manual(values=colPal(col))
   }
   if(isTRUE(showStat)){
     p <- p + ggpubr::stat_pvalue_manual(pwc, label="p.adj", tip.length=0, step.increase=0.1)

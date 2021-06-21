@@ -28,7 +28,7 @@ gsva_plot(
 
 \item{compare}{List of character vectors (each of length 2) indicating the pairwise comparisons to be made between conditions. Leave NULL for all comparisons to be made}
 
-\item{col}{Character indicating the RColorBrewer palette name to be used. Default is "Dark2".}
+\item{col}{Character indicating the RColorBrewer palette name or list of colours (hex, name, rgb()) to be used. Default is "Dark2".}
 
 \item{style}{Character indicating the style of plot ("violin" or "box"). Defaults to "violin".}
 }

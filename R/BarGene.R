@@ -78,7 +78,7 @@ data_sum<-function(data, eb){
 #'@param norm character describing the condition to use as a reference for relative gene expression. Each gene's expression will be set relative to this condition. Leave 'NULL' if plotting raw values.
 #'@param eb character describing the style of error bar. "sd" = standard deviation, "se" = standard error of the mean. Use '0' if no error bars to be plotted. Default is 'sd'.
 #'@param returnDat Boolean indicating if list of raw and summarized data should be returned for further analysis. Default is FALSE.
-#'@param col character indicating the RColorBrewer palette name to be used. Default is "Dark2"
+#'@param col character indicating the RColorBrewer palette name or list of colours (hex, name, rgb()) to be used. Default is "Dark2"
 #'@return Bar plot of gene expression and list of length 2 containing 'rawData' and 'Summary' of gene expression data if 'returnDat' is TRUE.
 #'@export
 
@@ -115,7 +115,7 @@ barGene<-function(genes, counts, conditions, title="Gene expression", norm=NULL,
     ggplot2::geom_errorbar(ggplot2::aes(ymin=mean-eb, ymax=mean+eb), width=.2, position=ggplot2::position_dodge(.9)) +
     ggplot2::labs(title=title, y=paste0(ylab," Normalized Expression (+/-",eb,")"), x="Gene") +
     ggplot2::theme_minimal() + ggplot2::theme(axis.text.x=ggplot2::element_text(angle=60, hjust=1)) +
-    ggplot2::scale_fill_brewer(palette=col)
+    ggplot2::scale_fill_manual(values=colPal(col))
   if(!is.null(norm)){
     p<- p + ggplot2::geom_hline(yintercept=1, linetype="dashed", color="black")
   }

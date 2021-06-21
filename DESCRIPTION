@@ -28,7 +28,8 @@ Imports:
   forcats,
   plotly,
   shiny,
-  gpGeneSets
+  gpGeneSets,
+  gplots
 Suggests: 
     knitr
 VignetteBuilder: knitr
