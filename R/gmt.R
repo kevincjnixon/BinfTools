@@ -15,7 +15,10 @@ customGMT<-function(gost, key, gmt){
   #genesets related to the term
   y<-gost$result[,-14]
   IDs<-y[grep(key, y$term_name, ignore.case = T),]$term_id
-  return(gmt[IDs])
+  terms<-grep(key, y$term_name, ignore.case = T, value = T)
+  x<-gmt[IDs]
+  names(x)<-terms
+  return(x)
 }
 
 #' Write a gene set to file in gmt format
