@@ -108,7 +108,13 @@ count_plot<-function(counts, scaling="zscore", genes, condition, con=NULL, title
   x<-res %>% tidyr::gather(key="Sample", value="Expression") %>% dplyr::mutate(group=conditions) %>%
     dplyr::group_by(group)
   if(!is.null(con)){
-    x$group<-relevel(as.factor(x$group), con)
+    if(length(con)==length(levels(factor(x$group)))){
+      x<- x %>% dplyr::mutate(group=forcats::fct_relevel(group, con))
+    } else {
+      newlev<-c(con, levels(factor(x$group))[!which(levels(factor(x$group)) %in% con)])
+      x<- x %>% dplyr::mutate(group=forcats::fct_relevel(group, newlev))
+    }
+    #x$group<-relevel(as.factor(x$group), con)
   }
   x<-as.data.frame(x)
   #print(head(x))
