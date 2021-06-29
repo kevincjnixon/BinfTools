@@ -9,6 +9,7 @@ gsva_plot(
   geneset,
   method = "ssgsea",
   condition,
+  con = NULL,
   title = "ssGSEA",
   compare = NULL,
   col = "Dark2",
@@ -23,6 +24,8 @@ gsva_plot(
 \item{method}{Method to employ in estimation of gene-set enrichment scores. One of "ssgsea","gsva","zscore","plage". Default is "ssgsea}
 
 \item{condition}{Character vector of conditions in the same order they appear as columns in 'counts'.}
+
+\item{con}{Character indicating the control condition (Condition to be plotted first). Default is NULL.}
 
 \item{title}{Character vector indicating the title of the plot}
 

@@ -9,6 +9,7 @@ count_plot(
   scaling = "zscore",
   genes,
   condition,
+  con = NULL,
   title = "expression",
   compare = NULL,
   col = "Dark2",
@@ -28,6 +29,8 @@ count_plot(
 \item{genes}{Character vector of genes to subset from counts. Must correspond with rownames(counts).}
 
 \item{condition}{Character vector of conditions in DESeq2 object. Must be in order of columns (counts).}
+
+\item{con}{Character indicating the control condition. (To be displayed first in plot). Default NULL.}
 
 \item{title}{Character vector indicating title of plot. Defaults to "expression"}
 

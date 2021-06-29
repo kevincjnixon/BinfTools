@@ -34,6 +34,7 @@ perMean<-function(counts, condition){
 #' @param scaling Method used to scale counts per gene across samples. 'zscore', 'log10', or 'none'. Default is 'zscore'
 #' @param genes Character vector of genes to subset from counts. Must correspond with rownames(counts).
 #' @param condition Character vector of conditions in DESeq2 object. Must be in order of columns (counts).
+#' @param con Character indicating the control condition. (To be displayed first in plot). Default NULL.
 #' @param title Character vector indicating title of plot. Defaults to "expression"
 #' @param compare List of character vectors (each of length 2) indicating pairwise comparisons. If NULL, all possible comparisons will be made. Default is NULL
 #' @param col Character indicating the RColorBrewer palette name or list of colours (hex, name, rgb()) to be used. Default is "Dark2"
@@ -46,7 +47,7 @@ perMean<-function(counts, condition){
 #' @return Generates a violin or box plot
 #' @export
 
-count_plot<-function(counts, scaling="zscore", genes, condition, title="expression", compare=NULL, col="Dark2", method="ind", pair=F, pc=1, yax=NULL, showStat=T, style="violin"){
+count_plot<-function(counts, scaling="zscore", genes, condition, con=NULL, title="expression", compare=NULL, col="Dark2", method="ind", pair=F, pc=1, yax=NULL, showStat=T, style="violin"){
   #Pull the normalized counts of genes
   res<-counts[which(rownames(counts) %in% genes),]
   ylab="z-score Normalized Expression"
@@ -106,6 +107,9 @@ count_plot<-function(counts, scaling="zscore", genes, condition, title="expressi
   conditions<-as.factor(c(rep(condition, each=times)))
   x<-res %>% tidyr::gather(key="Sample", value="Expression") %>% dplyr::mutate(group=conditions) %>%
     dplyr::group_by(group)
+  if(!is.null(con)){
+    x$group<-relevel(as.factor(x$group), con)
+  }
   x<-as.data.frame(x)
   #print(head(x))
   #Remove any infinite values
