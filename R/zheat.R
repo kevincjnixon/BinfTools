@@ -39,14 +39,18 @@ zheat<-function(genes=NULL, counts, conditions, con="WT", title="DEGs", labgenes
   #Order the heatmap rows based on average control z-score (control condition is dicated by con
   #Start by releveling the conditions so that con is first:
   #print(levels(conditions))
-  ind<-which(levels(conditions)==con)
-  if(ind != 1){
-    x<-1:length(levels(conditions))
-    x<-x[-ind]
-    x<-c(ind,x)
-    y<-levels(conditions)[x]
-    #levels(conditions)<-y
-    conditions<-forcats::fct_relevel(conditions, y)
+  if(length(con)==length(levels(factor(conditions)))){
+    conditions<-forcats::fct_relevel(conditions, con)
+  } else {
+    ind<-which(levels(conditions)==con)
+    if(ind != 1){
+      x<-1:length(levels(conditions))
+      x<-x[-ind]
+      x<-c(ind,x)
+      y<-levels(conditions)[x]
+      #levels(conditions)<-y
+      conditions<-forcats::fct_relevel(conditions, y)
+    }
   }
   #print(levels(conditions)[1])
   zmat<-zmat[order(rowMeans(zmat[,which(conditions==con)]), decreasing=T),]
