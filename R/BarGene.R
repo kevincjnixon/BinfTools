@@ -53,12 +53,12 @@ data_sum<-function(data, eb){
 	if(eb==0){ #We don't want any error bars
 		#message("eb=0. Error bars will not be showns...")
 		sum<-c(mean=mean(as.numeric(x[[col]]), na.rm=T),
-			  eb=rep(0, length(x[[col]])))
+			  eb=0)
 	}
     return(sum)
   }
   if(eb==0){ #We don't want any error bars
-	message("eb=0. Error bars will not be shown...")
+    message("eb=0. Error bars will not be shown...")
   }
   data_sum<-plyr::ddply(data, c("group","gene"), .fun=summary_func, "expression", eb)
   #data_sum<-rename(data_sum, c("mean"="reads"))
@@ -79,10 +79,11 @@ data_sum<-function(data, eb){
 #'@param eb character describing the style of error bar. "sd" = standard deviation, "se" = standard error of the mean. Use '0' if no error bars to be plotted. Default is 'sd'.
 #'@param returnDat Boolean indicating if list of raw and summarized data should be returned for further analysis. Default is FALSE.
 #'@param col character indicating the RColorBrewer palette name or list of colours (hex, name, rgb()) to be used. Default is "Dark2"
+#'@param ord character indicating the order in which the samples should appear (overrides any ordering from using 'norm' argument). Default is NULL.
 #'@return Bar plot of gene expression and list of length 2 containing 'rawData' and 'Summary' of gene expression data if 'returnDat' is TRUE.
 #'@export
 
-barGene<-function(genes, counts, conditions, title="Gene expression", norm=NULL, eb="sd", returnDat=F, col="Dark2"){
+barGene<-function(genes, counts, conditions, title="Gene expression", norm=NULL, eb="sd", returnDat=F, col="Dark2", ord=NULL){
   ylab="Mean"
   #norm is the condition to normalize expression to for relative expression
   counts<-counts[which(rownames(counts) %in% genes),]
@@ -108,6 +109,13 @@ barGene<-function(genes, counts, conditions, title="Gene expression", norm=NULL,
     group_levels<-c(norm, levels(condition)[which(!levels(condition) %in% norm)])
     x<- x%>% dplyr::mutate(group=forcats::fct_relevel(group, group_levels))
     ylab="Relative"
+  }
+  if(!is.null(ord)){
+    if(length(ord) == length(levels(factor(conditions)))){
+      x<- x%>% dplyr::mutate(group=forcats::fct_relevel(group, ord))
+    } else {
+      message("length(ord) is not equal to length(levels(factor(conditions))). Ignoring...")
+    }
   }
   #And now, we're ready for plotting
   p<-ggplot2::ggplot(x, ggplot2::aes(x=gene, y=mean, fill=group)) +
