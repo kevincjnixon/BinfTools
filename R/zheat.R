@@ -23,35 +23,39 @@ zheat<-function(genes=NULL, counts, conditions, con="WT", title="DEGs", labgenes
   normcounts<-as.matrix(counts)
   #If bnorm is true, zscore normalize the counts BEFORE pulling genes, otherwise, do it after
   if(isTRUE(zscore)){
-    print("scaling to all genes...")
+    message("scaling to all genes...")
     #genes points to the rows of counts to use in the heatmap - if null, use all genes in counts
     normcounts<-t(scale(t(counts)))
   }
 	if(!is.null(genes)){
-		print("pulling certain genes...")
+		message("pulling certain genes...")
 		zmat<-normcounts[which(rownames(normcounts) %in% genes),]
 	} else {
 		zmat<-normcounts
 	}
   #Order the heatmap rows based on average control z-score (control condition is dicated by con
   #Start by releveling the conditions so that con is first:
-  print(levels(conditions))
+  #print(levels(conditions))
   ind<-which(levels(conditions)==con)
   if(ind != 1){
     x<-1:length(levels(conditions))
     x<-x[-ind]
     x<-c(ind,x)
     y<-levels(conditions)[x]
-    levels(conditions)<-y
+    #levels(conditions)<-y
+    conditions<-forcats::fct_relevel(conditions, y)
   }
-  print(levels(conditions))
+  #print(levels(conditions)[1])
   zmat<-zmat[order(rowMeans(zmat[,which(conditions==con)]), decreasing=T),]
   #Now reorder the zmat to match the order of conditions (control then RNF)
   tmp<-zmat[,which(conditions==levels(conditions)[1])]
+  #print(head(tmp))
   for(i in 2:length(levels(conditions))){
-	tmp<-cbind(tmp, zmat[,which(conditions==levels(conditions)[i])])
+    tmp<-cbind(tmp, zmat[,which(conditions==levels(conditions)[i])])
+    #print(head(tmp))
   }
   zmat<-tmp
+  #print(head(zmat))
   tmp=NULL
   #Get the absolute max value to centre the scale around 0:
   lim<-c(0, max(zmat[is.finite(zmat)]))
