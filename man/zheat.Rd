@@ -11,7 +11,8 @@ zheat(
   con = "WT",
   title = "DEGs",
   labgenes = NULL,
-  zscore = T
+  zscore = T,
+  hmcol = NULL
 )
 }
 \arguments{
@@ -28,6 +29,8 @@ zheat(
 \item{labgenes}{Character vector corresponding to rownames(counts) of genes to be labelled on the side of the heatmap. Leave as NULL to label all genes. Use "" to label no genes.}
 
 \item{zscore}{Boolean indicating if counts should be z-score normalized (default=T)}
+
+\item{hmcol}{Color ramp palette of length 100 for custom heatmap colouring. Leave NULL for defaults.}
 }
 \value{
 Heatmap of z-score normalized gene expression with control condition samples appearing first.
