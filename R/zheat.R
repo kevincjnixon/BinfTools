@@ -4,42 +4,31 @@
 #' a DESeq2 counts object.
 #'
 #' @param genes A character vector of genes to subset from rownames(counts) to create the heatmap
-#' @param bnorm Boolean values indicating if z-score normalization should occur before subsetting genes. Leave "TRUE"
 #' @param counts Normalized count matrix with rows as genes and columns as samples. Use 'counts(dds, normalized=T)'.
 #' @param conditions Character vector indicating conditions belonging to each sample (same order as colnames(counts))
 #' @param con Character vector indicating the control condition level in 'conditions'. Default is "WT".
 #' @param title Character vector indicating the title of the figure
 #' @param labgenes Character vector corresponding to rownames(counts) of genes to be labelled on the side of the heatmap. Leave as NULL to label all genes. Use "" to label no genes.
+#' @param zscore Boolean indicating if counts should be z-score normalized (default=T)
 #' @return Heatmap of z-score normalized gene expression with control condition samples appearing first.
 #' @export
 
-zheat<-function(genes=NULL,bnorm=T, counts, conditions, con="WT", title="DEGs", labgenes=NULL){
+zheat<-function(genes=NULL, counts, conditions, con="WT", title="DEGs", labgenes=NULL, zscore=T){
   hmcol<-colorRampPalette(c("blue","grey","red"))(100)
   zmat<-c()
   conditions<-as.factor(conditions)
   #If bnorm is true, zscore normalize the counts BEFORE pulling genes, otherwise, do it after
-  if(!isFALSE(bnorm)){
-	print("scaling to all genes...")
-	#genes points to the rows of counts to use in the heatmap - if null, use all genes in counts
-	normcounts<-t(scale(t(counts)))
-	if(!is.null(genes)){
-		print("pulling certain genes...")
-		zmat<-normcounts[which(rownames(normcounts) %in% genes),]
-	} else {
-		zmat<-normcounts
-	}
-  } else {
-	normcounts<-counts
-	if(!is.null(genes)){
-		print("pulling certain genes...")
-		zmat<-normcounts[which(rownames(normcounts) %in% genes),]
-	} else {
-		zmat<-normcounts
-	}
-	#Now get the z-score for rows (genes) using the scale function
-	print("scaling to select genes...")
-	zmat<-t(scale(t(zmat)))
+  if(isTRUE(zscore)){
+    print("scaling to all genes...")
+    #genes points to the rows of counts to use in the heatmap - if null, use all genes in counts
+    normcounts<-t(scale(t(counts)))
   }
+	if(!is.null(genes)){
+		print("pulling certain genes...")
+		zmat<-normcounts[which(rownames(normcounts) %in% genes),]
+	} else {
+		zmat<-normcounts
+	}
   #Order the heatmap rows based on average control z-score (control condition is dicated by con
   #Start by releveling the conditions so that con is first:
   print(levels(conditions))

@@ -6,18 +6,16 @@
 \usage{
 zheat(
   genes = NULL,
-  bnorm = T,
   counts,
   conditions,
   con = "WT",
   title = "DEGs",
-  labgenes = NULL
+  labgenes = NULL,
+  zscore = T
 )
 }
 \arguments{
 \item{genes}{A character vector of genes to subset from rownames(counts) to create the heatmap}
-
-\item{bnorm}{Boolean values indicating if z-score normalization should occur before subsetting genes. Leave "TRUE"}
 
 \item{counts}{Normalized count matrix with rows as genes and columns as samples. Use 'counts(dds, normalized=T)'.}
 
@@ -28,6 +26,8 @@ zheat(
 \item{title}{Character vector indicating the title of the figure}
 
 \item{labgenes}{Character vector corresponding to rownames(counts) of genes to be labelled on the side of the heatmap. Leave as NULL to label all genes. Use "" to label no genes.}
+
+\item{zscore}{Boolean indicating if counts should be z-score normalized (default=T)}
 }
 \value{
 Heatmap of z-score normalized gene expression with control condition samples appearing first.
