@@ -17,6 +17,7 @@ zheat<-function(genes=NULL, counts, conditions, con="WT", title="DEGs", labgenes
   hmcol<-colorRampPalette(c("blue","grey","red"))(100)
   zmat<-c()
   conditions<-as.factor(conditions)
+  normcounts<-counts
   #If bnorm is true, zscore normalize the counts BEFORE pulling genes, otherwise, do it after
   if(isTRUE(zscore)){
     print("scaling to all genes...")
