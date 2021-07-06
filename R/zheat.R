@@ -10,13 +10,16 @@
 #' @param title Character vector indicating the title of the figure
 #' @param labgenes Character vector corresponding to rownames(counts) of genes to be labelled on the side of the heatmap. Leave as NULL to label all genes. Use "" to label no genes.
 #' @param zscore Boolean indicating if counts should be z-score normalized (default=T)
+#' @param hmcol Color ramp palette of length 100 for custom heatmap colouring. Leave NULL for defaults.
 #' @return Heatmap of z-score normalized gene expression with control condition samples appearing first.
 #' @export
 
-zheat<-function(genes=NULL, counts, conditions, con="WT", title="DEGs", labgenes=NULL, zscore=T){
-  hmcol<-colorRampPalette(c("blue","grey","red"))(100)
-  if(isFALSE(zscore)){
-    hmcol<-colorRampPalette(c("green","yellow","orange","red"))(100)
+zheat<-function(genes=NULL, counts, conditions, con="WT", title="DEGs", labgenes=NULL, zscore=T, hmcol=NULL){
+  if(is.null(hmcol)){
+    hmcol<-colorRampPalette(c("blue","grey","red"))(100)
+    if(isFALSE(zscore)){
+      hmcol<-colorRampPalette(c("green","yellow","orange","red"))(100)
+    }
   }
   zmat<-c()
   conditions<-as.factor(conditions)
