@@ -15,9 +15,12 @@
 
 zheat<-function(genes=NULL, counts, conditions, con="WT", title="DEGs", labgenes=NULL, zscore=T){
   hmcol<-colorRampPalette(c("blue","grey","red"))(100)
+  if(isFALSE(zscore)){
+    hmcol<-colorRampPalette(c("green","yellow","orange","red"))(100)
+  }
   zmat<-c()
   conditions<-as.factor(conditions)
-  normcounts<-counts
+  normcounts<-as.matrix(counts)
   #If bnorm is true, zscore normalize the counts BEFORE pulling genes, otherwise, do it after
   if(isTRUE(zscore)){
     print("scaling to all genes...")
@@ -35,11 +38,11 @@ zheat<-function(genes=NULL, counts, conditions, con="WT", title="DEGs", labgenes
   print(levels(conditions))
   ind<-which(levels(conditions)==con)
   if(ind != 1){
-	x<-1:length(levels(conditions))
-	x<-x[-ind]
-	x<-c(ind,x)
-	y<-levels(conditions)[x]
-	levels(conditions)<-y
+    x<-1:length(levels(conditions))
+    x<-x[-ind]
+    x<-c(ind,x)
+    y<-levels(conditions)[x]
+    levels(conditions)<-y
   }
   print(levels(conditions))
   zmat<-zmat[order(rowMeans(zmat[,which(conditions==con)]), decreasing=T),]
@@ -51,8 +54,11 @@ zheat<-function(genes=NULL, counts, conditions, con="WT", title="DEGs", labgenes
   zmat<-tmp
   tmp=NULL
   #Get the absolute max value to centre the scale around 0:
-  lim<-max(abs(zmat[is.finite(zmat)]))
-  print(lim)
+  lim<-c(0, max(zmat[is.finite(zmat)]))
+  if(isTRUE(zscore)){
+    lim<-c(max(abs(zmat[is.finite(zmat)]))*-1,max(abs(zmat[is.finite(zmat)])))
+  }
+  #print(lim)
   #Check to see if 'genes' is null and if it's not, replace it with a vector of length rownames
   #Where genes specified in 'genes' are in the correct place, and all other values are " "
   if(!is.null(labgenes)){
@@ -63,5 +69,5 @@ zheat<-function(genes=NULL, counts, conditions, con="WT", title="DEGs", labgenes
     labgenes<-tmp
   }
   #Now make a heatmap
-  pheatmap::pheatmap(zmat, color=hmcol, show_colnames=T, cluster_cols=F, cluster_rows=F, main=title, labels_row=labgenes,breaks=seq(from=-lim, to=lim, length.out=100))
+  pheatmap::pheatmap(zmat, color=hmcol, show_colnames=T, cluster_cols=F, cluster_rows=F, main=title, labels_row=labgenes,breaks=seq(from=lim[1], to=lim[2], length.out=100))
 }
