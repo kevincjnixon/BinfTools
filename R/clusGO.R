@@ -33,7 +33,7 @@ clusGO<-function(clusRes, species="hsapiens", bg=rownames(clusRes), source=NULL,
                   iea=iea, prefix=paste0(prefix,"_cluster",clusters[i]), ts=ts, pdf=pdf, fig=fig, returnGost=T,
                   writeRes=writeRes, writeGem=writeGem, returnRes=returnRes)},
                error=function(e){
-                 res[[i]]<-NULL
+                 res[[i]]<-NA
                  message(paste0("No enriched terms in cluster ",clusters[i],"."))
                  message(paste0("Moving on to cluster ",clusters[i+1],"."))
                })
@@ -44,7 +44,7 @@ clusGO<-function(clusRes, species="hsapiens", bg=rownames(clusRes), source=NULL,
                   iea=iea, prefix=paste0(prefix,"_cluster",clusters[i]), ts=ts, pdf=pdf, fig=fig, returnGost=F,
                   writeRes=writeRes, writeGem=writeGem, returnRes=T)},
                error=function(e){
-                 res[[i]]<-NULL
+                 res[[i]]<-NA
                  message(paste0("No enriched terms in cluster ",clusters[i],"."))
                  message(paste0("Moving on to cluster ",clusters[i+1],"."))
                })
