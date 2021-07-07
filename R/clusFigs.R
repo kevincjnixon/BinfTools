@@ -1,5 +1,7 @@
-clusHeatmap<-function(mat, gaps, title, annotdf){
-  hmcol<-colorRampPalette(c("blue","grey","red"))(100)
+clusHeatmap<-function(mat, gaps, title, annotdf, hmcol){
+  if(is.null(hmcol)){
+    hmcol<-colorRampPalette(c("blue","grey","red"))(100)
+  }
   mat<-as.matrix(mat)
   lim<-max(abs(mat[is.finite(mat)]))
   pheatmap::pheatmap(mat, scale="none", color=hmcol, cluster_rows=F, cluster_cols=F,
@@ -24,11 +26,13 @@ clusBar<-function(mat, title, col){
   seFC<-as.data.frame(do.call("rbind", lapply(clusList, colse)))
 
   clusters<-as.factor(c(rep(levels(clus), dim(avgFC)[2])))
+  maxclus<-max(levels(clusters))
 
   y<- seFC %>% tidyr::gather(key="Comparison", value="SE")
 
   x<- avgFC %>% tidyr::gather(key="Comparison", value="AvgFC") %>% dplyr::mutate(cluster=clusters) %>%
     dplyr::mutate(SE=y$SE) %>% dplyr::group_by(cluster)
+  x <- x %>% dplyr::mutate(cluster=forcats::fct_relevel(cluster, c(1:maxclus)))
 
   x<-as.data.frame(x)
   dodge<-ggplot2::position_dodge(width=0.9)
@@ -54,10 +58,11 @@ clusBar<-function(mat, title, col){
 #' @param numClus Number of k-means clusters to cluster the results
 #' @param title Character indicating the titles of the plots to be made
 #' @param col Character indicating the RColorBrewer palette name or list of colours (hex, name, rgb()) to be used for the bar plot. Default is "Dark2"
+#' @param hmcol Colour Ramp Palette of length 100 indicating the colour palette of the heatmap. Leave NULL for default.
 #' @return A data frame of log2FoldChanges for each comparison as columns (rows are genes) and a column named "cluster" indicating the cluster each gene belongs to. Two figures: a Heatmap of log2FoldChange of each gene ordered into clusters and a bar plot of the average log2FoldChange in each cluster (+/- SD) by comparison.
 #' @export
 
-clusFigs<-function(resList, numClus, title="Clustered Results", col="Dark2"){
+clusFigs<-function(resList, numClus, title="Clustered Results", col="Dark2", hmcol=NULL){
   #Make sure there is more than one entry in the list
   if(length(resList)<2){
     stop("resList must have at least 2 entries...")
@@ -94,7 +99,7 @@ clusFigs<-function(resList, numClus, title="Clustered Results", col="Dark2"){
   #Create the annotation data frame
   annotdf<-data.frame(row.names=rownames(mat), cluster=mat$cluster)
   #Pass it through to the heatmap function:
-  clusHeatmap(mat[,-(which(colnames(mat) %in% "cluster"))], gaps, title, annotdf)
+  clusHeatmap(mat[,-(which(colnames(mat) %in% "cluster"))], gaps, title, annotdf, hmcol)
   #Pass it through to the barplot function:
   tmp<-clusBar(mat, title, col=col)
   #return the cluster matrix
