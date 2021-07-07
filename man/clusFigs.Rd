@@ -4,7 +4,13 @@
 \alias{clusFigs}
 \title{k-means clustered figures}
 \usage{
-clusFigs(resList, numClus, title = "Clustered Results", col = "Dark2")
+clusFigs(
+  resList,
+  numClus,
+  title = "Clustered Results",
+  col = "Dark2",
+  hmcol = NULL
+)
 }
 \arguments{
 \item{resList}{A list of results data frames. names(resList) will be used}
@@ -14,6 +20,8 @@ clusFigs(resList, numClus, title = "Clustered Results", col = "Dark2")
 \item{title}{Character indicating the titles of the plots to be made}
 
 \item{col}{Character indicating the RColorBrewer palette name or list of colours (hex, name, rgb()) to be used for the bar plot. Default is "Dark2"}
+
+\item{hmcol}{Colour Ramp Palette of length 100 indicating the colour palette of the heatmap. Leave NULL for default.}
 }
 \value{
 A data frame of log2FoldChanges for each comparison as columns (rows are genes) and a column named "cluster" indicating the cluster each gene belongs to. Two figures: a Heatmap of log2FoldChange of each gene ordered into clusters and a bar plot of the average log2FoldChange in each cluster (+/- SD) by comparison.
