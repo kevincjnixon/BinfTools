@@ -15,11 +15,17 @@ clusGO(
   ts = c(10, 500),
   pdf = T,
   fig = T,
-  returnGost = F
+  returnGost = F,
+  writeRes = T,
+  writeGem = T,
+  returnRes = F,
+  writeGene = F
 )
 }
 \arguments{
 \item{clusRes}{data.frame object that is output from clusFigs()}
+
+\item{writeGene}{Boolean indicating if the genes in each cluster should be written out to '\emph{prefix}_cluster\emph{n}.genes.txt". Default is FALSE.}
 
 \item{...}{Arguments for GO_GEM() see ?GO_GEM for details. \emph{bg} is automatically set as rownames(clusRes).}
 }
