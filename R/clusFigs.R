@@ -32,7 +32,7 @@ clusBar<-function(mat, title, col){
 
   x<- avgFC %>% tidyr::gather(key="Comparison", value="AvgFC") %>% dplyr::mutate(cluster=clusters) %>%
     dplyr::mutate(SE=y$SE) %>% dplyr::group_by(cluster)
-  x <- x %>% dplyr::mutate(cluster=forcats::fct_relevel(cluster, c(1:maxclus)))
+  x <- x %>% dplyr::mutate(cluster=forcats::fct_relevel(cluster, as.character(c(1:maxclus))))
 
   x<-as.data.frame(x)
   dodge<-ggplot2::position_dodge(width=0.9)
