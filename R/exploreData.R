@@ -323,5 +323,5 @@ exploreData<-function(res, counts, cond){
   }
 
   # Create Shiny app ----
-  shiny::shinyApp(ui = ui, server = server)
+  shiny::shinyApp(ui = ui, server = server, options=list(quiet=T)
 }
