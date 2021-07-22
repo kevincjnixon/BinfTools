@@ -10,7 +10,10 @@ clusHeatmap<-function(mat, gaps, title, annotdf, hmcol){
 }
 
 clusBar<-function(mat, title, col){
-  clus<-factor(mat$cluster)
+  clus<-mat$cluster
+  if(class(clus)!="factor"){
+    clus<-factor(mat$cluster)
+  }
   mat<-mat[,-(which(colnames(mat) %in% "cluster"))]
   clusList<-split(mat, clus)
   avgFC<-as.data.frame(do.call("rbind", lapply(clusList, colMeans)))
@@ -106,3 +109,35 @@ clusFigs<-function(resList, numClus, title="Clustered Results", col="Dark2", hmc
   return(mat)
 }
 
+clusRelev<-function(clusRes, cluslev, rename=T, title="Releveld Clusters", col="Dark2", hmcol=NULL){
+  clusRes$cluster<-factor(clusRes$cluster)
+  if(length(cluslev) == length(levels(factor(clusRes$cluster)))){
+    clusRes <- clusRes %>% dplyr::mutate(cluster= forcats::fct_relevel(cluster, cluslev))
+  } else {
+    newlev<-c(cluslev, levels(factor(clusRes$cluster))[!which(levels(factor(clusRes$cluster)) %in% cluslev)])
+    clusRes <- clusRes %>% dplyr::mutate(cluster = forcats::fct_relevel(cluster, cluslev))
+  }
+  clusRes<-as.data.frame(clusRes)
+  if(isTRUE(rename)){
+    newClus<-c()
+    for(i in 1:length(levels(factor(clusRes$cluster)))){
+      newClus<-c(newClus, rep(i, length(clusRes$cluster[which(clusRes$cluster == levels(clusRes$cluster)[i])])))
+    }
+    newClus<-factor(newClus, levels=c(1:length(unique(newClus))))
+    clusRes$cluster<-newClus
+  }
+  clusRes<-clusRes[order(clusRes$cluster),]
+  #Calculate the gaps for the heatmap
+  gaps=c()
+  for(i in 1:(numClus-1)){
+    gaps<-c(gaps, sum(gaps[length(gaps)],length(which(clusRes$cluster == i))))
+  }
+  #Create the annotation data frame
+  annotdf<-data.frame(row.names=rownames(clusRes), cluster=clusRes$cluster)
+  #Pass it through to the heatmap function:
+  clusHeatmap(clusRes[,-(which(colnames(clusRes) %in% "cluster"))], gaps, title, annotdf, hmcol)
+  #Pass it through to the barplot function:
+  tmp<-clusBar(clusRes, title, col=col)
+  #return the cluster clusResrix
+  return(clusRes)
+}
