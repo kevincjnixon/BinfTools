@@ -9,12 +9,14 @@ clusHeatmap<-function(mat, gaps, title, annotdf, hmcol){
                      show_colnames = T, gaps_row=gaps, main=title, breaks=seq(from=-lim, to=lim, length.out=100))
 }
 
-clusBar<-function(mat, title, col){
+clusBar<-function(mat, title, col, cluslev=NULL){
   clus<-mat$cluster
   if(class(clus)!="factor"){
     clus<-factor(mat$cluster)
   }
-  cluslev<-levels(clus)
+  if(is.null(cluslev)){
+    cluslev<-c(1:max(clus))
+  }
   mat<-mat[,-(which(colnames(mat) %in% "cluster"))]
   clusList<-split(mat, clus)
   avgFC<-as.data.frame(do.call("rbind", lapply(clusList, colMeans)))
@@ -140,7 +142,7 @@ clusRelev<-function(clusRes, cluslev, rename=T, title="Releveled Clusters", col=
   #Pass it through to the heatmap function:
   clusHeatmap(clusRes[,-(which(colnames(clusRes) %in% "cluster"))], gaps, title, annotdf, hmcol)
   #Pass it through to the barplot function:
-  tmp<-clusBar(clusRes, title, col=col)
+  tmp<-clusBar(clusRes, title, col=col, cluslev=cluslev)
   #return the cluster clusResrix
   return(clusRes)
 }
