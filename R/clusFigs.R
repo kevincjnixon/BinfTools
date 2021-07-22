@@ -110,6 +110,7 @@ clusFigs<-function(resList, numClus, title="Clustered Results", col="Dark2", hmc
 }
 
 clusRelev<-function(clusRes, cluslev, rename=T, title="Releveld Clusters", col="Dark2", hmcol=NULL){
+  numClus<-max(clusRes$cluster)
   clusRes$cluster<-factor(clusRes$cluster)
   cluslev<-as.character(cluslev)
   if(length(cluslev) == length(levels(factor(clusRes$cluster)))){
