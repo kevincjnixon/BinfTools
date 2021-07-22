@@ -119,13 +119,14 @@ clusRelev<-function(clusRes, cluslev, rename=T, title="Releveled Clusters", col=
     clusRes <- clusRes %>% dplyr::mutate(cluster= forcats::fct_relevel(cluster, cluslev))
   } else {
     newlev<-c(cluslev, levels(factor(clusRes$cluster))[!which(levels(factor(clusRes$cluster)) %in% cluslev)])
-    clusRes <- clusRes %>% dplyr::mutate(cluster = forcats::fct_relevel(cluster, cluslev))
+    clusRes <- clusRes %>% dplyr::mutate(cluster = forcats::fct_relevel(cluster, newlev))
+    cluslev<-as.character(levels(clusRes$cluster))
   }
   clusRes<-as.data.frame(clusRes)
   if(isTRUE(rename)){
     newClus<-c()
-    for(i in 1:length(levels(factor(clusRes$cluster)))){
-      newClus<-c(newClus, rep(i, length(clusRes$cluster[which(clusRes$cluster == levels(clusRes$cluster)[i])])))
+    for(i in 1:maxClus){
+      newClus<-c(newClus, rep(i, length(clusRes$cluster[which(clusRes$cluster == as.numeric(cluslev[i]))])))
     }
     newClus<-factor(newClus, levels=c(1:length(unique(newClus))))
     clusRes$cluster<-newClus
