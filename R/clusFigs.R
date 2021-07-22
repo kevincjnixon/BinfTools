@@ -111,6 +111,8 @@ clusFigs<-function(resList, numClus, title="Clustered Results", col="Dark2", hmc
 
 clusRelev<-function(clusRes, cluslev, rename=T, title="Releveld Clusters", col="Dark2", hmcol=NULL){
   clusRes$cluster<-factor(clusRes$cluster)
+  print(class(clusRes))
+  print(class(clusRes$cluster))
   if(length(cluslev) == length(levels(factor(clusRes$cluster)))){
     clusRes <- clusRes %>% dplyr::mutate(cluster= forcats::fct_relevel(cluster, cluslev))
   } else {
