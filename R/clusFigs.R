@@ -14,6 +14,7 @@ clusBar<-function(mat, title, col){
   if(class(clus)!="factor"){
     clus<-factor(mat$cluster)
   }
+  cluslev<-levels(clus)
   mat<-mat[,-(which(colnames(mat) %in% "cluster"))]
   clusList<-split(mat, clus)
   avgFC<-as.data.frame(do.call("rbind", lapply(clusList, colMeans)))
@@ -35,7 +36,7 @@ clusBar<-function(mat, title, col){
 
   x<- avgFC %>% tidyr::gather(key="Comparison", value="AvgFC") %>% dplyr::mutate(cluster=clusters) %>%
     dplyr::mutate(SE=y$SE) %>% dplyr::group_by(cluster)
-  x <- x %>% dplyr::mutate(cluster=forcats::fct_relevel(cluster, as.character(c(1:maxclus))))
+  x <- x %>% dplyr::mutate(cluster=forcats::fct_relevel(cluster, as.character(cluslev)))
 
   x<-as.data.frame(x)
   dodge<-ggplot2::position_dodge(width=0.9)
@@ -109,7 +110,7 @@ clusFigs<-function(resList, numClus, title="Clustered Results", col="Dark2", hmc
   return(mat)
 }
 
-clusRelev<-function(clusRes, cluslev, rename=T, title="Releveld Clusters", col="Dark2", hmcol=NULL){
+clusRelev<-function(clusRes, cluslev, rename=T, title="Releveled Clusters", col="Dark2", hmcol=NULL){
   numClus<-max(clusRes$cluster)
   clusRes$cluster<-factor(clusRes$cluster)
   cluslev<-as.character(cluslev)
@@ -128,7 +129,7 @@ clusRelev<-function(clusRes, cluslev, rename=T, title="Releveld Clusters", col="
     newClus<-factor(newClus, levels=c(1:length(unique(newClus))))
     clusRes$cluster<-newClus
   }
-  clusRes<-clusRes[order(clusRes$cluster),]
+  clusRes<-clusRes[order(clusRes$cluster, decreasing=T),]
   #Calculate the gaps for the heatmap
   gaps=c()
   for(i in 1:(numClus-1)){
