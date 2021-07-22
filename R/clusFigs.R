@@ -11,12 +11,6 @@ clusHeatmap<-function(mat, gaps, title, annotdf, hmcol){
 
 clusBar<-function(mat, title, col, cluslev=NULL){
   clus<-mat$cluster
-  if(class(clus)!="factor"){
-    clus<-factor(mat$cluster)
-  }
-  if(is.null(cluslev)){
-    cluslev<-c(1:max(clus))
-  }
   mat<-mat[,-(which(colnames(mat) %in% "cluster"))]
   clusList<-split(mat, clus)
   avgFC<-as.data.frame(do.call("rbind", lapply(clusList, colMeans)))
@@ -33,6 +27,9 @@ clusBar<-function(mat, title, col, cluslev=NULL){
 
   clusters<-as.factor(c(rep(levels(clus), dim(avgFC)[2])))
   maxclus<-max(levels(clusters))
+  if(is.null(cluslev)){
+    cluslev<-c(1:maxclus)
+  }
 
   y<- seFC %>% tidyr::gather(key="Comparison", value="SE")
 
