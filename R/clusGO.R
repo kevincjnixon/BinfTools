@@ -12,46 +12,18 @@ clusGO<-function(clusRes, species="hsapiens", bg=rownames(clusRes), source=NULL,
                  pdf=T, fig=T, returnGost=F, writeRes=T, writeGem=T, returnRes=F, writeGene=F){
   clusRes<-clusRes[order(clusRes$cluster),]
   clusters<-unique(clusRes$cluster)
-  res<-list()
   for(i in 1:length(clusters)){
     genes<-rownames(subset(clusRes, cluster==clusters[i]))
     if(isTRUE(writeGene)){
       write.table(genes, file=paste0(prefix,"_cluster",clusters[i],".genes.txt"), quote=F, col.names=F, row.names=F, sep="\t")
     }
     print(paste("Analyzing",length(genes),"genes in cluster", clusters[i]))
-    if(isFALSE(returnGost) & isFALSE(returnRes)){
-      tryCatch({BinfTools::GO_GEM(geneList=genes, species=species, bg=bg, source=source, corr=corr,
-                  iea=iea, prefix=paste0(prefix,"_cluster",clusters[i]), ts=ts, pdf=pdf, fig=fig, returnGost=returnGost,
-                  writeRes=writeRes, writeGem=writeGem, returnRes=returnRes)},
-               error=function(e){
-                 message(paste0("No enriched terms in cluster ",clusters[i],"."))
-                 message(paste0("Moving on to cluster ",clusters[i+1],"."))
-               })
-    }
-    if(isTRUE(returnGost)){
-      res[[i]]<-tryCatch({BinfTools::GO_GEM(geneList=genes, species=species, bg=bg, source=source, corr=corr,
-                  iea=iea, prefix=paste0(prefix,"_cluster",clusters[i]), ts=ts, pdf=pdf, fig=fig, returnGost=T,
-                  writeRes=writeRes, writeGem=writeGem, returnRes=returnRes)},
-               error=function(e){
-                 message(paste0("No enriched terms in cluster ",clusters[i],"."))
-                 message(paste0("Moving on to cluster ",clusters[i+1],"."))
-                 return(NA)
-               })
-      names(res)[i]<-paste0("cluster",clusters[i])
-    }
-    if(isTRUE(returnRes)){
-      res[[i]]<-tryCatch({BinfTools::GO_GEM(geneList=genes, species=species, bg=bg, source=source, corr=corr,
-                  iea=iea, prefix=paste0(prefix,"_cluster",clusters[i]), ts=ts, pdf=pdf, fig=fig, returnGost=F,
-                  writeRes=writeRes, writeGem=writeGem, returnRes=T)},
-               error=function(e){
-                 message(paste0("No enriched terms in cluster ",clusters[i],"."))
-                 message(paste0("Moving on to cluster ",clusters[i+1],"."))
-                 return(NA)
-               })
-      names(res)[i]<-paste0("cluster",clusters[i])
-    }
-  }
-  if(isTRUE(returnGost) | isTRUE(returnRes)){
-    return(res)
+    tryCatch({BinfTools::GO_GEM(geneList=genes, species=species, bg=bg, source=source, corr=corr,
+                iea=iea, prefix=paste0(prefix,"_cluster",clusters[i]), ts=ts, pdf=pdf, fig=fig, returnGost=returnGost,
+                writeRes=writeRes, writeGem=writeGem, returnRes=returnRes)},
+             error=function(e){
+               message(paste0("No enriched terms in cluster ",clusters[i],"."))
+               message(paste0("Moving on to cluster ",clusters[i+1],"."))
+             })
   }
 }
