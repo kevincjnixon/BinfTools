@@ -138,6 +138,8 @@ clusRelev<-function(clusRes, cluslev, rename=T, title="Releveled Clusters", col=
   #Create the annotation data frame
   annotdf<-data.frame(row.names=rownames(clusRes), cluster=clusRes$cluster)
   #Pass it through to the heatmap function:
+  print(nrow(clusRes))
+  print(gaps)
   clusHeatmap(clusRes[,-(which(colnames(clusRes) %in% "cluster"))], gaps, title, annotdf, hmcol, labgenes)
   #Pass it through to the barplot function:
   print(as.numeric(cluslev))
