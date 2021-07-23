@@ -4,6 +4,8 @@ clusHeatmap<-function(mat, gaps, title, annotdf, hmcol, labgenes){
   }
   mat<-as.matrix(mat)
   lim<-max(abs(mat[is.finite(mat)]))
+  print(dim(mat))
+  print(gaps)
   pheatmap::pheatmap(mat, scale="none", color=hmcol, cluster_rows=F, cluster_cols=F,
                      legend=T, labels_row = labgenes, annotation_row=annotdf, gaps_col=seq(1:ncol(mat-1)),
                      show_colnames = T, gaps_row=gaps, main=title, breaks=seq(from=-lim, to=lim, length.out=100))
@@ -138,11 +140,8 @@ clusRelev<-function(clusRes, cluslev, rename=T, title="Releveled Clusters", col=
   #Create the annotation data frame
   annotdf<-data.frame(row.names=rownames(clusRes), cluster=clusRes$cluster)
   #Pass it through to the heatmap function:
-  print(nrow(clusRes))
-  print(gaps)
   clusHeatmap(clusRes[,-(which(colnames(clusRes) %in% "cluster"))], gaps, title, annotdf, hmcol, labgenes)
   #Pass it through to the barplot function:
-  print(as.numeric(cluslev))
   #print(as.numeric(cluslev))
   tmp<-clusBar(clusRes, title, col=col, cluslev=as.numeric(cluslev))
   #return the cluster clusResrix
