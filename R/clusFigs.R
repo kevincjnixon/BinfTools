@@ -121,18 +121,28 @@ clusRelev<-function(clusRes, cluslev, rename=T, title="Releveled Clusters", col=
   if(isTRUE(rename)){
     newClus<-clusRes$cluster
     for(i in 1:numClus){
-      message("Cluster ",as.numeric(cluslev[i])," is now cluster ",i,".")
       #message("Cluster ",as.numeric(cluslev[i])," is now cluster ",i,".")
       newClus[clusRes$cluster==as.numeric(cluslev[i])]<-i
     }
     clusRes$cluster<-newClus
-    #Pass it through to the heatmap function:
-    clusHeatmap(clusRes[,-(which(colnames(clusRes) %in% "cluster"))], gaps, title, annotdf, hmcol, labgenes)
-    #Pass it through to the barplot function:
-    print(as.numeric(cluslev))
-    #print(as.numeric(cluslev))
-    tmp<-clusBar(clusRes, title, col=col, cluslev=as.numeric(cluslev))
-    #return the cluster clusResrix
-    return(clusRes)
+    clusRes<-clusRes[order(clusRes$cluster),]
+    cluslev<-c(1:numClus)
   }
+  #clusRes$cluster<-as.numeric(clusRes$cluster)
+  clusRes<-clusRes[order(clusRes$cluster),]
+  #Calculate the gaps for the heatmap
+  gaps=c()
+  for(i in 1:(numClus-1)){
+    gaps<-c(gaps, sum(gaps[length(gaps)],length(which(clusRes$cluster == i))))
+  }
+  #Create the annotation data frame
+  annotdf<-data.frame(row.names=rownames(clusRes), cluster=clusRes$cluster)
+  #Pass it through to the heatmap function:
+  clusHeatmap(clusRes[,-(which(colnames(clusRes) %in% "cluster"))], gaps, title, annotdf, hmcol)
+  #Pass it through to the barplot function:
+  print(as.numeric(cluslev))
+  #print(as.numeric(cluslev))
+  tmp<-clusBar(clusRes, title, col=col, cluslev=as.numeric(cluslev))
+  #return the cluster clusResrix
+  return(clusRes)
 }
