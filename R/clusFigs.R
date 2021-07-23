@@ -40,7 +40,7 @@ clusBar<-function(mat, title, col, cluslev=NULL){
   x <- x %>% dplyr::mutate(cluster=forcats::fct_relevel(cluster, as.character(cluslev)))
 
   x<-as.data.frame(x)
-  print(levels(x$cluster))
+  #print(levels(x$cluster))
   dodge<-ggplot2::position_dodge(width=0.9)
   p<-ggplot2::ggplot(x, ggplot2::aes(x=cluster, y=AvgFC, fill=factor(Comparison)))+
     ggplot2::geom_bar(stat="identity", position= ggplot2::position_dodge(), color="black") +
@@ -132,7 +132,7 @@ clusRelev<-function(clusRes, cluslev, rename=T, title="Releveled Clusters", col=
     }
     newClus<-factor(newClus, levels=c(1:length(unique(newClus))))
     clusRes$cluster<-newClus
-    cluslev<-c(1:max(as.numeric(clusRes$cluster)))
+    cluslev<-levels(clusRes$cluster)
   }
   clusRes<-clusRes[order(clusRes$cluster, decreasing=T),]
   #Calculate the gaps for the heatmap
@@ -145,7 +145,7 @@ clusRelev<-function(clusRes, cluslev, rename=T, title="Releveled Clusters", col=
   #Pass it through to the heatmap function:
   clusHeatmap(clusRes[,-(which(colnames(clusRes) %in% "cluster"))], gaps, title, annotdf, hmcol)
   #Pass it through to the barplot function:
-  print(cluslev)
+  #print(cluslev)
   tmp<-clusBar(clusRes, title, col=col, cluslev=cluslev)
   #return the cluster clusResrix
   return(clusRes)
