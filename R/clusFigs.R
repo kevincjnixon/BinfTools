@@ -144,6 +144,7 @@ clusRelev<-function(clusRes, cluslev, rename=T, title="Releveled Clusters", col=
   #Pass it through to the heatmap function:
   clusHeatmap(clusRes[,-(which(colnames(clusRes) %in% "cluster"))], gaps, title, annotdf, hmcol)
   #Pass it through to the barplot function:
+  print(as.character(cluslev))
   tmp<-clusBar(clusRes, title, col=col, cluslev=cluslev)
   #return the cluster clusResrix
   return(clusRes)
