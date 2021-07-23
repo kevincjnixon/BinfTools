@@ -40,6 +40,7 @@ clusBar<-function(mat, title, col, cluslev=NULL){
   x <- x %>% dplyr::mutate(cluster=forcats::fct_relevel(cluster, as.character(cluslev)))
 
   x<-as.data.frame(x)
+  print(levels(x$cluster))
   dodge<-ggplot2::position_dodge(width=0.9)
   p<-ggplot2::ggplot(x, ggplot2::aes(x=cluster, y=AvgFC, fill=factor(Comparison)))+
     ggplot2::geom_bar(stat="identity", position= ggplot2::position_dodge(), color="black") +
