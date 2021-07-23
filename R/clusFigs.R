@@ -4,8 +4,13 @@ clusHeatmap<-function(mat, gaps, title, annotdf, hmcol, labgenes){
   }
   mat<-as.matrix(mat)
   lim<-max(abs(mat[is.finite(mat)]))
-  print(dim(mat))
-  print(gaps)
+  if(!is.null(labgenes)){
+    tmp<-rep(" ", nrow(zmat))
+    for(i in 1:length(labgenes)){
+      tmp[which(rownames(zmat) %in% labgenes[i], arr.ind=T)]<- labgenes[i]
+    }
+    labgenes<-tmp
+  }
   pheatmap::pheatmap(mat, scale="none", color=hmcol, cluster_rows=F, cluster_cols=F,
                      legend=T, labels_row = labgenes, annotation_row=annotdf, gaps_col=seq(1:ncol(mat-1)),
                      show_colnames = T, gaps_row=gaps, main=title, breaks=seq(from=-lim, to=lim, length.out=100))
