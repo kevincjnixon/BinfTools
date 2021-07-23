@@ -1,154 +1,153 @@
-rowGeoMean<-function(a){
-  x<-NULL
-  for(i in 1:nrow(a)){
-    x<-c(x, prod(a[i,]^(1/length(a[i,]))))
+clusHeatmap<-function(mat, gaps, title, annotdf, hmcol){
+  if(is.null(hmcol)){
+    hmcol<-colorRampPalette(c("blue","grey","red"))(100)
   }
-  return(x)
+  mat<-as.matrix(mat)
+  lim<-max(abs(mat[is.finite(mat)]))
+  pheatmap::pheatmap(mat, scale="none", color=hmcol, cluster_rows=F, cluster_cols=F,
+                     legend=T, show_rownames=F, annotation_row=annotdf, gaps_col=seq(1:ncol(mat-1)),
+                     show_colnames = T, gaps_row=gaps, main=title, breaks=seq(from=-lim, to=lim, length.out=100))
 }
-rowMedian<-function(a){
-  x<-NULL
-  for(i in 1:nrow(a)){
-    x<-c(x, median(as.numeric(a[i,])))
+
+clusBar<-function(mat, title, col, cluslev=NULL){
+  clus<-mat$cluster
+  if(class(clus)!="factor"){
+    clus<-factor(mat$cluster)
   }
+  mat<-mat[,-(which(colnames(mat) %in% "cluster"))]
+  clusList<-split(mat, clus)
+  avgFC<-as.data.frame(do.call("rbind", lapply(clusList, colMeans)))
+  colse<-function(x){
+    y<-c()
+    for(i in 1:ncol(x)){
+      #y<-c(y, (sd(x[,i])/(sqrt(length(x[,i])))))
+      y<-c(y, sd(x[,i]))
+    }
+    names(y)<-colnames(x)
+    return(y)
+  }
+  seFC<-as.data.frame(do.call("rbind", lapply(clusList, colse)))
+
+  clusters<-as.factor(c(rep(levels(clus), dim(avgFC)[2])))
+  maxclus<-max(levels(clusters))
+  if(is.null(cluslev)){
+    cluslev<-c(1:maxclus)
+  }
+  y<- seFC %>% tidyr::gather(key="Comparison", value="SE")
+
+  x<- avgFC %>% tidyr::gather(key="Comparison", value="AvgFC") %>% dplyr::mutate(cluster=clusters) %>%
+    dplyr::mutate(SE=y$SE) %>% dplyr::group_by(cluster)
+  x <- x %>% dplyr::mutate(cluster=forcats::fct_relevel(cluster, as.character(cluslev)))
+
+  x<-as.data.frame(x)
+  #print(levels(x$cluster))
+  dodge<-ggplot2::position_dodge(width=0.9)
+  p<-ggplot2::ggplot(x, ggplot2::aes(x=cluster, y=AvgFC, fill=factor(Comparison)))+
+    ggplot2::geom_bar(stat="identity", position= ggplot2::position_dodge(), color="black") +
+    ggplot2::geom_errorbar(ggplot2::aes(ymax=AvgFC+SE, ymin=AvgFC-SE), position=dodge,
+                           width=0.2) +
+    ggplot2::labs(title=title, ylab="Average log2 Fold-Change", xlab="Cluster") +
+    ggplot2::guides(fill=ggplot2::guide_legend(title="Comparison")) +
+    ggplot2::theme_minimal() + ggplot2::scale_fill_manual(values=colPal(col))
+
+  print(p)
   return(x)
 }
 
-perMean<-function(counts, condition){
-  counts<-counts/rowMeans(counts)
-  head(counts)
-  res<-NULL
-  for(i in 1:length(levels(factor(condition)))){
-    #print(which(condition %in% levels(factor(condition))[i]))
-    res<-cbind(res, rowMeans(counts[,which(condition %in% levels(factor(condition))[i])]))
-  }
-  colnames(res)<-levels(factor(condition))
-  res<-as.data.frame(res)
-  return(res)
-}
-#' A function to make a plot of normalized counts
+#' k-means clustered figures
 #'
-#' This function takes normalized counts of specific genes from a DESeq2 counts
-#' object, scales them, and creates a plot with pairwise t-tests by condition
-#'
-#' @param counts Normalized counts from a DESeq2 object - use 'counts(dds, normalized=T)'
-#' @param scaling Method used to scale counts per gene across samples. 'zscore', 'log10', or 'none'. Default is 'zscore'
-#' @param genes Character vector of genes to subset from counts. Must correspond with rownames(counts).
-#' @param condition Character vector of conditions in DESeq2 object. Must be in order of columns (counts).
-#' @param con Character indicating the control condition. (To be displayed first in plot). Default NULL.
-#' @param title Character vector indicating title of plot. Defaults to "expression"
-#' @param compare List of character vectors (each of length 2) indicating pairwise comparisons. If NULL, all possible comparisons will be made. Default is NULL
-#' @param col Character indicating the RColorBrewer palette name or list of colours (hex, name, rgb()) to be used. Default is "Dark2"
-#' @param method Character indicating what to plot. One of "ind", "mean", "geoMean", or "median", or "perMean". Defaults to "ind" for individual data points (one point per sample).
-#' @param pair Boolean indicating if t-test should be independent (F; default) or paired (T).
-#' @param pc Numeric indicating the pseudocount to be added when scaling="log10". Default=1.
-#' @param yax Character indicating the y-axis label. Leave NULL if going with default axis label.
-#' @param showStat Boolean indicating if statistics should be plotted.
-#' @param style Character indicating the style of plot ("violin" or "box"). Defaults to "violin".
-#' @return Generates a violin or box plot
+#' This function is for use with more than one results object. Combine the results
+#' from multiple comparisons by clustering genes based on their log2 fold changes
+#' between conditions for each comparison. This function will create a clustered
+#' heatmap and bar plot of the average log2 fold-change in each cluster.
+#' @param resList A list of results data frames. names(resList) will be used
+#' @param numClus Number of k-means clusters to cluster the results
+#' @param title Character indicating the titles of the plots to be made
+#' @param col Character indicating the RColorBrewer palette name or list of colours (hex, name, rgb()) to be used for the bar plot. Default is "Dark2"
+#' @param hmcol Colour Ramp Palette of length 100 indicating the colour palette of the heatmap. Leave NULL for default.
+#' @return A data frame of log2FoldChanges for each comparison as columns (rows are genes) and a column named "cluster" indicating the cluster each gene belongs to. Two figures: a Heatmap of log2FoldChange of each gene ordered into clusters and a bar plot of the average log2FoldChange in each cluster (+/- SD) by comparison.
 #' @export
 
-count_plot<-function(counts, scaling="zscore", genes, condition, con=NULL, title="expression", compare=NULL, col="Dark2", method="ind", pair=F, pc=1, yax=NULL, showStat=T, style="violin"){
-  #Pull the normalized counts of genes
-  res<-counts[which(rownames(counts) %in% genes),]
-  ylab="z-score Normalized Expression"
-  if(scaling=="log10"){
-    #Log10 of counts
-    res<-as.data.frame(log(pc+res, 10))
-    ylab=expression(log[10](NormalizedExpression))
+clusFigs<-function(resList, numClus, title="Clustered Results", col="Dark2", hmcol=NULL){
+  #Make sure there is more than one entry in the list
+  if(length(resList)<2){
+    stop("resList must have at least 2 entries...")
   }
-  if(scaling=="zscore"){
-    #zscore normalized counts
-    res<-as.data.frame(t(scale(t(res))))
+  #Get the names of the comparisons
+  compNames<-names(resList)
+  #Create a matrix for clustering based on the log2FoldChanges of each comparison
+  mat<-data.frame(genes=rownames(resList[[1]]), comp1=resList[[1]]$log2FoldChange)
+  for(i in 2:length(resList)){
+    tmp<-data.frame(genes=rownames(resList[[i]]), tmp=resList[[i]]$log2FoldChange)
+    mat<-merge(mat, tmp, by.x="genes", by.y="genes")
   }
-  if(scaling=="none"){
-    message("No scaling method selected...")
-    ylab="Normalized Expression"
+  #Set genes to rownames
+  rownames(mat)<-mat$genes
+  #remove 'genes' column
+  mat<-mat[,-(which(colnames(mat) %in% "genes"))]
+  colnames(mat)<-compNames
+  #Remove any NAs
+  mat<-as.matrix(mat[complete.cases(mat),])
+  #Now we can cluster!
+  print(paste("Clustering", length(resList),"results with",numClus,"clusters ..."))
+  #Set seed
+  set.seed(1234)
+  clusRes<-kmeans(mat,centers=numClus, iter.max=1000)
+  #Add the cluster to mat
+  mat<-as.data.frame(mat)
+  mat$cluster<-clusRes$cluster
+  mat<-mat[order(mat$cluster),]
+  #Calculate the gaps for the heatmap
+  gaps=c()
+  for(i in 1:(numClus-1)){
+    gaps<-c(gaps, sum(gaps[length(gaps)],length(which(mat$cluster == i))))
   }
-  #Check the method
-  if(method=="mean"){
-    message("Calculaing mean across each condition...")
-    tmp<-NULL
-    for(i in 1:length(levels(factor(condition)))){
-      tmp<-cbind(tmp,rowMeans(res[,which(condition %in% levels(factor(condition))[i])]))
-    }
-    colnames(tmp)<-as.character(levels(factor(condition)))
-    res<-as.data.frame(tmp)
-    condition<-as.character(levels(factor(condition)))
-  }
-  if(method=="geoMean"){
-    message("Calculating geometric mean across each condition...")
-    tmp<-NULL
-    for(i in 1:length(levels(factor(condition)))){
-      tmp<-cbind(tmp,rowGeoMean(res[,which(condition %in% levels(factor(condition))[i])]))
-    }
-    colnames(tmp)<-levels(factor(condition))
-    res<-as.data.frame(tmp)
-    condition<-as.character(levels(factor(condition)))
-  }
-  if(method=="perMean"){
-    message("Calculating percent mean for each condition...")
-    res<-perMean(res, condition)
-    condition<-as.character(levels(factor(condition)))
-  }
-  if(method=="median"){
-    message("Calculating median across each condition...")
-    tmp<-NULL
-    for(i in 1:length(levels(factor(condition)))){
-      tmp<-cbind(tmp,rowMedian(res[,which(condition %in% levels(factor(condition))[i])]))
-    }
-    colnames(tmp)<-levels(factor(condition))
-    res<-as.data.frame(tmp)
-    condition<-as.character(levels(factor(condition)))
+  #Create the annotation data frame
+  annotdf<-data.frame(row.names=rownames(mat), cluster=mat$cluster)
+  #Pass it through to the heatmap function:
+  clusHeatmap(mat[,-(which(colnames(mat) %in% "cluster"))], gaps, title, annotdf, hmcol)
+  #Pass it through to the barplot function:
+  tmp<-clusBar(mat, title, col=col)
+  #return the cluster matrix
+  return(mat)
+}
+
+clusRelev<-function(clusRes, cluslev, rename=T, title="Releveled Clusters", col="Dark2", hmcol=NULL){
+  numClus<-max(clusRes$cluster)
+  clusRes$cluster<-factor(clusRes$cluster)
+  if(length(cluslev) == length(levels(factor(clusRes$cluster)))){
+    clusRes <- clusRes %>% dplyr::mutate(cluster= forcats::fct_relevel(cluster, as.character(cluslev)))
   } else {
-    message("Using individual data points...")
+    newlev<-c(cluslev, levels(factor(clusRes$cluster))[!which(levels(factor(clusRes$cluster)) %in% cluslev)])
+    clusRes <- clusRes %>% dplyr::mutate(cluster = forcats::fct_relevel(cluster, as.character(newlev)))
+    cluslev<-as.numeric(newlev)
   }
-  #now we need to convert the results to a format acceptable for ggplot
-  times<-dim(res)[1]
-  conditions<-as.factor(c(rep(condition, each=times)))
-  x<-res %>% tidyr::gather(key="Sample", value="Expression") %>% dplyr::mutate(group=conditions) %>%
-    dplyr::group_by(group)
-  if(!is.null(con)){
-    if(length(con)==length(levels(factor(x$group)))){
-      x<- x %>% dplyr::mutate(group=forcats::fct_relevel(group, con))
-    } else {
-      newlev<-c(con, levels(factor(x$group))[!which(levels(factor(x$group)) %in% con)])
-      x<- x %>% dplyr::mutate(group=forcats::fct_relevel(group, newlev))
+  clusRes<-as.data.frame(clusRes)
+  #clusRes$cluster<-as.numeric(clusRes$cluster)
+  if(isTRUE(rename)){
+    newClus<-clusRes$cluster
+    for(i in 1:numClus){
+      #message("Cluster ",as.numeric(cluslev[i])," is now cluster ",i,".")
+      newClus[clusRes$cluster==as.numeric(cluslev[i])]<-i
     }
-    #x$group<-relevel(as.factor(x$group), con)
+    clusRes$cluster<-newClus
+    clusRes<-clusRes[order(clusRes$cluster),]
+    cluslev<-c(1:numClus)
   }
-  x<-as.data.frame(x)
-  #print(head(x))
-  #Remove any infinite values
-  to_remove<-c()
-  for(i in 1:nrow(x)){
-    if(any(is.infinite(x[i,2]))){
-      #print("infinite value found...")
-      to_remove<-c(to_remove, i)
-    }
+  #clusRes$cluster<-as.numeric(clusRes$cluster)
+  clusRes<-clusRes[order(clusRes$cluster),]
+  #Calculate the gaps for the heatmap
+  gaps=c()
+  for(i in 1:(numClus-1)){
+    gaps<-c(gaps, sum(gaps[length(gaps)],length(which(clusRes$cluster == i))))
   }
-  if(length(to_remove > 1)){
-    print(paste("Removing", length(to_remove), "inifite values..."))
-    x<-x[-to_remove,]
-  }
-  x<-as.data.frame(x)
-  #Pairwise comparison
-  pwc<- x%>% rstatix::pairwise_t_test(Expression ~ group, comparisons=compare, p.adjust.method="BH", paired=pair)
-  pwc <- pwc %>% rstatix::add_xy_position(x="group")
-  #Now for the plot:
-  if(!is.null(yax)){
-    ylab<-yax
-  }
-  p<-NULL
-  if(style=="violin"){
-    p<- ggpubr::ggviolin(x, x="group", y="Expression", fill="group") +
-      ggplot2::geom_boxplot(width=0.1, fill="white") +
-      ggplot2::labs(title=title, y=ylab, x="Condition") + ggplot2::theme_minimal() + ggplot2::scale_fill_manual(values=colPal(col))
-  } else {
-    p<- ggpubr::ggboxplot(x, x="group", y="Expression", fill="group") +
-      ggplot2::labs(title=title, y=ylab, x="Condition") + ggplot2::theme_minimal() + ggplot2::scale_fill_manual(values=colPal(col))
-  }
-  if(isTRUE(showStat)){
-    p <- p + ggpubr::stat_pvalue_manual(pwc, label="p.adj", tip.length=0, step.increase=0.1)
-  }
-  print(p)
+  #Create the annotation data frame
+  annotdf<-data.frame(row.names=rownames(clusRes), cluster=clusRes$cluster)
+  #Pass it through to the heatmap function:
+  clusHeatmap(clusRes[,-(which(colnames(clusRes) %in% "cluster"))], gaps, title, annotdf, hmcol)
+  #Pass it through to the barplot function:
+  #print(as.numeric(cluslev))
+  tmp<-clusBar(clusRes, title, col=col, cluslev=as.numeric(cluslev))
+  #return the cluster clusResrix
+  return(clusRes)
 }

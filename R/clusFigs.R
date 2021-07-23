@@ -1,15 +1,15 @@
-clusHeatmap<-function(mat, gaps, title, annotdf, hmcol){
+clusHeatmap<-function(mat, gaps, title, annotdf, hmcol, labgenes){
   if(is.null(hmcol)){
     hmcol<-colorRampPalette(c("blue","grey","red"))(100)
   }
   mat<-as.matrix(mat)
   lim<-max(abs(mat[is.finite(mat)]))
   pheatmap::pheatmap(mat, scale="none", color=hmcol, cluster_rows=F, cluster_cols=F,
-                     legend=T, show_rownames=F, annotation_row=annotdf, gaps_col=seq(1:ncol(mat-1)),
+                     legend=T, labels_row=labgenes, annotation_row=annotdf, gaps_col=seq(1:ncol(mat-1)),
                      show_colnames = T, gaps_row=gaps, main=title, breaks=seq(from=-lim, to=lim, length.out=100))
 }
 
-clusBar<-function(mat, title, col, cluslev=NULL){
+clusBar<-function(mat, title, col){
   clus<-mat$cluster
   if(class(clus)!="factor"){
     clus<-factor(mat$cluster)
@@ -30,17 +30,14 @@ clusBar<-function(mat, title, col, cluslev=NULL){
 
   clusters<-as.factor(c(rep(levels(clus), dim(avgFC)[2])))
   maxclus<-max(levels(clusters))
-  if(is.null(cluslev)){
-    cluslev<-c(1:maxclus)
-  }
+
   y<- seFC %>% tidyr::gather(key="Comparison", value="SE")
 
   x<- avgFC %>% tidyr::gather(key="Comparison", value="AvgFC") %>% dplyr::mutate(cluster=clusters) %>%
     dplyr::mutate(SE=y$SE) %>% dplyr::group_by(cluster)
-  x <- x %>% dplyr::mutate(cluster=forcats::fct_relevel(cluster, as.character(cluslev)))
+  x <- x %>% dplyr::mutate(cluster=forcats::fct_relevel(cluster, as.character(c(1:maxclus))))
 
   x<-as.data.frame(x)
-  #print(levels(x$cluster))
   dodge<-ggplot2::position_dodge(width=0.9)
   p<-ggplot2::ggplot(x, ggplot2::aes(x=cluster, y=AvgFC, fill=factor(Comparison)))+
     ggplot2::geom_bar(stat="identity", position= ggplot2::position_dodge(), color="black") +
@@ -63,12 +60,13 @@ clusBar<-function(mat, title, col, cluslev=NULL){
 #' @param resList A list of results data frames. names(resList) will be used
 #' @param numClus Number of k-means clusters to cluster the results
 #' @param title Character indicating the titles of the plots to be made
+#' @param labgenes Character vector of genes (corresponding to rownames in the resList) to be labeled in the heatmap. Default "" to label no genes. NULL labels all genes.
 #' @param col Character indicating the RColorBrewer palette name or list of colours (hex, name, rgb()) to be used for the bar plot. Default is "Dark2"
 #' @param hmcol Colour Ramp Palette of length 100 indicating the colour palette of the heatmap. Leave NULL for default.
 #' @return A data frame of log2FoldChanges for each comparison as columns (rows are genes) and a column named "cluster" indicating the cluster each gene belongs to. Two figures: a Heatmap of log2FoldChange of each gene ordered into clusters and a bar plot of the average log2FoldChange in each cluster (+/- SD) by comparison.
 #' @export
 
-clusFigs<-function(resList, numClus, title="Clustered Results", col="Dark2", hmcol=NULL){
+clusFigs<-function(resList, numClus, title="Clustered Results", col="Dark2", hmcol=""){
   #Make sure there is more than one entry in the list
   if(length(resList)<2){
     stop("resList must have at least 2 entries...")
@@ -105,36 +103,30 @@ clusFigs<-function(resList, numClus, title="Clustered Results", col="Dark2", hmc
   #Create the annotation data frame
   annotdf<-data.frame(row.names=rownames(mat), cluster=mat$cluster)
   #Pass it through to the heatmap function:
-  clusHeatmap(mat[,-(which(colnames(mat) %in% "cluster"))], gaps, title, annotdf, hmcol)
+  clusHeatmap(mat[,-(which(colnames(mat) %in% "cluster"))], gaps, title, annotdf, hmcol, labgenes)
   #Pass it through to the barplot function:
   tmp<-clusBar(mat, title, col=col)
   #return the cluster matrix
   return(mat)
 }
 
-clusRelev<-function(clusRes, cluslev, rename=T, title="Releveled Clusters", col="Dark2", hmcol=NULL){
-  numClus<-max(clusRes$cluster)
+clusRelev<-function(clusRes, cluslev, rename=T, title="Releveld Clusters", col="Dark2", hmcol=NULL, labgenes){
   clusRes$cluster<-factor(clusRes$cluster)
   if(length(cluslev) == length(levels(factor(clusRes$cluster)))){
-    clusRes <- clusRes %>% dplyr::mutate(cluster= forcats::fct_relevel(cluster, as.character(cluslev)))
+    clusRes <- clusRes %>% dplyr::mutate(cluster= forcats::fct_relevel(cluster, cluslev))
   } else {
     newlev<-c(cluslev, levels(factor(clusRes$cluster))[!which(levels(factor(clusRes$cluster)) %in% cluslev)])
-    clusRes <- clusRes %>% dplyr::mutate(cluster = forcats::fct_relevel(cluster, as.character(newlev)))
-    cluslev<-as.numeric(newlev)
+    clusRes <- clusRes %>% dplyr::mutate(cluster = forcats::fct_relevel(cluster, cluslev))
   }
   clusRes<-as.data.frame(clusRes)
-  #clusRes$cluster<-as.numeric(clusRes$cluster)
   if(isTRUE(rename)){
-    newClus<-clusRes$cluster
-    for(i in 1:numClus){
-      #message("Cluster ",as.numeric(cluslev[i])," is now cluster ",i,".")
-      newClus[clusRes$cluster==as.numeric(cluslev[i])]<-i
+    newClus<-c()
+    for(i in 1:length(levels(factor(clusRes$cluster)))){
+      newClus<-c(newClus, rep(i, length(clusRes$cluster[which(clusRes$cluster == levels(clusRes$cluster)[i])])))
     }
+    newClus<-factor(newClus, levels=c(1:length(unique(newClus))))
     clusRes$cluster<-newClus
-    clusRes<-clusRes[order(clusRes$cluster),]
-    cluslev<-c(1:numClus)
   }
-  #clusRes$cluster<-as.numeric(clusRes$cluster)
   clusRes<-clusRes[order(clusRes$cluster),]
   #Calculate the gaps for the heatmap
   gaps=c()
@@ -144,10 +136,9 @@ clusRelev<-function(clusRes, cluslev, rename=T, title="Releveled Clusters", col=
   #Create the annotation data frame
   annotdf<-data.frame(row.names=rownames(clusRes), cluster=clusRes$cluster)
   #Pass it through to the heatmap function:
-  clusHeatmap(clusRes[,-(which(colnames(clusRes) %in% "cluster"))], gaps, title, annotdf, hmcol)
+  clusHeatmap(clusRes[,-(which(colnames(clusRes) %in% "cluster"))], gaps, title, annotdf, hmcol, labgenes)
   #Pass it through to the barplot function:
-  #print(as.numeric(cluslev))
-  tmp<-clusBar(clusRes, title, col=col, cluslev=as.numeric(cluslev))
+  tmp<-clusBar(clusRes, title, col=col)
   #return the cluster clusResrix
   return(clusRes)
 }
