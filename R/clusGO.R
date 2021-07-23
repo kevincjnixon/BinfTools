@@ -10,20 +10,27 @@
 
 clusGO<-function(clusRes, species="hsapiens", bg=rownames(clusRes), source=NULL, corr="fdr", iea=FALSE, prefix="ClusGO", ts=c(10,500),
                  pdf=T, fig=T, returnGost=F, writeRes=T, writeGem=T, returnRes=F, writeGene=F){
-  clusRes<-clusRes[order(clusRes$cluster),]
-  clusters<-unique(clusRes$cluster)
-  for(i in 1:length(clusters)){
-    genes<-rownames(subset(clusRes, cluster==clusters[i]))
-    if(isTRUE(writeGene)){
-      write.table(genes, file=paste0(prefix,"_cluster",clusters[i],".genes.txt"), quote=F, col.names=F, row.names=F, sep="\t")
-    }
-    print(paste("Analyzing",length(genes),"genes in cluster", clusters[i]))
-    tryCatch({BinfTools::GO_GEM(geneList=genes, species=species, bg=bg, source=source, corr=corr,
-                iea=iea, prefix=paste0(prefix,"_cluster",clusters[i]), ts=ts, pdf=pdf, fig=fig, returnGost=returnGost,
-                writeRes=writeRes, writeGem=writeGem, returnRes=returnRes)},
-             error=function(e){
-               message(paste0("No enriched terms in cluster ",clusters[i],"."))
-               message(paste0("Moving on to cluster ",clusters[i+1],"."))
-             })
-  }
+
+  clusGenes<-lapply(split(clusRes, clusRes$cluster), rownames)
+  names(clusGenes)<-paste0("cluster",names(clusGenes))
+
+  return(BinfTools::GO_GEM(clusGenes, species=speices, bg=bg, source=source, corr=corr,
+                           iea=iea, prefix=prefix, ts=ts, pdf=pdf, fig=fig, returnRes=returnRes, returnGost=returnGost))
+
+  # clusRes<-clusRes[order(clusRes$cluster),]
+  # clusters<-unique(clusRes$cluster)
+  # for(i in 1:length(clusters)){
+  #   genes<-rownames(subset(clusRes, cluster==clusters[i]))
+  #   if(isTRUE(writeGene)){
+  #     write.table(genes, file=paste0(prefix,"_cluster",clusters[i],".genes.txt"), quote=F, col.names=F, row.names=F, sep="\t")
+  #   }
+  #   print(paste("Analyzing",length(genes),"genes in cluster", clusters[i]))
+  #   tryCatch({BinfTools::GO_GEM(geneList=genes, species=species, bg=bg, source=source, corr=corr,
+  #               iea=iea, prefix=paste0(prefix,"_cluster",clusters[i]), ts=ts, pdf=pdf, fig=fig, returnGost=returnGost,
+  #               writeRes=writeRes, writeGem=writeGem, returnRes=returnRes)},
+  #            error=function(e){
+  #              message(paste0("No enriched terms in cluster ",clusters[i],"."))
+  #              message(paste0("Moving on to cluster ",clusters[i+1],"."))
+  #            })
+  # }
 }
