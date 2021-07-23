@@ -5,9 +5,9 @@ clusHeatmap<-function(mat, gaps, title, annotdf, hmcol, labgenes){
   mat<-as.matrix(mat)
   lim<-max(abs(mat[is.finite(mat)]))
   if(!is.null(labgenes)){
-    tmp<-rep(" ", nrow(zmat))
+    tmp<-rep(" ", nrow(mat))
     for(i in 1:length(labgenes)){
-      tmp[which(rownames(zmat) %in% labgenes[i], arr.ind=T)]<- labgenes[i]
+      tmp[which(rownames(mat) %in% labgenes[i], arr.ind=T)]<- labgenes[i]
     }
     labgenes<-tmp
   }
