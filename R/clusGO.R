@@ -14,7 +14,7 @@ clusGO<-function(clusRes, species="hsapiens", bg=rownames(clusRes), source=NULL,
   clusGenes<-lapply(split(clusRes, clusRes$cluster), rownames)
   names(clusGenes)<-paste0("cluster",names(clusGenes))
 
-  return(BinfTools::GO_GEM(clusGenes, species=speices, bg=bg, source=source, corr=corr,
+  return(BinfTools::GO_GEM(clusGenes, species=species, bg=bg, source=source, corr=corr,
                            iea=iea, prefix=prefix, ts=ts, pdf=pdf, fig=fig, returnRes=returnRes, returnGost=returnGost))
 
   # clusRes<-clusRes[order(clusRes$cluster),]
