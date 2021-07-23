@@ -37,7 +37,7 @@ clusBar<-function(mat, title, col, cluslev=NULL){
 
   x<- avgFC %>% tidyr::gather(key="Comparison", value="AvgFC") %>% dplyr::mutate(cluster=clusters) %>%
     dplyr::mutate(SE=y$SE) %>% dplyr::group_by(cluster)
-  x <- x %>% dplyr::mutate(cluster=forcats::fct_relevel(cluster, cluslev))
+  x <- x %>% dplyr::mutate(cluster=forcats::fct_relevel(cluster, as.character(cluslev)))
 
   x<-as.data.frame(x)
   print(levels(x$cluster))
@@ -117,10 +117,10 @@ clusRelev<-function(clusRes, cluslev, rename=T, title="Releveled Clusters", col=
   clusRes$cluster<-factor(clusRes$cluster)
   cluslev<-cluslev
   if(length(cluslev) == length(levels(factor(clusRes$cluster)))){
-    clusRes <- clusRes %>% dplyr::mutate(cluster= forcats::fct_relevel(cluster, cluslev))
+    clusRes <- clusRes %>% dplyr::mutate(cluster= forcats::fct_relevel(cluster, as.character(cluslev)))
   } else {
     newlev<-c(cluslev, levels(factor(clusRes$cluster))[!which(levels(factor(clusRes$cluster)) %in% cluslev)])
-    clusRes <- clusRes %>% dplyr::mutate(cluster = forcats::fct_relevel(cluster, newlev))
+    clusRes <- clusRes %>% dplyr::mutate(cluster = forcats::fct_relevel(cluster, as.character(newlev)))
     cluslev<-levels(clusRes$cluster)
   }
   clusRes<-as.data.frame(clusRes)
