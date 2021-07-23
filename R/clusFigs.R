@@ -134,6 +134,7 @@ clusRelev<-function(clusRes, cluslev, rename=T, title="Releveled Clusters", col=
     clusRes$cluster<-newClus
     cluslev<-levels(clusRes$cluster)
   }
+  clusRes$cluster<-as.numeric(clusRes$cluster)
   clusRes<-clusRes[order(clusRes$cluster, decreasing=T),]
   #Calculate the gaps for the heatmap
   gaps=c()
@@ -146,7 +147,7 @@ clusRelev<-function(clusRes, cluslev, rename=T, title="Releveled Clusters", col=
   clusHeatmap(clusRes[,-(which(colnames(clusRes) %in% "cluster"))], gaps, title, annotdf, hmcol)
   #Pass it through to the barplot function:
   #print(cluslev)
-  tmp<-clusBar(clusRes, title, col=col, cluslev=cluslev)
+  tmp<-clusBar(clusRes, title, col=col, cluslev=as.numeric(cluslev))
   #return the cluster clusResrix
   return(clusRes)
 }
