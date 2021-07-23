@@ -126,7 +126,7 @@ clusRelev<-function(clusRes, cluslev, rename=T, title="Releveled Clusters", col=
   clusRes<-as.data.frame(clusRes)
   clusRes$cluster<-as.numeric(clusRes$cluster)
   if(isTRUE(rename)){
-    newClus<-rep(NA, nrow(clusRes))
+    newClus<-c()
     for(i in 1:numClus){
       message("Cluster ",as.numeric(cluslev[i])," is now cluster ",i,".")
       newClus<-c(newClus, rep(i, length(clusRes$cluster[which(clusRes$cluster == as.numeric(cluslev[i]))])))
