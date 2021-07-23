@@ -115,13 +115,12 @@ clusFigs<-function(resList, numClus, title="Clustered Results", col="Dark2", hmc
 clusRelev<-function(clusRes, cluslev, rename=T, title="Releveled Clusters", col="Dark2", hmcol=NULL){
   numClus<-max(clusRes$cluster)
   clusRes$cluster<-factor(clusRes$cluster)
-  cluslev<-cluslev
   if(length(cluslev) == length(levels(factor(clusRes$cluster)))){
     clusRes <- clusRes %>% dplyr::mutate(cluster= forcats::fct_relevel(cluster, as.character(cluslev)))
   } else {
     newlev<-c(cluslev, levels(factor(clusRes$cluster))[!which(levels(factor(clusRes$cluster)) %in% cluslev)])
     clusRes <- clusRes %>% dplyr::mutate(cluster = forcats::fct_relevel(cluster, as.character(newlev)))
-    cluslev<-levels(clusRes$cluster)
+    cluslev<-as.numeric(newlev)
   }
   clusRes<-as.data.frame(clusRes)
   clusRes$cluster<-as.numeric(clusRes$cluster)
@@ -131,13 +130,12 @@ clusRelev<-function(clusRes, cluslev, rename=T, title="Releveled Clusters", col=
       message("Cluster ",as.numeric(cluslev[i])," is now cluster ",i,".")
       newClus[clusRes$cluster==as.numeric(cluslev[i])]<-i
     }
-    newClus<-factor(newClus, levels=c(1:numClus))
     clusRes$cluster<-newClus
-    clusRes<-clusRes[order(clusRes$cluster, decreasing=F),]
-    cluslev<-levels(clusRes$cluster)
+    clusRes<-clusRes[order(clusRes$cluster),]
+    cluslev<-c(1:numClus)
   }
   clusRes$cluster<-as.numeric(clusRes$cluster)
-  clusRes<-clusRes[order(clusRes$cluster, decreasing=F),]
+  clusRes<-clusRes[order(clusRes$cluster),]
   #Calculate the gaps for the heatmap
   gaps=c()
   for(i in 1:(numClus-1)){
