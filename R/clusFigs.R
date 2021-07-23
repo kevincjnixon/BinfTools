@@ -123,7 +123,7 @@ clusRelev<-function(clusRes, cluslev, rename=T, title="Releveled Clusters", col=
     cluslev<-as.numeric(newlev)
   }
   clusRes<-as.data.frame(clusRes)
-  clusRes$cluster<-as.numeric(clusRes$cluster)
+  #clusRes$cluster<-as.numeric(clusRes$cluster)
   if(isTRUE(rename)){
     newClus<-clusRes$cluster
     for(i in 1:numClus){
@@ -134,7 +134,7 @@ clusRelev<-function(clusRes, cluslev, rename=T, title="Releveled Clusters", col=
     clusRes<-clusRes[order(clusRes$cluster),]
     cluslev<-c(1:numClus)
   }
-  clusRes$cluster<-as.numeric(clusRes$cluster)
+  #clusRes$cluster<-as.numeric(clusRes$cluster)
   clusRes<-clusRes[order(clusRes$cluster),]
   #Calculate the gaps for the heatmap
   gaps=c()
