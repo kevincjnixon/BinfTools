@@ -37,7 +37,7 @@ clusBar<-function(mat, title, col, cluslev=NULL){
 
   x<- avgFC %>% tidyr::gather(key="Comparison", value="AvgFC") %>% dplyr::mutate(cluster=clusters) %>%
     dplyr::mutate(SE=y$SE) %>% dplyr::group_by(cluster)
-  x <- x %>% dplyr::mutate(cluster=forcats::fct_relevel(cluster, as.character(cluslev)))
+  x <- x %>% dplyr::mutate(cluster=forcats::fct_relevel(cluster, cluslev))
 
   x<-as.data.frame(x)
   print(levels(x$cluster))
@@ -115,13 +115,13 @@ clusFigs<-function(resList, numClus, title="Clustered Results", col="Dark2", hmc
 clusRelev<-function(clusRes, cluslev, rename=T, title="Releveled Clusters", col="Dark2", hmcol=NULL){
   numClus<-max(clusRes$cluster)
   clusRes$cluster<-factor(clusRes$cluster)
-  cluslev<-as.character(cluslev)
+  cluslev<-cluslev
   if(length(cluslev) == length(levels(factor(clusRes$cluster)))){
     clusRes <- clusRes %>% dplyr::mutate(cluster= forcats::fct_relevel(cluster, cluslev))
   } else {
     newlev<-c(cluslev, levels(factor(clusRes$cluster))[!which(levels(factor(clusRes$cluster)) %in% cluslev)])
     clusRes <- clusRes %>% dplyr::mutate(cluster = forcats::fct_relevel(cluster, newlev))
-    cluslev<-as.character(levels(clusRes$cluster))
+    cluslev<-levels(clusRes$cluster)
   }
   clusRes<-as.data.frame(clusRes)
   if(isTRUE(rename)){
@@ -145,7 +145,7 @@ clusRelev<-function(clusRes, cluslev, rename=T, title="Releveled Clusters", col=
   #Pass it through to the heatmap function:
   clusHeatmap(clusRes[,-(which(colnames(clusRes) %in% "cluster"))], gaps, title, annotdf, hmcol)
   #Pass it through to the barplot function:
-  print(as.character(cluslev))
+  print(cluslev)
   tmp<-clusBar(clusRes, title, col=col, cluslev=cluslev)
   #return the cluster clusResrix
   return(clusRes)
