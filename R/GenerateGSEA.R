@@ -12,10 +12,10 @@ GSEAclus<-function(gsFile, term, clusName, dir){
   }
   comb<-cbind(gs, clus)
   colnames(comb)<-c("NAME","Cluster")
-  #write.table(comb, paste0(dir,"GSEA_clusters.tsv"),
-  #            quote=F, row.names=F, sep="\t")
+  write.table(comb, paste0(dir,"GSEA_clusters.tsv"),
+              quote=F, row.names=F, sep="\t")
   message("\nDone")
-  return(comb)
+  #return(comb)
 }
 
 #' Create a rnk file for Gene Set Enrichment Analysis
