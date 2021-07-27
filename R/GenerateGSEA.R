@@ -1,3 +1,23 @@
+GSEAclus<-function(gsFile, term, clusName, dir){
+  if(length(term)!=length(clusName)){
+    stop("term must be of same length as clusName")
+  }
+  gs<-names(qusage::read.gmt(gsFile))
+  clus<-rep("", length(gs))
+  message("Identifying GSEA names with terms...")
+  pb<-txtProgressBar(min=0, max=length(term), style=3)
+  for(i in 1:length(term)){
+    clus[grep(term[i], gs, ignore.case=T)]<-clusName[i]
+    setTxtProgressBar(pb, i)
+  }
+  comb<-cbind(gs, clus)
+  colnames(comb)<-c("NAME","Cluster")
+  #write.table(comb, paste0(dir,"GSEA_clusters.tsv"),
+  #            quote=F, row.names=F, sep="\t")
+  message("\nDone")
+  return(comb)
+}
+
 #' Create a rnk file for Gene Set Enrichment Analysis
 #'
 #' This function creates a ranked list of genes for use with a PreRanked
