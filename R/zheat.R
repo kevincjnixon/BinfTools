@@ -10,11 +10,12 @@
 #' @param title Character vector indicating the title of the figure
 #' @param labgenes Character vector corresponding to rownames(counts) of genes to be labelled on the side of the heatmap. Leave as NULL to label all genes. Use "" to label no genes.
 #' @param zscore Boolean indicating if counts should be z-score normalized (default=T)
+#' @param rclus Boolean indicating if rows (genes) should be clustered. Leave FALSE for genes to be ordered on decreasing expression in 'con'.
 #' @param hmcol Color ramp palette of length 100 for custom heatmap colouring. Leave NULL for defaults.
 #' @return Heatmap of z-score normalized gene expression with control condition samples appearing first.
 #' @export
 
-zheat<-function(genes=NULL, counts, conditions, con="WT", title="DEGs", labgenes=NULL, zscore=T, hmcol=NULL){
+zheat<-function(genes=NULL, counts, conditions, con="WT", title="DEGs", labgenes=NULL, zscore=T, rclus=F, hmcol=NULL){
   if(is.null(hmcol)){
     hmcol<-colorRampPalette(c("blue","grey","red"))(100)
     if(isFALSE(zscore)){
@@ -80,5 +81,5 @@ zheat<-function(genes=NULL, counts, conditions, con="WT", title="DEGs", labgenes
     labgenes<-tmp
   }
   #Now make a heatmap
-  pheatmap::pheatmap(zmat, color=hmcol, show_colnames=T, cluster_cols=F, cluster_rows=F, main=title, labels_row=labgenes,breaks=seq(from=lim[1], to=lim[2], length.out=100))
+  pheatmap::pheatmap(zmat, color=hmcol, show_colnames=T, cluster_cols=F, cluster_rows=rclus, main=title, labels_row=labgenes,breaks=seq(from=lim[1], to=lim[2], length.out=100))
 }
