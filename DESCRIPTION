@@ -29,7 +29,8 @@ Imports:
   plotly,
   shiny,
   gpGeneSets,
-  gplots
+  gplots,
+  VennDiagram
 Suggests: 
     knitr
 VignetteBuilder: knitr
