@@ -1,3 +1,8 @@
+showPals<-function(){
+  par(mar=c(3,4,2,2))
+  RColorBrewer::display.brewer.all()
+}
+
 #'Colour palettes
 #'
 #'This function creates either a custom colour palette or can return the colours
