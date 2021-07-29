@@ -64,7 +64,7 @@ getOL<-function(x, retVals=F){
     }
     #print(names(OL))
     if(isFALSE(retVals)){
-      OL<-lengths(OL)
+      OL<-as.list(lengths(OL))
     }
     return(OL)
  }
