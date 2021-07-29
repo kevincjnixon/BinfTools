@@ -6,12 +6,15 @@
 \usage{
 plotVenn(
   x,
+  title="Venn Diagram",
   cols = "Dark2",
   lty="blank"
 )
 }
 \arguments{
 \item{x}{A named list (max length of 5) of characters (genes) to plot in a Venn Diagram}
+  
+\item{title}{Character indicating the title of the plot. Default is "Venn Diagram".}
 
 \item{cols}{Character indicating the RColorBrewer palette name or list of colours (hex, name, rgb()) to be used. Default is "Dark2"}
 
