@@ -77,10 +77,11 @@ getOL<-function(x, retVals=F){
 #' @param title Character indicating the title of the plot. Default="Venn Diagram"
 #' @param cols Character indicating the RColorBrewer palette name or list of colours (hex, name, rgb()) to be used. Default is "Dark2"
 #' @param lty Line type (1=solid line, 2=dashed line, default="blank")
+#' @param scale Boolean indicating if circles should be scaled to size (works only for 2 or 3-way Venn diagrams). Default=F.
 #' @return An image of a Venn diagram showing overlaps between groups
 #' @export
 
-plotVenn<-function(x, title="Venn Diagram", cols="Dark2", lty="blank"){
+plotVenn<-function(x, title="Venn Diagram", cols="Dark2", lty="blank", scale=F){
   require(VennDiagram, quietly=T)
   y<-getOL(x)
   grid.newpage()
@@ -98,7 +99,9 @@ plotVenn<-function(x, title="Venn Diagram", cols="Dark2", lty="blank"){
                        cross.area=y$n12,
                        fill=BinfTools::colPal(cols)[1:length(x)],
                        lty=lty,
-                       category = names(x))
+                       category = names(x),
+                       scaled=scale,
+                       euler.d=scale)
   }
   if(length(x)==3){
     #print(lengths(y))
@@ -111,7 +114,9 @@ plotVenn<-function(x, title="Venn Diagram", cols="Dark2", lty="blank"){
                      n123=y$n123,
                      fill=BinfTools::colPal(cols)[1:length(x)],
                      lty=lty,
-                     category = names(x))
+                     category = names(x),
+                     scaled=scale,
+                     euler.d=scale)
   }
   if(length(x)==4){
     venn<-draw.quad.venn(area1=length(x[[1]]),
