@@ -78,7 +78,7 @@ getOL<-function(x){
 #' @export
 
 plotVenn<-function(x, title="Venn Diagram", cols="Dark2", lty="blank"){
-  require(VennDiagram)
+  require(VennDiagram, quietly=T)
   y<-getOL(x)
   grid.newpage()
   pushViewport(viewport(layout=grid.layout(2,1, heights=unit(c(0.25, 10),"null"))))
