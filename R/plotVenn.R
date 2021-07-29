@@ -1,4 +1,4 @@
-getOL<-function(x){
+getOL<-function(x, retVals=F){
     if(length(x)>5){
       stop("max length of x is 5...")
     }
@@ -8,7 +8,7 @@ getOL<-function(x){
     for(i in 1:length(x)){
       if(i < length(x)){
         for(j in (i+1):length(x)){
-          OL[[index]]<-length(x[[i]][which(x[[i]] %in% x[[j]])])
+          OL[[index]]<-x[[i]][which(x[[i]] %in% x[[j]])]
           names(OL)[index]<-paste0("n",i,j)
           index<-index+1
         }
@@ -22,7 +22,7 @@ getOL<-function(x){
             if(j<length(x)){
               tmp<-x[[i]][which(x[[i]] %in% x[[j]])]
               for(k in (j+1):length(x)){
-                OL[[index]]<-length(tmp[which(tmp %in% x[[k]])])
+                OL[[index]]<-tmp[which(tmp %in% x[[k]])]
                 names(OL)[index]<-paste0("n",i,j,k)
                 index<-index+1
               }
@@ -42,7 +42,7 @@ getOL<-function(x){
                 if(k<length(x)){
                   tmp<-tmp[which(tmp %in% x[[k]])]
                   for(d in (k+1):length(x)){
-                    OL[[index]]<-length(tmp[which(tmp %in% x[[d]])])
+                    OL[[index]]<-tmp[which(tmp %in% x[[d]])]
                     names(OL)[index]<-paste0("n",i,j,k,d)
                     index<-index+1
                   }
@@ -59,10 +59,13 @@ getOL<-function(x){
       for(i in 2:length(x)){
         tmp<-tmp[which(tmp) %in% x[[i]]]
       }
-      OL[[index]]<-length(tmp)
+      OL[[index]]<-tmp
       names(OL)[index]<-"n12345"
     }
     #print(names(OL))
+    if(isFALSE(retVals)){
+      OL<-lengths(OL)
+    }
     return(OL)
  }
   
