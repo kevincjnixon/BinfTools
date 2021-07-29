@@ -135,6 +135,6 @@ plotVenn<-function(x, title="Venn Diagram", cols="Dark2", lty="blank"){
                         lty=lty,
                         category=names(x))
   }
-  print(venn, vp=viewport(layout.pos.row=2))
+  #print(venn, vp=viewport(layout.pos.row=2))
   grid.text(title, vp=viewport(layout.pos.row=1))
 }
