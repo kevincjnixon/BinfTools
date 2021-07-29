@@ -8,7 +8,8 @@ plotVenn(
   x,
   title="Venn Diagram",
   cols = "Dark2",
-  lty="blank"
+  lty="blank",
+  scale=F
 )
 }
 \arguments{
@@ -19,6 +20,8 @@ plotVenn(
 \item{cols}{Character indicating the RColorBrewer palette name or list of colours (hex, name, rgb()) to be used. Default is "Dark2"}
 
 \item{lty}{Line type (1=solid line, 2=dashed line, default="blank")}
+  
+\item{scale}{Boolean indicating if circles should be scaled to size (works only for 2 or 3-way Venn diagrams). Default=F.}
 }
 \value{
 An image of a Venn diagram showing overlaps between groups
