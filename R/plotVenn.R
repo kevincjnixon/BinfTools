@@ -71,23 +71,26 @@ getOL<-function(x){
 #' Make a Venn diagram from a named list of genes. Uses functions from the VennDiagram package.
 #'
 #' @param x A named list (max length of 5) of characters (genes) to plot in a Venn Diagram
+#' @param title Character indicating the title of the plot. Default="Venn Diagram"
 #' @param cols Character indicating the RColorBrewer palette name or list of colours (hex, name, rgb()) to be used. Default is "Dark2"
 #' @param lty Line type (1=solid line, 2=dashed line, default="blank")
 #' @return An image of a Venn diagram showing overlaps between groups
 #' @export
 
-plotVenn<-function(x, cols="Dark2", lty="blank"){
+plotVenn<-function(x, title="Venn Diagram", cols="Dark2", lty="blank"){
   require(VennDiagram)
   y<-getOL(x)
   grid.newpage()
+  pushViewport(viewport(layout=grid.layout(2,1, heights=unit(c(0.25, 10),"null"))))
+  venn<-NULL
   if(length(x)==1){
-    draw.single.venn(area=length(x),
+    venn<-draw.single.venn(area=length(x),
                      fill=BinfTools::colPal(cols)[1:length(x)],
                      lty=lty,
                      category=names(x))
   }
   if(length(x)==2){
-    draw.pairwise.venn(area1=length(x[[1]]),
+    venn<-draw.pairwise.venn(area1=length(x[[1]]),
                        area2=length(x[[2]]),
                        cross.area=y$n12,
                        fill=BinfTools::colPal(cols)[1:length(x)],
@@ -96,7 +99,7 @@ plotVenn<-function(x, cols="Dark2", lty="blank"){
   }
   if(length(x)==3){
     #print(lengths(y))
-    draw.triple.venn(area1=length(x[[1]]),
+    venn<-draw.triple.venn(area1=length(x[[1]]),
                      area2=length(x[[2]]),
                      area3=length(x[[3]]),
                      n12=y$n12,
@@ -108,7 +111,7 @@ plotVenn<-function(x, cols="Dark2", lty="blank"){
                      category = names(x))
   }
   if(length(x)==4){
-    draw.quad.venn(area1=length(x[[1]]),
+    venn<-draw.quad.venn(area1=length(x[[1]]),
                    area2=length(x[[2]]),
                    area3=length(x[[3]]),
                    area4=length(x[[4]]),
@@ -121,7 +124,7 @@ plotVenn<-function(x, cols="Dark2", lty="blank"){
                    category=names(x))
   }
   if(length(x)==5){
-    draw.quintuple.venn(area1=length(x[[1]]), area2=length(x[[2]]),
+    venn<-draw.quintuple.venn(area1=length(x[[1]]), area2=length(x[[2]]),
                         area3=length(x[[3]]), area4=length(x[[4]]), area5=length(x[[5]]),
                         n12=y$n12, n13=y$n13, n14=y$n14, n15=y$n15, n23=y$n23, n24=y$n24,
                         n25=y$n25, n34=y$n34, n35=y$n35, n45=y$n45, n123=y$n123, n124=y$n124,
@@ -132,4 +135,6 @@ plotVenn<-function(x, cols="Dark2", lty="blank"){
                         lty=lty,
                         category=names(x))
   }
+  print(venn, vp=viewport(layout.pos.row=2))
+  grid.text(title, vp=viewport(layout.pos.row=1))
 }
