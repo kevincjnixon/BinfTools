@@ -57,7 +57,7 @@ getOL<-function(x, retVals=F){
       #Now for the final comparison:
       tmp<-x[[1]]
       for(i in 2:length(x)){
-        tmp<-tmp[which(tmp %in% x[[i]]])]
+        tmp<-tmp[which(tmp %in% x[[i]])]
       }
       OL[[index]]<-tmp
       names(OL)[index]<-"n12345"
