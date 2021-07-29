@@ -104,7 +104,7 @@ plotVenn<-function(x, title="Venn Diagram", cols="Dark2", lty="blank", scale=F){
                        euler.d=scale)
   }
   if(length(x)==3){
-    #print(lengths(y))
+    overrideTriple=scale
     venn<-draw.triple.venn(area1=length(x[[1]]),
                      area2=length(x[[2]]),
                      area3=length(x[[3]]),
