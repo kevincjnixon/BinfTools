@@ -2,10 +2,6 @@ getOL<-function(x){
     if(length(x)>5){
       stop("max length of x is 5...")
     }
-    OL<-list(n12=NA, n13=NA, n14=NA, n15=NA,
-             n23=NA, n24=NA, n25=NA,
-             n34=NA, n35=NA, n45=NA,
-             n123=NA, n124=NA, n125=NA, n134=NA, n135=NA, n145=NA)
     OL=list()
     index<-1
     #start with 1 on one comparisons:
@@ -66,7 +62,7 @@ getOL<-function(x){
       OL[[index]]<-length(tmp)
       names(OL)[index]<-"n12345"
     }
-    print(names(OL))
+    #print(names(OL))
     return(OL)
  }
   
