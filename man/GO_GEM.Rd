@@ -15,6 +15,7 @@ GO_GEM(
   ts = c(10, 500),
   pdf = T,
   fig = T,
+  figCols = c("blue", "orange"),
   returnGost = F,
   writeRes = T,
   writeGem = T,
@@ -41,6 +42,8 @@ GO_GEM(
 \item{pdf}{Boolean indicating if bar plots should be exported to pdf. Default is TRUE.}
 
 \item{fig}{Boolean indicating if bar plots should be printed to R output. Default is TRUE.}
+  
+\item{figCols}{Character indicating the RColorBrewer palette name or list of colours (hex, name, rgb()) to be used for enrichment and significance, respectively in the output figures. Default is c("blue","orange").}
 
 \item{returnGost}{Boolean indicating if gost results should be returned for future use with gprofiler2 functions. Default is FALSE.}
 
