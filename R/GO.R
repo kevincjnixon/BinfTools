@@ -14,6 +14,7 @@
 #' @param ts Vector of length 2 indicating the minimum and maximum term size - the minimum/maximum number of genes per term when generating the plot of most enriched/significant terms. Default is c(10,500).
 #' @param pdf Boolean indicating if bar plots should be exported to pdf. Default is TRUE.
 #' @param fig Boolean indicating if bar plots should be printed to R output. Default is TRUE.
+#' @param figCols Character indicating the RColorBrewer palette name or list of colours (hex, name, rgb()) to be used for enrichment and significance, respectively in the output figures. Default is c("blue","orange").
 #' @param returnGost Boolean indicating if gost results should be returned for future use with gprofiler2 functions. Default is FALSE.
 #' @param writeRes Boolean indicating if GO.txt results should be written to file 'prefix.GO.txt'
 #' @param writeGem Boolean indicating if gem.txt results should be written to file.
@@ -22,8 +23,8 @@
 #'
 
 GO_GEM<-function(geneList,species="hsapiens",bg=NULL,source=NULL, corr="fdr", iea=FALSE, prefix="GO_analysis", ts=c(10,500),
-                 pdf=T, fig=T, returnGost=F, writeRes=T, writeGem=T, returnRes=F){
-  GOfun<-function(genes, spec=species, cbg=bg, dsource=source, corrm=corr, exiea=iea, prefix=pre, termsz=ts, prpdf=pdf, prfig=fig, giveGost=returnGost,
+                 pdf=T, fig=T, figCols=c("blue","orange"), returnGost=F, writeRes=T, writeGem=T, returnRes=F){
+  GOfun<-function(genes, spec=species, cbg=bg, dsource=source, corrm=corr, exiea=iea, prefix=pre, termsz=ts, prpdf=pdf, prfig=fig, cols=figCols, giveGost=returnGost,
                   gemWrite=writeGem, resWrite=writeRes, giveRes=returnRes){
     #ts is term size (for plotting, terms must have ts genes to make cutoff, default is 10)
     x<-gprofiler2::gost(genes, organism=spec, custom_bg=cbg, sources=dsource, evcodes=TRUE, multi_query=FALSE, correction_method=corrm, exclude_iea=exiea)
@@ -38,7 +39,7 @@ GO_GEM<-function(geneList,species="hsapiens",bg=NULL,source=NULL, corr="fdr", ie
       write.table(gem, paste0(prefix,".gem.txt"), quote=FALSE, sep="\t", row.names = FALSE)
     }
     y<-y[order(y$enrichment, decreasing=T),]
-    GO_plot(y, prefix, termsz, prpdf, prfig)
+    GO_plot(y, prefix, termsz, prpdf, prfig, cols)
     if(isTRUE(resWrite)){
       write.table(y, paste0(prefix,".GO.txt"), quote=FALSE, sep="\t", row.names=FALSE)
     }
@@ -111,7 +112,7 @@ GO_GEM<-function(geneList,species="hsapiens",bg=NULL,source=NULL, corr="fdr", ie
 #'
 #' Function that generates the top 10 term figures for GO_GEM()
 
-GO_plot<-function(GOres, prefix, ts, pdf, fig, print=c("both","sig","enr")){
+GO_plot<-function(GOres, prefix, ts, pdf, fig, col, print=c("both","sig","enr")){
   tmp<-GOres[order(GOres$p_value),] #order by increasing p-value
   #Take the top ten terms (already sorted by enrihcment)
   GOres<-GOres[which(GOres$term_size >= ts[1]),]
@@ -122,10 +123,10 @@ GO_plot<-function(GOres, prefix, ts, pdf, fig, print=c("both","sig","enr")){
   a<-b*(ylim.prim[1]=ylim.sec[1])
   subt<-strsplit(prefix, split="/", fixed=T)[[1]][length(strsplit(prefix, split="/", fixed=T)[[1]])]
   p<- ggplot2::ggplot(GOres, ggplot2::aes(x=seq(1:length(term_name)), y=enrichment)) +
-    ggplot2::geom_col(fill="blue", width=0.75) + ggplot2::geom_col(ggplot2::aes(x=seq(1:length(term_name)), y=a+(-log10(p_value))*b), fill="orange", width=0.375) +
+    ggplot2::geom_col(fill=colPal(col[1]), width=0.75) + ggplot2::geom_col(ggplot2::aes(x=seq(1:length(term_name)), y=a+(-log10(p_value))*b), fill=colPal(col[2]), width=0.375) +
     ggplot2::scale_x_continuous(name="GO Term", breaks=1:10, labels=GOres$term_name) +
     ggplot2::scale_y_continuous(name="Enrichment", sec.axis=ggplot2::sec_axis(~(. -a)/b, name="-Log10 P-value")) +
-    ggplot2::theme_classic() + ggplot2::theme(axis.title.y=ggplot2::element_text(color="blue"), axis.title.y.right=ggplot2::element_text(color="orange"),
+    ggplot2::theme_classic() + ggplot2::theme(axis.title.y=ggplot2::element_text(color=colPal(col[1])), axis.title.y.right=ggplot2::element_text(color=colPal(col[2])),
                                               axis.text.x=ggplot2::element_text(angle=60, hjust=1)) +
     ggplot2::labs(title=paste0("Top Ten Enriched terms (>",ts[1],"genes/term)"),
                   subtitle=subt)
@@ -133,10 +134,10 @@ GO_plot<-function(GOres, prefix, ts, pdf, fig, print=c("both","sig","enr")){
   tmp<-tmp[which(tmp$term_size <=ts[2]),]
   tmp<-tmp[1:10,]
   q<- ggplot2::ggplot(tmp, ggplot2::aes(x=seq(1:length(term_name)), y=enrichment)) +
-    ggplot2::geom_col(fill="blue", width=0.75) + ggplot2::geom_col(ggplot2::aes(x=seq(1:length(term_name)), y=a+(-log10(p_value))*b), fill="orange", width=0.375) +
+    ggplot2::geom_col(fill=colPal(col[1]), width=0.75) + ggplot2::geom_col(ggplot2::aes(x=seq(1:length(term_name)), y=a+(-log10(p_value))*b), fill=colPal(col[2]), width=0.375) +
     ggplot2::scale_x_continuous(name="GO Term", breaks=1:10, labels=tmp$term_name) +
     ggplot2::scale_y_continuous(name="Enrichment", sec.axis=ggplot2::sec_axis(~(. -a)/b, name="-Log10 P-value")) +
-    ggplot2::theme_classic() + ggplot2::theme(axis.title.y=ggplot2::element_text(color="blue"), axis.title.y.right=ggplot2::element_text(color="orange"),
+    ggplot2::theme_classic() + ggplot2::theme(axis.title.y=ggplot2::element_text(color=colPal(col[1])), axis.title.y.right=ggplot2::element_text(color=colPal(col[2])),
                                               axis.text.x=ggplot2::element_text(angle=60, hjust=1))+
     ggplot2::labs(title=paste0("Top Ten Significant terms (<",ts[2],"genes/term)"),
                   subtitle=subt)
