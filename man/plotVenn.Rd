@@ -9,7 +9,8 @@ plotVenn(
   title="Venn Diagram",
   cols = "Dark2",
   lty="blank",
-  scale=F
+  scale=F,
+  retVals=F
 )
 }
 \arguments{
@@ -22,6 +23,8 @@ plotVenn(
 \item{lty}{Line type (1=solid line, 2=dashed line, default="blank")}
   
 \item{scale}{Boolean indicating if circles should be scaled to size (works only for 2 or 3-way Venn diagrams). Default=F. If you want to set scale=T for a three-way Venn diagram, you must generate an environment vairable named 'overrideTriple'. To cancel this, execute rm(overrideTriple).}
+                                                     
+\item{retVals}{Boolean indicating if values in overlaps should be returned. Default=FALSE}
 }
 \value{
 An image of a Venn diagram showing overlaps between groups
