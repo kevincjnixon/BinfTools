@@ -18,7 +18,8 @@ GO_GEM(
   figCols = c("blue", "orange"),
   returnGost = F,
   writeRes = T,
-  writeGem = T,
+  writeGem = F,
+  writeGene = F,
   returnRes = F
 )
 }
@@ -50,6 +51,8 @@ GO_GEM(
 \item{writeRes}{Boolean indicating if GO.txt results should be written to file 'prefix.GO.txt'}
 
 \item{writeGem}{Boolean indicating if gem.txt results should be written to file.}
+
+\item{writeGene}{Boolean indicating if gene.txt results should be writted to file.}
 }
 \value{
 Exports a table of analysis results in 'prefix.GO.txt', a gem file in 'prefix.gem', and a pdf with two figures: top ten enriched terms followed by top ten significant terms in 'prefix.top10.pdf'
