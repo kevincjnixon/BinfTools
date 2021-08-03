@@ -78,10 +78,11 @@ getOL<-function(x, retVals=F){
 #' @param cols Character indicating the RColorBrewer palette name or list of colours (hex, name, rgb()) to be used. Default is "Dark2"
 #' @param lty Line type (1=solid line, 2=dashed line, default="blank")
 #' @param scale Boolean indicating if circles should be scaled to size (works only for 2 or 3-way Venn diagrams). Default=F.
+#' @param retVals Boolean indicating if the overlaps should be returned (default=F)
 #' @return An image of a Venn diagram showing overlaps between groups
 #' @export
 
-plotVenn<-function(x, title="Venn Diagram", cols="Dark2", lty="blank", scale=F){
+plotVenn<-function(x, title="Venn Diagram", cols="Dark2", lty="blank", scale=F, retVals=F){
   require(VennDiagram, quietly=T)
   y<-getOL(x)
   grid.newpage()
@@ -145,4 +146,8 @@ plotVenn<-function(x, title="Venn Diagram", cols="Dark2", lty="blank", scale=F){
   }
   #print(venn, vp=viewport(layout.pos.row=2))
   grid.text(title, vp=viewport(layout.pos.row=1))
+  
+  if(isTRUE(retVals)){
+      return(getOL(x, retVals=retVals))
+  }
 }
