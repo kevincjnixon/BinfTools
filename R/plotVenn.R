@@ -69,6 +69,16 @@ getOL<-function(x, retVals=F){
     return(OL)
  }
   
+nonOL<-function(x, OL){
+  OLgenes<-unique(unlist(OL))
+  y<-list()
+  for(i in 1:length(x)){
+    y[[i]]<-x[[i]][which(!x[[i]] %in% OLgenes)]
+    names(y)[i]<-paste("Only",i, sep="_")
+  }
+  return(y)
+}
+
 #' Make a Venn diagram
 #'
 #' Make a Venn diagram from a named list of genes. Uses functions from the VennDiagram package.
@@ -148,6 +158,8 @@ plotVenn<-function(x, title="Venn Diagram", cols="Dark2", lty="blank", scale=F, 
   grid.text(title, vp=viewport(layout.pos.row=1))
   
   if(isTRUE(retVals)){
-      return(getOL(x, retVals=retVals))
+      res<-getOL(x, retVals=retVals)
+      res<-c(nonOL(x, res), res)
+      return(res)
   }
 }
