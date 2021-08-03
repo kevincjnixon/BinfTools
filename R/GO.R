@@ -18,14 +18,15 @@
 #' @param returnGost Boolean indicating if gost results should be returned for future use with gprofiler2 functions. Default is FALSE.
 #' @param writeRes Boolean indicating if GO.txt results should be written to file 'prefix.GO.txt'
 #' @param writeGem Boolean indicating if gem.txt results should be written to file.
+#' @param writeGene Boolean indicating if gene.txt results should be written to file.
 #' @return Exports a table of analysis results in 'prefix.GO.txt', a gem file in 'prefix.gem', and a pdf with two figures: top ten enriched terms followed by top ten significant terms in 'prefix.top10.pdf'
 #' @export
 #'
 
 GO_GEM<-function(geneList,species="hsapiens",bg=NULL,source=NULL, corr="fdr", iea=FALSE, prefix="GO_analysis", ts=c(10,500),
-                 pdf=T, fig=T, figCols=c("blue","orange"), returnGost=F, writeRes=T, writeGem=T, returnRes=F){
+                 pdf=T, fig=T, figCols=c("blue","orange"), returnGost=F, writeRes=T, writeGem=F, writeGene=F, returnRes=F){
   GOfun<-function(genes, spec=species, cbg=bg, dsource=source, corrm=corr, exiea=iea, prefix=pre, termsz=ts, prpdf=pdf, prfig=fig, cols=figCols, giveGost=returnGost,
-                  gemWrite=writeGem, resWrite=writeRes, giveRes=returnRes){
+                  gemWrite=writeGem, resWrite=writeRes, genWrite=writeGene, giveRes=returnRes){
     #ts is term size (for plotting, terms must have ts genes to make cutoff, default is 10)
     x<-gprofiler2::gost(genes, organism=spec, custom_bg=cbg, sources=dsource, evcodes=TRUE, multi_query=FALSE, correction_method=corrm, exclude_iea=exiea)
     y<-x$result[,-14]
@@ -37,6 +38,9 @@ GO_GEM<-function(geneList,species="hsapiens",bg=NULL,source=NULL, corr="fdr", ie
     gem<-gem[,c("GO.ID","Description","p.Val","FDR","Phenotype","Genes")]
     if(isTRUE(gemWrite)){
       write.table(gem, paste0(prefix,".gem.txt"), quote=FALSE, sep="\t", row.names = FALSE)
+    }
+    if(isTRUE(genWrite)){
+      write.table(genes, paste0(prefix,".genes.txt"), quote=F, row.names=F, col.names=F, sep="\t")
     }
     y<-y[order(y$enrichment, decreasing=T),]
     GO_plot(y, prefix, termsz, prpdf, prfig, cols)
