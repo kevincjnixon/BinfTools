@@ -28,6 +28,9 @@ GO_GEM<-function(geneList,species="hsapiens",bg=NULL,source=NULL, corr="fdr", ie
   GOfun<-function(genes, spec=species, cbg=bg, dsource=source, corrm=corr, exiea=iea, prefix=pre, termsz=ts, prpdf=pdf, prfig=fig, cols=figCols, giveGost=returnGost,
                   gemWrite=writeGem, resWrite=writeRes, genWrite=writeGene, giveRes=returnRes){
     #ts is term size (for plotting, terms must have ts genes to make cutoff, default is 10)
+    if(isTRUE(genWrite)){
+      write.table(genes, paste0(prefix,".genes.txt"), quote=F, row.names=F, col.names=F, sep="\t")
+    }
     x<-gprofiler2::gost(genes, organism=spec, custom_bg=cbg, sources=dsource, evcodes=TRUE, multi_query=FALSE, correction_method=corrm, exclude_iea=exiea)
     y<-x$result[,-14]
     y$enrichment <- (y$intersection_size/y$query_size)/(y$term_size/y$effective_domain_size)
@@ -38,9 +41,6 @@ GO_GEM<-function(geneList,species="hsapiens",bg=NULL,source=NULL, corr="fdr", ie
     gem<-gem[,c("GO.ID","Description","p.Val","FDR","Phenotype","Genes")]
     if(isTRUE(gemWrite)){
       write.table(gem, paste0(prefix,".gem.txt"), quote=FALSE, sep="\t", row.names = FALSE)
-    }
-    if(isTRUE(genWrite)){
-      write.table(genes, paste0(prefix,".genes.txt"), quote=F, row.names=F, col.names=F, sep="\t")
     }
     y<-y[order(y$enrichment, decreasing=T),]
     GO_plot(y, prefix, termsz, prpdf, prfig, cols)
