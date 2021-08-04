@@ -1,4 +1,4 @@
-GSEAclus<-function(gsFile, term, clusName, dir){
+GSEAclus<-function(gsFile, term, clusName, dir, retRNK=F){
   if(length(term)!=length(clusName)){
     stop("term must be of same length as clusName")
   }
@@ -15,7 +15,9 @@ GSEAclus<-function(gsFile, term, clusName, dir){
   write.table(comb, paste0(dir,"GSEA_clusters.tsv"),
               quote=F, row.names=F, sep="\t")
   message("\nDone")
-  #return(comb)
+  if(isTRUE(retRNK)){
+    return(comb)
+  }
 }
 
 #' Create a rnk file for Gene Set Enrichment Analysis
@@ -27,10 +29,11 @@ GSEAclus<-function(gsFile, term, clusName, dir){
 #' @param filename Path to the output .rnk file. Default is "./GSEA.rnk"
 #' @param bystat Boolean values determining if genes should be ranked by column 'stat'. If TRUE, and no column 'stat', genes will be ranked using the -log10 of column 'pvalue'. Default is TRUE.
 #' @param byFC Boolean values determining if genes should be ranked by column 'log2FoldChange'Default is FALSE.
+#' @param retRNK Boolead indicating if ranked list should be returned as data frame object
 #' @return Exports a ranked gene list. If both bystat and byFC are true, ranking will be abs(stat)*log2FoldChange.
 #' @export
 
-GenerateGSEA<-function(res, filename="GSEA.rnk", bystat=T, byFC=F){
+GenerateGSEA<-function(res, filename="GSEA.rnk", bystat=T, byFC=F, retRNK=F){
   GSEA<-data.frame(NAME=rownames(res), Rank=rep(NA,nrow(res)))
   #res<-res[complete.cases(res),]
   #Check to see if there is a column named 'stat', if not, rename 'pvalue' to stat
@@ -70,4 +73,7 @@ GenerateGSEA<-function(res, filename="GSEA.rnk", bystat=T, byFC=F){
 	  }
   }
   write.table(GSEA[complete.cases(GSEA),], filename, quote=FALSE, row.names=FALSE, sep="\t")
+  if(isTRUE(retRNK)){
+    return(GSEA[complete.cases(GSEA),])
+  }
 }
