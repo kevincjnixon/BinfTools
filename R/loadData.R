@@ -8,7 +8,7 @@
 
 loadData<-function(sampleTable){
   if(is.character(sampleTable)){
-    if(length(grep(".txt", sampleTable))>0 | length(grep(".tsb", sampleTable))>0){
+    if(length(grep(".txt", sampleTable))>0 | length(grep(".tsv", sampleTable))>0){
       sampleTable<-read.delim(sampleTable)
     }
     if(length(grep(".csv", sampleTable))>0){
