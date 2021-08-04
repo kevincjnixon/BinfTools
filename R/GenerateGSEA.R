@@ -29,7 +29,7 @@ GSEAclus<-function(gsFile, term, clusName, dir, retRNK=F){
 #' @param filename Path to the output .rnk file. Default is "./GSEA.rnk"
 #' @param bystat Boolean values determining if genes should be ranked by column 'stat'. If TRUE, and no column 'stat', genes will be ranked using the -log10 of column 'pvalue'. Default is TRUE.
 #' @param byFC Boolean values determining if genes should be ranked by column 'log2FoldChange'Default is FALSE.
-#' @param retRNK Boolead indicating if ranked list should be returned as data frame object
+#' @param retRNK Boolean indicating if ranked list should be returned as data frame object
 #' @return Exports a ranked gene list. If both bystat and byFC are true, ranking will be abs(stat)*log2FoldChange.
 #' @export
 
