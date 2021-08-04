@@ -49,7 +49,7 @@ clusBar<-function(mat, title, col, cluslev=NULL){
     ggplot2::geom_bar(stat="identity", position= ggplot2::position_dodge(), color="black") +
     ggplot2::geom_errorbar(ggplot2::aes(ymax=AvgFC+SE, ymin=AvgFC-SE), position=dodge,
                            width=0.2) +
-    ggplot2::labs(title=title, ylab="Average log2 Fold-Change", xlab="Cluster") +
+    ggplot2::labs(title=title, y="Average log2 Fold-Change (+/- sd)", x="Cluster") +
     ggplot2::guides(fill=ggplot2::guide_legend(title="Comparison")) +
     ggplot2::theme_minimal() + ggplot2::scale_fill_manual(values=colPal(col))
   print(p)
