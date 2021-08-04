@@ -51,7 +51,7 @@ getSym<-function(object, obType=c("res","counts"), species="hsapiens", target="H
   }
   if(obType=="counts"){
     y<-gprofiler2::gconvert(genes, organism=species, target=target, mthreshold=1)
-    sym<-y$name
+    sym<-y$target
     if(isTRUE(addCol)){
       x$SYMBOL<-sym
     }else{
