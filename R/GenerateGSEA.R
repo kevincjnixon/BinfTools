@@ -74,6 +74,9 @@ GenerateGSEA<-function(res, filename="GSEA.rnk", bystat=T, byFC=F, retRNK=F){
   }
   write.table(GSEA[complete.cases(GSEA),], filename, quote=FALSE, row.names=FALSE, sep="\t")
   if(isTRUE(retRNK)){
-    return(GSEA[complete.cases(GSEA),])
+    GSEA<-GSEA[complete.cases(GSEA),]
+    rnk<-GSEA$Rank
+    names(rnk)<-GSEA$NAME
+    return(rnk)
   }
 }
