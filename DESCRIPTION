@@ -30,7 +30,9 @@ Imports:
   shiny,
   gpGeneSets,
   gplots,
-  VennDiagram
+  VennDiagram,
+  fgsea,
+  gage
 Suggests: 
     knitr
 VignetteBuilder: knitr
