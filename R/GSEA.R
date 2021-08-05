@@ -164,9 +164,9 @@ enPlot<-function(gseaRes, rnk, gmt, title=NULL){
     main<-c()
     if(length(grep(":", gseaRes$pathway[i]))>0){
       #message("Standard names detected...")
-      id<-paste0(":",gseaRes$pathway[i],"$")
+      id<-paste0(":",sapply(strsplit(gseaRes$pathway[i],":",T),'[[',2),"$")
       if(is.null(title)){
-        main<-paste(gseaRes$pathway[i], "NES:", round(gseaRes$NES[i], digits=3), "padj:", signif(gseaRes$padj[i], digits=3))
+        main<-paste(sapply(strsplit(gseaRes$pathway[i],":",T),'[[',1), "NES:", round(gseaRes$NES[i], digits=3), "padj:", signif(gseaRes$padj[i], digits=3))
       }
     }
     if(length(grep("%", gseaRes$pathway[i]))>0){
@@ -180,6 +180,6 @@ enPlot<-function(gseaRes, rnk, gmt, title=NULL){
     if(!is.null(title)){
       main<-title[i]
     }
-    print(plotEnrichment(myGO[[grep(id, names(myGO))]], rnk, NES=gseaRes$NES[i], title=main))
+    print(plotEnrichment(myGO[[grep(id, names(myGO))[1]]], rnk, NES=gseaRes$NES[i], title=main))
   }
 }
