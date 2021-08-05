@@ -36,7 +36,7 @@ GSEA = function(rnk, gmt, pval=1, ts=c(10,600), nperm=10000, parseBader=T) {
                         nperm=nperm) %>%
     as.data.frame() %>%
     dplyr::filter(padj < !!pval)
-  print(dim(fgRes))
+  #print(dim(fgRes))
 
   ## Filter FGSEA by using gage results. Must be significant and in same direction to keep
   gaRes = gage::gage(rnk, gsets=myGO, same.dir=TRUE, set.size =ts)
@@ -51,7 +51,7 @@ GSEA = function(rnk, gmt, pval=1, ts=c(10,600), nperm=10000, parseBader=T) {
     dplyr::filter(!is.na(p.geomean) & q.val < pval ) %>%
     dplyr::select("Pathway")
 
-  print(dim(rbind(ups,downs)))
+  #print(dim(rbind(ups,downs)))
   ## Define up / down pathways which are significant in both tests
   keepups = fgRes[fgRes$NES > 0 & !is.na(match(fgRes$pathway, ups$Pathway)), ]
   keepdowns = fgRes[fgRes$NES < 0 & !is.na(match(fgRes$pathway, downs$Pathway)), ]
@@ -74,13 +74,13 @@ GSEA = function(rnk, gmt, pval=1, ts=c(10,600), nperm=10000, parseBader=T) {
   if(isTRUE(parseBader)){
     filtRes$pathway<-sapply(strsplit(filtRes$pathway, "%", T),'[[',1)
   }
-  g = ggplot(filtRes, aes(reorder(pathway, NES), NES)) +
-    geom_col( aes(fill = Index )) +
-    scale_fill_manual(values = colos ) +
-    coord_flip() +
-    labs(x="Pathway", y="Normalized Enrichment Score",
+  g = ggplot2::ggplot(filtRes, ggplot2::aes(reorder(pathway, NES), NES)) +
+    ggplot2::geom_col( ggplot2::aes(fill = Index )) +
+    ggplot2::scale_fill_manual(values = colos ) +
+    ggplot2::coord_flip() +
+    ggplot2::labs(x="Pathway", y="Normalized Enrichment Score",
          title="Gene Set Enrichment Analysis") +
-    theme_minimal() + theme(legend.position="none")#, title=element_text(size=1))
+    ggplot2::theme_minimal() + ggplot2::theme(legend.position="none")#, title=element_text(size=1))
 
   print(g)
   #output = list("Results" = fgRes, "Plot" = g)
@@ -97,7 +97,7 @@ plotEnrichment<-function (pathway, stats, gseaParam = 1, ticksSize = 0.2, NES=NU
   statsAdj <- statsAdj/max(abs(statsAdj))
   pathway <- unname(as.vector(na.omit(match(pathway, names(statsAdj)))))
   pathway <- sort(pathway)
-  gseaRes <- calcGseaStat(statsAdj, selectedStats = pathway,
+  gseaRes <- fgsea::calcGseaStat(statsAdj, selectedStats = pathway,
                           returnAllExtremes = TRUE)
   bottoms <- gseaRes$bottoms
   tops <- gseaRes$tops
@@ -125,17 +125,17 @@ plotEnrichment<-function (pathway, stats, gseaParam = 1, ticksSize = 0.2, NES=NU
     sz<-8
   }
   #print(paste(title, ":",nchar(title)))
-  g <- ggplot(toPlot, aes(x = x, y = y, colour=x)) + geom_point(color = "green", size = 0.1) +
-    geom_segment(mapping=aes(x=0, xend=length(rnk), y=ES, yend=ES), colour = "red", linetype = "dashed", size=1) +
+  g <- ggplot2::ggplot(toPlot, ggplot2::aes(x = x, y = y, colour=x)) + ggplot2::geom_point(color = "green", size = 0.1) +
+    ggplot2::geom_segment(mapping=ggplot2::aes(x=0, xend=length(rnk), y=ES, yend=ES), colour = "red", linetype = "dashed", size=1) +
     #geom_hline(yintercept = min(bottoms), colour = "red", linetype = "dashed", size=1) +
-    geom_segment(colour = "black", size=1, mapping=aes(x=0, xend=length(rnk), y=axis, yend=axis)) +
-    geom_segment(data = data.frame(x=0:length(rnk)), mapping = aes(x=x, y=hm-diff/5, xend=x, yend=hm+diff/5), size=ticksSize) +
-    geom_line(color = "green", size=2) + theme_classic() +
-    geom_segment(data = data.frame(x = pathway), mapping = aes(x = x, y = axis-diff/2, xend = x, yend = axis+diff/2), size = ticksSize,
+    ggplot2::geom_segment(colour = "black", size=1, mapping=ggplot2::aes(x=0, xend=length(rnk), y=axis, yend=axis)) +
+    ggplot2::geom_segment(data = data.frame(x=0:length(rnk)), mapping = ggplot2::aes(x=x, y=hm-diff/5, xend=x, yend=hm+diff/5), size=ticksSize) +
+    ggplot2::geom_line(color = "green", size=2) + ggplot2::theme_classic() +
+    ggplot2::geom_segment(data = data.frame(x = pathway), mapping = ggplot2::aes(x = x, y = axis-diff/2, xend = x, yend = axis+diff/2), size = ticksSize,
                  colour = "black") +
-    theme(axis.line.x=element_blank(), title=element_text(size=12)) +
-    labs(x = "Rank", y = "Enrichment Score", title=title) +
-    scale_colour_gradientn(colours=hmcol) + theme(legend.position="none", title=ggplot2::element_text(size=sz))
+    ggplot2::theme(axis.line.x=ggplot2::element_blank()) +
+    ggplot2::labs(x = "Rank", y = "Enrichment Score", title=title) +
+    ggplot2::scale_colour_gradientn(colours=hmcol) + ggplot2::theme(legend.position="none", title=ggplot2::element_text(size=sz))
   g
 }
 
