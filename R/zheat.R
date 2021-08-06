@@ -12,10 +12,11 @@
 #' @param zscore Boolean indicating if counts should be z-score normalized (default=T)
 #' @param rclus Boolean indicating if rows (genes) should be clustered. Leave FALSE for genes to be ordered on decreasing expression in 'con'.
 #' @param hmcol Color ramp palette of length 100 for custom heatmap colouring. Leave NULL for defaults.
+#' @param retClus Boolean indicating if clustered row names should be returnd. Default=FALSE.
 #' @return Heatmap of z-score normalized gene expression with control condition samples appearing first.
 #' @export
 
-zheat<-function(genes=NULL, counts, conditions, con="WT", title="DEGs", labgenes=NULL, zscore=T, rclus=F, hmcol=NULL){
+zheat<-function(genes=NULL, counts, conditions, con="WT", title="DEGs", labgenes=NULL, zscore=T, rclus=F, hmcol=NULL, retClus=F){
   if(is.null(hmcol)){
     hmcol<-colorRampPalette(c("blue","grey","red"))(100)
     if(isFALSE(zscore)){
@@ -81,12 +82,16 @@ zheat<-function(genes=NULL, counts, conditions, con="WT", title="DEGs", labgenes
     labgenes<-tmp
   }
   #Now make a heatmap
+  out<-NULL
   if(is.logical(rclus)){
-    pheatmap::pheatmap(zmat, color=hmcol, show_colnames=T, cluster_cols=F, cluster_rows=rclus, main=title, labels_row=labgenes,breaks=seq(from=lim[1], to=lim[2], length.out=100))
+    out<-pheatmap::pheatmap(zmat, color=hmcol, show_colnames=T, cluster_cols=F, cluster_rows=rclus, main=title, labels_row=labgenes,breaks=seq(from=lim[1], to=lim[2], length.out=100))
   } else {
     #rclus<-rclus[which(rownames(rclus) %in% rownames(zmat)),]
     rclus<-rclus[order(rclus[,1]),,drop=F]
     zmat<-zmat[match(rownames(rclus), rownames(zmat)),]
-    pheatmap::pheatmap(zmat, color=hmcol, show_colnames=T, cluster_cols=F, cluster_rows=F, main=title, annotation_row=rclus, labels_row=labgenes, breaks=seq(from=lim[1], to=lim[2], length.out=100))
+    out<-pheatmap::pheatmap(zmat, color=hmcol, show_colnames=T, cluster_cols=F, cluster_rows=F, main=title, annotation_row=rclus, labels_row=labgenes, breaks=seq(from=lim[1], to=lim[2], length.out=100))
+  }
+  if(isTRUE(retClus)){
+    return(out)
   }
 }
