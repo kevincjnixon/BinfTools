@@ -1,3 +1,10 @@
+heatClus<-function(out, level=round(max(out$tree_row$height))){
+  plot(out$tree_row)
+  abline(h=level, col="red", lty=2, lwd=2)
+  x<-sort(cutree(out$tree_row, h=level))
+  return(data.frame(row.names=names(x),
+                    Cluster=paste0("cluster_",x)))
+}
 #' Z-score normalized heatmap of gene expression
 #'
 #' A function to generate a z-score normalized heatmap of gene expression from
