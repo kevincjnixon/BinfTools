@@ -13,7 +13,8 @@ zheat(
   labgenes = NULL,
   zscore = T,
   rclus = F,
-  hmcol = NULL
+  hmcol = NULL,
+  retClus = F
 )
 }
 \arguments{
@@ -34,6 +35,8 @@ zheat(
 \item{rclus}{Boolean indicating if rows (genes) should be clustered. Leave FALSE for genes to be ordered on decreasing expression in 'con'.}
 
 \item{hmcol}{Color ramp palette of length 100 for custom heatmap colouring. Leave NULL for defaults.}
+
+\item{retClus}{Boolean indicating if clustered row names should be returnd. Default=FALSE.}
 }
 \value{
 Heatmap of z-score normalized gene expression with control condition samples appearing first.
