@@ -95,7 +95,9 @@ zheat<-function(genes=NULL, counts, conditions, con="WT", title="DEGs", labgenes
   } else {
     #rclus<-rclus[which(rownames(rclus) %in% rownames(zmat)),]
     rclus<-rclus[order(rclus[,1]),,drop=F]
+	  print(head(zmat))
     zmat<-zmat[match(rownames(rclus), rownames(zmat)),]
+	  print(head(zmat))
     out<-pheatmap::pheatmap(zmat, color=hmcol, show_colnames=T, cluster_cols=F, cluster_rows=F, main=title, annotation_row=rclus, labels_row=labgenes, breaks=seq(from=lim[1], to=lim[2], length.out=100))
   }
   if(isTRUE(retClus)){
