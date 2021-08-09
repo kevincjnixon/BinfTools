@@ -173,3 +173,65 @@ GO_plot<-function(GOres, prefix, ts, pdf, fig, col, print=c("both","sig","enr"))
   }
 }
 
+combGO_plot<-function(GOresList, title, ts=c(10,500), sig=T, numTerm=10, upcols=c("lightpink","red"),
+                      downcols=c("lightblue","blue")){
+  if(length(GOresList)!=2){
+    stop("length(GOresList) must be 2!")
+  }
+  #print(names(GOresList))
+  #message("Down should be first. Up second.")
+  GOresList[[1]]$dir<-factor(rep("Down", nrow(GOresList[[1]])))
+  GOresList[[1]]$enrichment<-GOresList[[1]]$enrichment*-1
+  GOresList[[1]]$sig<-(-log10(GOresList[[1]]$p_value))*-1
+  GOresList[[2]]$dir<-factor(rep("Up", nrow(GOresList[[2]])))
+  GOresList[[2]]$sig<-(-log10(GOresList[[2]]$p_value))
+  filtRes<-NULL
+  if(isTRUE(sig)){
+    GOresList[[1]]<-GOresList[[1]][order(GOresList[[1]]$p_value),]
+    GOresList[[2]]<-GOresList[[2]][order(GOresList[[2]]$p_value),]
+    GOresList[[1]]<-subset(GOresList[[1]], term_size <= ts[2])
+    GOresList[[2]]<-subset(GOresList[[2]], term_size <= ts[2])
+    filtRes<-rbind(head(GOresList[[1]], n=numTerm),
+                   head(GOresList[[2]], n=numTerm)[order(head(GOresList[[2]], n=numTerm)$p_value, decreasing=T),])
+  } else {
+    GOresList[[1]]<-GOresList[[1]][order(GOresList[[1]]$enrichment),]
+    GOresList[[2]]<-GOresList[[2]][order(GOresList[[2]]$enrichment, decreasing=T),]
+    GOresList[[1]]<-subset(GOresList[[1]], term_size >= ts[1])
+    GOresList[[2]]<-subset(GOresList[[2]], term_size >= ts[1])
+    filtRes<-rbind(head(GOresList[[1]], n=numTerm),
+                   head(GOresList[[2]], n=numTerm)[order(head(GOresList[[2]], n=numTerm)$enrichment),])
+  }
+  #print(head(GOresList[[1]]$term_name))
+
+
+  ylim.prim<-c(0, max(filtRes$enrichment)+1)
+  ylim.sec<-c(0, max(-log10(filtRes$p_value))+1)
+  b<-diff(ylim.prim)/diff(ylim.sec)
+  a<-b*(ylim.prim[1]=ylim.sec[1])
+
+  # upcols =  colorRampPalette(colors = c("red4", "red1", "lightpink"))( sum(filtRes$dir == "Up"))
+  # downcols =  colorRampPalette(colors = c( "lightblue", "blue1", "blue4"))( sum(filtRes$dir == "Down"))
+  #upcols<-c("red","orange")
+  #downcols<-c("darkblue", "purple")
+  colos = c(upcols, downcols)
+  #names(colos) = 1:length(colos)
+  names(colos)=c("Up_Enrichment","Up_Significance","Down_Enrichment", "Down_Significance")
+  #filtRes$Index = as.factor(1:nrow(filtRes))
+  filtRes$fill_E=c(rep(downcols[1], length(filtRes$dir[which(filtRes$dir %in% "Down")])),
+                   rep(upcols[1], length(filtRes$dir[which(filtRes$dir %in% "Up")])))
+  filtRes$fill_S=c(rep(downcols[2], length(filtRes$dir[which(filtRes$dir %in% "Down")])),
+                   rep(upcols[2], length(filtRes$dir[which(filtRes$dir %in% "Up")])))
+  #print(head(filtRes))
+  #print(tail(filtRes))
+  g = ggplot2::ggplot(filtRes, ggplot2::aes(x=seq(1:length(term_name)), y=enrichment)) +
+    ggplot2::geom_col( ggplot2::aes(fill = dir) , width=0.9) +
+    ggplot2::scale_fill_manual(values = c(downcols[1], upcols[1]) ) +
+    ggplot2::geom_col(ggplot2::aes(x=seq(1:length(term_name)), y=sig), fill= filtRes$fill_S, width=0.375) +
+    ggplot2::scale_x_continuous(name="GO Term", breaks=1:length(filtRes$term_name), labels=filtRes$term_name) +
+    ggplot2::scale_y_continuous(name="Enrichment", sec.axis=ggplot2::sec_axis(~(. -a)/b, name="-Log10 P-value")) +
+    ggplot2::labs(title=title) +
+    ggplot2::coord_flip() +
+    ggplot2::theme_minimal() + ggplot2::theme(legend.position="none")#, title=element_text(size=1))
+  print(g)
+  #return(filtRes)
+}
