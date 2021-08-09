@@ -116,7 +116,7 @@ plotVenn<-function(x, title="Venn Diagram", cols="Dark2", lty="blank", scale=F, 
   }
   if(length(x)==3){
     if(isTRUE(scale)){
-        assign("overrideTriple", TRUE, envir=.GlovalEnv)
+        assign("overrideTriple", TRUE, envir=.GlobalEnv)
     }
     venn<-draw.triple.venn(area1=length(x[[1]]),
                      area2=length(x[[2]]),
