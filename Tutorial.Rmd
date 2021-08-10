@@ -1,0 +1,263 @@
+Install necessary packages
+```{r}
+#Bioconductor packages don't install automatically on BinfTools install
+BiocManager::install("SAGx")
+BiocManager::install("GSVA")
+BiocManager::install("fgsea")
+BiocManager::install("gage")
+
+devtools::install_github("kevincjnixon/gpGeneSets") # gprofiler genesets for mouse, human, and drosophila
+devtools::install_github("kevincjnixon/BinfTools")
+```
+Starting with BinfTools
+```{r}
+library(BinfTools)
+```
+After running DESeq2 (DESeq object='dds', DESeq results = 'res')
+```{r}
+#norm_counts<-as.data.frame(counts(dds, normalized=T)) #If you want to use another count matrix, it must be a data frame with rows as genes and columns matching the order of 'cond'
+#cond<-as.character(dds$condition) #Use the factor used for the DESeq2 contrasts
+#res<-as.data.frame(res)
+```
+BinfTools has examples of these objects built in if you don't have data on hand
+
+These results are from Drosophila (my PhD project) and the gene IDs are flybase IDs (equivalent to ENSEMBL IDs - hard to tell what they are from the ID)
+
+We can run BinfTools using these original gene symbols, but if we want to more easily identify genes, we can use a gprofiler2::gconvert wrapper to convert the IDs to gene symbols for both the results and counts objects.
+```{r}
+symRes<-getSym(object=res, #The object with rownames to convert
+               obType="res", #The type of object 'res' or 'counts'
+               species="dmelanogaster", #species
+               target="FLYBASENAME_GENE", #What you want the gene names converted to. 'HGNC' is human gene symbols, 'MGI' for mouse symbols
+               addCol=F) #Boolean, FALSE replaces rownames with gene symbols (if there are duplicates, only the highest expressed version is kept), TRUE adds a column named SYMBOL and all duplicates are kept
+
+symCounts<-getSym(object=norm_counts,
+                  obType="counts",
+                  species="dmelanogaster",
+                  target="FLYBASENAME_GENE",
+                  addCol=F)
+```
+Now, if we want to look at specific genes, it's a little easier to identify them rather than having to look up the ENSEMBL IDs.
+
+Let's make a bar plot to look at the expression of certain genes in each condition.
+```{r}
+#set up the genes of interest:
+genes<-c("Ldh","dac","Hsp70Bb","rut","tmod")
+barGene(genes=genes,
+        counts=symCounts, #Using symCounts because the rownames match the gene names that we're looking for
+        conditions=cond,
+        title="Genes of interest - normalized Expression",
+        norm=NULL, #Set this to a character of the control condition to plot the relative expression (i.e. set this condition to a value of 1)
+        eb="sd", #Error bars, 'sd' = standard devation, 'se' = standard error, a value of zero (0; no quotes) will remove error bars altogether - this may be useful if plotting relative expression
+        returnDat=F, #Return the values if you want to plot this elsewhere (graphpad/excel) to match figures made by researchers
+        col="Dark2", #Colour scheme, can be RColourBrewer palette name, or vector of colours in rgb(), hexadecimal, or colour names
+        ord=c("WT","KO")) #If the order of the conditions in the plot is not what you wanted, you can set this to reorder the conditions in any way you want
+#Mess around with it:
+barGene(genes=genes,
+        counts=log10(1+symCounts),
+        conditions=cond,
+        title="log10 (1+normCounts)",
+        norm="WT",
+        eb="se",
+        col=c("blue","yellow"),
+        ord=NULL)
+```
+
+Now we can move into generating some summary plots (volcano / MA)
+
+```{r}
+DEG<-volcanoPlot(res=symRes, #Results object
+                 title="KO vs WT",
+                 p=0.05, #adjusted p-value threshold for DEGs
+                 pval=NULL, #unadjusted p-value threshold for DEGs (in case you don't want to use adjusted)
+                 FC=log2(1.5), #log2FoldChange threshold for DEGs (can be 0)
+                 lab=genes, #list of genes to label (NULL to not label any)
+                 col=genes, #list of genes to colour (NULL to not colour any)
+                 fclim=NULL, #x-axis (log2FoldChange) limits, genes passing this limit will be represented as triangles on the edge of the plot - good if you have some extreme outliers
+                 showNum=T, #Show the numbers of genes on the plot?
+                 returnDEG=T, #Return list of DEGs (Down, Up) - this is good for running GO later on
+                 expScale=F, #Scale point size to mean expression?
+                 upcol=NULL, #Colour value for upregulated genes, NULL will be red
+                 dncol=NULL) #Colour value for downregulated genes, NULL will be blue)
+MA_Plot(res=symRes,
+        title="KO vs WT",
+        p=0.05,
+        pval=NULL,
+        FC=log2(1.5),
+        lab=genes,
+        col=genes,
+        fclim=NULL, #Same as volcano plot, but will act on y-axis, not x
+        showNum=T,
+        returnDEG=F,
+        sigScale=F, #Scale point size to significance?
+        upcol=NULL,
+        dncol=NULL)
+```
+
+Now for some pathway enrichment analyses. The GO_GEM() function is a wrapper for gprofiler2::gost() and will output results in a ".GO.txt" file, a GEM file (for Cytoscape) in ".gem.txt", a pdf of the top 10 enriched and significant terms, and a list of genes in ".genes.txt". GO_GEM can take either a character vector of genes or a named list of genes (for example, the DEG list from volcanoPlot). It can export a gprofiler2 'gost' object (for use with other gprofiler2 function and the customGMT() function) and a results table for use with other functions.
+ 
+
+```{r}
+dir.create("GO") #Make a directory for output
+GO_res<-GO_GEM(geneList=DEG,
+               species="dmelanogaster",
+               bg=rownames(symRes), #A character vector of genes indicating the background for the GO analysis. Leave NULL to use all genes (if you don't have one)
+               source="GO:BP", #A character indicating the source - see documentation for all of them
+               corr="fdr", #How to correct the p-values
+               iea=F, #Remove genes in terms 'inferred by electronic analysis' ?
+               prefix="GO/", #Character for output prefix. If named list is provided as geneList, names of the list will be added to the prefix
+               ts=c(10,500), #numeric of length 2 indicating minimum/maximum term size for results plots
+               pdf=F, #print figures to pdf?
+               fig=T, #Show figures in plots in RStudio?
+               figCols=c("blue","orange"), #colours for enrichment/significance in plots
+               returnGost=F, #Return gprofiler2 gost object
+               writeRes=F, #Write results to ".GO.txt" file
+               writeGem=F, #Write gem file?
+               writeGene=F, #Write genes in query to file?
+               returnRes=T) #Return the results table (only one of returnRes or returnGost can be T, not both)
+
+GO_gost<-GO_GEM(geneList=DEG,
+                species="dmelanogaster",
+                bg=rownames(symRes),
+                source="GO:BP",
+                prefix="GO/",
+                pdf=F,
+                fig=F,
+                returnGost=T,
+                writeRes=F)
+```
+If we want to plot GO results for DEGs (up/down, specifically), we can use this experimental function using the GO_res (must be name list with 'Down', 'Up')
+```{r}
+BinfTools:::combGO_plot(GOresList=GO_res,
+                        title="Biological process - significant",
+                        ts=c(10,500),
+                        sig=T,
+                        numTerm=10,
+                        upcols=c("lightpink","red"),
+                        downcols=c("lightblue","blue"))
+
+BinfTools:::combGO_plot(GOresList=GO_res,
+                        title="Biological process - enriched",
+                        ts=c(10,500),
+                        sig=F,
+                        numTerm=10,
+                        upcols=c("lightpink","red"),
+                        downcols=c("lightblue","blue"))
+```
+Now, if we want to run a GSEA, we can do so, but we need to either load a gmt for GSEA into R (so that it's a named list with the term as the name and genes in each entry) or specify a .gmt file. The gpGeneSets has genesets already loaded (but they only have GO IDs, so it won't be as nice). Gary's lab has great curated genesets for GSEA, but not for Drosophila, so we'll have to use the gpGeneSets for this example.
+```{r}
+#First start by ranking the genes
+rnk<-GenerateGSEA(res=symRes, #Results object
+                  filename="GSEA.rnk", #Output rnk file name for GSEA preranked outside of R
+                  bystat=T, #Rank genes by stats? will use Wald statistic or if not nere, -log10(p-value) with the direction from the log2FoldChange
+                  byFC=F, #Rank genes by log2FoldChange? I like to use this with the shrunken log fold change from DESEq2
+                  retRNK=T) #Return the RNK object? yes, to run GSEA in R
+library(gpGeneSets)
+gsea_res<-GSEA(rnk=rnk, #Rnk object
+               gmt=gp_dm, #either .gmt filename or a loaded gene set
+               pval=1, #adjusted p-value threshold for terms to return, set to 1 to return all terms and filter later
+               ts=c(10,600), #min/max term sizes to filter terms BEFORE analysis
+               nperm=10000, #number of permuations for p-value generation
+               parseBader=F) #Set to TRUE if using Gary's genesets - it will parse the term names so it looks neater. I'm not using gary's genesets here, so we will set to FALSE
+```
+We have the GSEA results now. And if we want an enrichment plot from the results, we can specify the row(s) of the gsea_res to make the enrichment plots for that/those term(s). Here, I'll just do the top positively and negatively enriched terms (row 1 and nrow(gsea_res))
+```{r}
+rows<-c(1, nrow(gsea_res))
+enPlot(gseaRes=gsea_res[rows,], #GSEA results table subset into the rows of interest to make a plot
+       rnk=rnk, #Original rnk object used to make gsea_res
+       gmt=gp_dm, #Original gmt object/filename used to make gsea_res
+       title=NULL) #character vector of length (nrow(gseaRes)) for custom titles, or leave NULL for automatic titles - works better for Gary's genesets
+```
+Now that we've done some global analyses, let's look at something more focused. Let's say we have certain terms that are enriched in our GO analysis or the GSEA. We can make custom genesets (either separately into a .gmt file), or we can extract genesets related to a keyword from the gpGeneSets. For instance, in the original GO results, we see 'rhodopsin' in a number of terms, so let's focus on that:
+```{r}
+#Make a custom GMT from the GO_gost object and gpGeneSets
+#We want it to be as unbiased as possible, so we'll combind up and downregulated GO results:
+rhodopsin<-c(customGMT(gost=GO_gost$Down, #gost object from GO_GEM and returnGost=T
+                     key="rhodopsin", #keyword to pull gene sets - this is a grep, so anything with this key will be pulled - the resulting geneset may require some manual curation so check the names
+                     gmt=gp_dm), #The gpGeneSets object containing the complete gene sets 'gp_hs' for human, 'gp_mm' for mouse and 'gp_dm' for drosophila
+             customGMT(gost=GO_gost$Up,
+                       key="rhodopsin",
+                       gmt=gp_dm))
+
+#Now we have a geneset of rhodospin-related terms and if we want to write it to a gmt file, we can use:
+write.gmt(geneSet=rhodopsin,
+          filename="rhodopsin.gmt")
+
+#if we have a gene set from outside R, we can read it in using qusage:
+
+rhodopsin<-qusage::read.gmt(file="rhodopsin.gmt")
+```
+
+Now we have a geneset, we can run a single-sample gsea and plot the results:
+```{r}
+gsva_plot(counts=as.matrix(symCounts), #counts object (as matrix), make sure rownames are the same nomenclature as the gene symbols in geneset
+          geneset=rhodopsin,
+          method="gsva", #Method for gsva plot - see documentation for options
+          condition=cond,
+          con="WT", #Indicate the control condition
+          title="Rhodospin ssGSEA", 
+          compare=NULL, #for pairwise t-tests, leave NULL to do all possible comparisons, or provide a list of vectors, length 2 indicating the conditions to compare
+          col="Dark2", #Colour scheme, can be RColourBrewer palette name, or vector of rgb(), hexadecimal, or colour names
+          style="violin") #If not 'violin' it will be a box plot
+```
+We can also plot the overall expression (gsva plots enrichment) of genes:
+```{r}
+count_plot(counts=symCounts,
+           scaling="none", #Can be "zscore" to emphasize differences, or 'log10', or "none"
+           genes=unique(unlist(rhodopsin)), #Character vector of gene names - need to unlist the geneset for this
+           condition=cond,
+           con="WT",
+           title="Rhodopsin Genes Expression",
+           compare=NULL,
+           col="Dark2",
+           method="perMean", #What method to plot? "mean", "median", "perMean", "ind", "geoMean"
+           pair=F, #Paired t-tests?
+           pc=1, #pseudocount if scaling="log10"
+           yax="Percent Mean Expression", #y-axis label if default isn't descriptive enough
+           showStat=T, #Show statistics on plot?
+           style="box") #Default is violin
+```
+
+We can also generate heatmaps using zheat():
+```{r}
+htree<-zheat(genes=unique(unlist(rhodopsin)), #Character vector of genes to plot in heatmap, NULL will plot all genes
+      counts=symCounts,
+      conditions=cond,
+      con="WT",
+      title="Rhodopsin genes",
+      labgenes="",#Character vecotr of gene names to label in heatmap, NULL labels all, "" will label none
+      zscore=T, #Plot row-zscore? if FALSE, probably want to log transform counts
+      rclus=T, #TRUE=hierarchical clustering, FALSE=order in decreasing expression in control condition, can also give it a dataframe with rownames=gene names and the first column with an identifier to cluster genes
+      hmcol=NULL, #colorRampPalette of length 100 for custom heatmap colours (NULL=default colours)
+      retClus=T) #return clustered objects if rclus=T - will be used to pull clustered genes later
+```
+Now let's say we want to pull a cluster of genes from this:
+```{r}
+#Cut the hierarchical tree at a certain level (use outputted figure to refine where you're cutting) and output a data frame of genes belonging to each cluster
+annodf<-BinfTools:::heatClus(out=htree,
+                             level=3)
+head(annodf)
+
+zheat(genes=unique(unlist(rhodopsin)),
+      counts=symCounts,
+      conditions=cond,
+      con="WT",
+      title="Rhodopsin - cut tree clusters",
+      labgenes=NULL,
+      zscore=T,
+      rclus=annodf)
+```
+Now, for one final thing (for now), we can create a shiny app to explore our data and results. This could be handy to send to collaborators in the future to easily browse their results and then tell us what they would like to focus on.
+```{r}
+app<-exploreData(res=symRes, #Results object, or named list of results objects
+                 counts=symCounts, #Normalized counts or name list of normalized counts - must be same names as res
+                 cond=cond) #Conditions or named list of conditions (same names as above)
+
+#Now the app is it's own object and can be run by:
+
+app
+
+#You can save it in an RData object and send (with chunk no. 1 of this Rmd file) to a collaborator to run
+```
+
+There are functions to compare and cluster multiple contrasts and run GO analyses on these as well. I will work on adding those to this tutorial.
