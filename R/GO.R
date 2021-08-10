@@ -225,13 +225,14 @@ combGO_plot<-function(GOresList, title, ts=c(10,500), sig=T, numTerm=10, upcols=
   #print(tail(filtRes))
   g = ggplot2::ggplot(filtRes, ggplot2::aes(x=seq(1:length(term_name)), y=enrichment)) +
     ggplot2::geom_col( ggplot2::aes(fill = dir) , width=0.9) +
-    ggplot2::scale_fill_manual(values = c(downcols[1], upcols[1]) ) +
-    ggplot2::geom_col(ggplot2::aes(x=seq(1:length(term_name)), y=sig), fill= filtRes$fill_S, width=0.375) +
+    ggplot2::scale_fill_manual(name="Enrichment", values = c(downcols[1], upcols[1])) +
+    ggplot2::geom_col(ggplot2::aes(x=seq(1:length(term_name)), y=a+sig*b), fill=filtRes$fill_S, width=0.375) +
+    #ggplot2::scale_fill_manual(name="Significance", values=c(downcols[2], upcols[2])) +
     ggplot2::scale_x_continuous(name="GO Term", breaks=1:length(filtRes$term_name), labels=filtRes$term_name) +
     ggplot2::scale_y_continuous(name="Enrichment", sec.axis=ggplot2::sec_axis(~(. -a)/b, name="-Log10 P-value")) +
     ggplot2::labs(title=title) +
     ggplot2::coord_flip() +
-    ggplot2::theme_minimal() + ggplot2::theme(legend.position="none")#, title=element_text(size=1))
+    ggplot2::theme_minimal() + ggplot2::theme(legend.position="none")
   print(g)
   #return(filtRes)
 }
