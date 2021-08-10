@@ -186,6 +186,20 @@ write.gmt(geneSet=rhodopsin,
 #if we have a gene set from outside R, we can read it in using qusage:
 
 rhodopsin<-qusage::read.gmt(file="rhodopsin.gmt")
+
+#And let's say we want to look at the overlap of the rhodopsin genes with DEGs. We can make a Venn diagram:
+
+#plotVenn takes a named list of up to length 5:
+forVenn<-list(DE_Up=DEG$Up,
+              DE_Down=DEG$Down,
+              Rhodopsin=unique(unlist(rhodopsin)))
+
+plotVenn(x=forVenn, #name list for plotting Venn diagram
+         title="Rhodopsin genes",
+         cols="Dark2", #Colour scheme for plot
+         lty="blank", #outlines for circles
+         scale=F, #Scale to list sizes?
+         retVals=F) #Return list of values in overlaps?
 ```
 
 Now we have a geneset, we can run a single-sample gsea and plot the results:
