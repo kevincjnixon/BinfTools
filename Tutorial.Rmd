@@ -62,7 +62,24 @@ barGene(genes=genes,
         col=c("blue","yellow"),
         ord=NULL)
 ```
+Another form of quality control is investigating the corrleation between the samples and conditions:
+```{r}
+#We can plot the correlation heatmap of all samples using corHeat
+corHeat(counts=symCounts, #Counts object
+        method="spearman", #Correlation method
+        title="Spearman Correlation",#Plot title
+        hmcol=colorRampPalette(c("red","grey","blue"))(100), #heatmap colours
+        showNum=T) #Show correlation coefficients?
 
+#Plot a gene-by-gene correlation
+expCor(counts=symCounts, #Counts object
+       cond=cond, #Conditions
+       title="Correlation KO vs WT", #Plot title
+       method="spearman", #Correlation method
+       transform="log10", #Transformation of counts? "none","log10", or "log2"
+       printInd=F) #Print individual correlation plots in addition to paired plot?
+
+```
 Now we can move into generating some summary plots (volcano / MA)
 
 ```{r}
