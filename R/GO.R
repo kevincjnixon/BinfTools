@@ -173,6 +173,20 @@ GO_plot<-function(GOres, prefix, ts, pdf, fig, col, print=c("both","sig","enr"))
   }
 }
 
+#'Combine GO Results from DE analysis into one plot
+#'
+#'This function will combine GO results from GO_GEM when performed on DEGs into a single plot.
+#'
+#'@param GOresList list of GO_GEM results (set returnRes=T) of length 2. Best for DEG GO results, where the first entry in the list is downregulated, and the second entry in the list is upregulated
+#'@param title Character for the plot title
+#'@param ts numeric vector of length 2 with the minimum and maximum term sizes for plotting. Default is c(10,500)
+#'@param sig Boolean indicating if top significant results should be plotted. Set to FALSE to plot top enriched results
+#'@param numTerm Numeric indicating the number of top terms to plot. Default is 10.
+#'@param upcols character vector of length 2 indicating the colour for upregulated enrichment and significance bars
+#'@param downcols character vector of length 2 indicating the colour for downregulated enrichment and significance bars
+#'@return A plot of top GO results
+#'@export
+
 combGO_plot<-function(GOresList, title, ts=c(10,500), sig=T, numTerm=10, upcols=c("lightpink","red"),
                       downcols=c("lightblue","blue")){
   if(length(GOresList)!=2){
