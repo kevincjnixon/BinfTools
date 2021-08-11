@@ -166,7 +166,8 @@ enPlot<-function(gseaRes, rnk, gmt, title=NULL){
       #message("Standard names detected...")
       id<-paste0(":",sapply(strsplit(gseaRes$pathway[i],":",T),'[[',2),"$")
       if(is.null(title)){
-        main<-paste(sapply(strsplit(gseaRes$pathway[i],":",T),'[[',1), "NES:", round(gseaRes$NES[i], digits=3), "padj:", signif(gseaRes$padj[i], digits=3))
+        #main<-paste(sapply(strsplit(gseaRes$pathway[i],":",T),'[[',1), "NES:", round(gseaRes$NES[i], digits=3), "padj:", signif(gseaRes$padj[i], digits=3))
+        main<-paste(gseaRes$pathway[i], "NES:", round(gseaRes$NES[i], digits=3), "padj:", signif(gseaRes$padj[i], digits=3))
       }
     }
     if(length(grep("%", gseaRes$pathway[i]))>0){
