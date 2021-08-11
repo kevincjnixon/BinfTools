@@ -219,20 +219,24 @@ combGO_plot<-function(GOresList, title, ts=c(10,500), sig=T, numTerm=10, upcols=
   #filtRes$Index = as.factor(1:nrow(filtRes))
   filtRes$fill_E=c(rep(downcols[1], length(filtRes$dir[which(filtRes$dir %in% "Down")])),
                    rep(upcols[1], length(filtRes$dir[which(filtRes$dir %in% "Up")])))
+  filtRes$Enrichment=filtRes$dir
   filtRes$fill_S=c(rep(downcols[2], length(filtRes$dir[which(filtRes$dir %in% "Down")])),
                    rep(upcols[2], length(filtRes$dir[which(filtRes$dir %in% "Up")])))
+  filtRes$Significance=filtRes$dir
   #print(head(filtRes))
   #print(tail(filtRes))
   g = ggplot2::ggplot(filtRes, ggplot2::aes(x=seq(1:length(term_name)), y=enrichment)) +
     ggplot2::geom_col( ggplot2::aes(fill = dir) , width=0.9) +
     ggplot2::scale_fill_manual(name="Enrichment", values = c(downcols[1], upcols[1])) +
-    ggplot2::geom_col(ggplot2::aes(x=seq(1:length(term_name)), y=a+sig*b), fill=filtRes$fill_S, width=0.375) +
+    ggplot2::geom_col(ggplot2::aes(x=seq(1:length(term_name)), y=a+sig*b, color=Significance), fill=filtRes$fill_S, width=0.375) +
+    ggplot2::scale_colour_manual(values=c(downcols[2], upcols[2])) +
+    ggplot2::guides(colour=ggplot2::guide_legend(override.aes = list(fill=c(downcols[2],upcols[2]), colour=c(downcols[2], upcols[2]), name="Significance"))) +
     #ggplot2::scale_fill_manual(name="Significance", values=c(downcols[2], upcols[2])) +
     ggplot2::scale_x_continuous(name="GO Term", breaks=1:length(filtRes$term_name), labels=filtRes$term_name) +
     ggplot2::scale_y_continuous(name="Enrichment", sec.axis=ggplot2::sec_axis(~(. -a)/b, name="-Log10 P-value")) +
     ggplot2::labs(title=title) +
     ggplot2::coord_flip() +
-    ggplot2::theme_minimal() + ggplot2::theme(legend.position="none")
+    ggplot2::theme_minimal() + ggplot2::theme(legend.position="right")
   print(g)
   #return(filtRes)
 }
