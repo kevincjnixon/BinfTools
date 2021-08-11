@@ -32,7 +32,8 @@ Imports:
   gplots,
   VennDiagram,
   fgsea,
-  gage
+  gage,
+  GGally
 Suggests: 
     knitr
 VignetteBuilder: knitr
