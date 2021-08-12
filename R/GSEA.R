@@ -166,8 +166,7 @@ enPlot<-function(gseaRes, rnk, gmt, title=NULL){
       #message("Standard names detected...")
       id<-paste0(":",sapply(strsplit(gseaRes$pathway[i],":",T),'[[',2),"$")
       if(is.null(title)){
-        #main<-paste(sapply(strsplit(gseaRes$pathway[i],":",T),'[[',1), "NES:", round(gseaRes$NES[i], digits=3), "padj:", signif(gseaRes$padj[i], digits=3))
-        main<-paste(gseaRes$pathway[i], "NES:", round(gseaRes$NES[i], digits=3), "padj:", signif(gseaRes$padj[i], digits=3))
+        main<-paste(sapply(strsplit(gseaRes$pathway[i],":",T),'[[',1), "NES:", round(gseaRes$NES[i], digits=3), "padj:", signif(gseaRes$padj[i], digits=3))
       }
     }
     if(length(grep("%", gseaRes$pathway[i]))>0){
@@ -183,4 +182,26 @@ enPlot<-function(gseaRes, rnk, gmt, title=NULL){
     }
     print(plotEnrichment(myGO[[grep(id, names(myGO))[1]]], rnk, NES=gseaRes$NES[i], title=main))
   }
+}
+
+#' Make a custom gmt from GSEA terms
+#'
+#' @param terms Character vector of GSEA terms (pathway column from results of GSEA() function)
+#' @param gmt GMT file name or R object used to generate the gsea results using GSEA()
+#' @return List gmt object of genesets with terms from GSEA analysis
+#' @export
+gsea_gmt<-function(terms, gmt){
+  if(is.character(gmt)){
+    gmt<-qusage::read.gmt(gmt)
+  }
+  pb<-txtProgressBar(min=0, max=length(terms), style=3)
+  res<-list()
+  index<-1
+  for(i in 1:length(terms)){
+    tryCatch({res[[index]]<-gmt[[grep(terms[i], names(gmt), ignore.case=T)]]
+    names(res)[index]<-terms[i]
+    index<-index+1}, error=function(e) NULL)
+    setTxtProgressBar(pb, i)
+  }
+  return(res)
 }
