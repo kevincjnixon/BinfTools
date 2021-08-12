@@ -185,8 +185,15 @@ enPlot(gseaRes=gsea_res[rows,], #GSEA results table subset into the rows of inte
        gmt=gp_dm, #Original gmt object/filename used to make gsea_res
        title=NULL) #character vector of length (nrow(gseaRes)) for custom titles, or leave NULL for automatic titles - works better for Gary's genesets
 ```
-Now that we've done some global analyses, let's look at something more focused. Let's say we have certain terms that are enriched in our GO analysis or the GSEA. We can make custom genesets (either separately into a .gmt file), or we can extract genesets related to a keyword from the gpGeneSets. For instance, in the original GO results, we see 'rhodopsin' in a number of terms, so let's focus on that:
+Now that we've done some global analyses, let's look at something more focused. Let's say we have certain terms that are enriched in our GO analysis or the GSEA. We can make custom genesets (either separately into a .gmt file), or we can extract genesets related to a keyword from the gpGeneSets. For instance, in the original GO results, we see 'rhodopsin' in a number of terms, so let's focus on that. But if you are unsure as to what a good keyword might be, you can always make a word cloud to start:
 ```{r}
+#Make a word cloud, to find some ideal keywords:
+PathWC(text=GO_res$Down$term_name, #Character vector of text to be converted to a word cloud, for pathway results, specify the coloumn of the results with the term/pathway names to investigate
+       cols="Dark2",#Colour scheme for the word cloud
+       retTerms=F, #Return a data frame with the word frequencies?
+       minfreq=3, #How many times must a words show up before you include it in the cloud?
+       rmwords=c("regulation","process","positive", "negative","mediated","cell","cellular","protein"))#Words not to include in the word cloud (because they don't mean anything specific, biologically - these 8 words are set to filter out by default, but you can either set to NULL to keep all words, or uses any combination of these or other words you'd like)
+
 #Make a custom GMT from the GO_gost object and gpGeneSets
 #We want it to be as unbiased as possible, so we'll combind up and downregulated GO results:
 rhodopsin<-c(customGMT(gost=GO_gost$Down, #gost object from GO_GEM and returnGost=T
