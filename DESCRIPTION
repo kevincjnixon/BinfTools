@@ -38,7 +38,10 @@ Imports:
   tm,
   wordcloud
 Suggests: 
+    rmarkdown,
     knitr
 VignetteBuilder: knitr
 Depends: 
-    R (>= 2.10)
+    R (>= 2.10),
+    rmarkdown,
+    knitr
