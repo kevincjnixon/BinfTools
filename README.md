@@ -3,7 +3,7 @@ Useful R functions for Multi-omics analyses
 
 BinfTools - Quick Start Guide
 =============================
-
+View the [BinfTools Vignette](https://drive.google.com/file/d/1XM9iBdcQBpgcXPtu0zAVzUyogzuk7DnS/view?usp=sharing)
 For more detailed information about all of the functions, see the [BinfTools Wiki](https://github.com/kevincjnixon/BinfTools/wiki)
 
 Installation
