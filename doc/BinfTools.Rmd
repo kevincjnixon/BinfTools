@@ -4,7 +4,7 @@ author: "Kevin CJ Nixon"
 date: "August 12, 2021"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Vignette}
+  %\VignetteIndexEntry{BinfTools}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
