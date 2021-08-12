@@ -33,7 +33,10 @@ Imports:
   VennDiagram,
   fgsea,
   gage,
-  GGally
+  GGally,
+  qusage,
+  tm,
+  wordcloud
 Suggests: 
     knitr
 VignetteBuilder: knitr
