@@ -1,0 +1,279 @@
+## ---- include = FALSE---------------------------------------------------------
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.width=8,
+  fig.height=8,
+  fig.align = "center"
+)
+
+## ----setup--------------------------------------------------------------------
+#Bioconductor packages don't install automatically on BinfTools install
+#BiocManager::install("SAGx")
+#BiocManager::install("GSVA")
+#BiocManager::install("fgsea")
+#BiocManager::install("gage")
+
+#devtools::install_github("kevincjnixon/gpGeneSets") # gprofiler genesets for mouse, human, and drosophila
+#devtools::install_github("kevincjnixon/BinfTools")
+
+library(BinfTools)
+library(gpGeneSets)
+
+## ----Data---------------------------------------------------------------------
+#norm_counts<-as.data.frame(counts(dds, normalized=T)) #If you want to use another count matrix, it must be a data frame with rows as genes and columns matching the order of 'cond'
+#cond<-as.character(dds$condition) #Use the factor used for the DESeq2 contrasts
+#res<-as.data.frame(res)
+
+## ----Symbols------------------------------------------------------------------
+symRes<-getSym(object=res, #The object with rownames to convert
+               obType="res", #The type of object 'res' or 'counts'
+               species="dmelanogaster", #species
+               target="FLYBASENAME_GENE", #What you want the gene names converted to. 'HGNC' is human gene symbols, 'MGI' for mouse symbols
+               addCol=F) #Boolean, FALSE replaces rownames with gene symbols (if there are duplicates, only the highest expressed version is kept), TRUE adds a column named SYMBOL and all duplicates are kept
+
+symCounts<-getSym(object=norm_counts,
+                  obType="counts",
+                  species="dmelanogaster",
+                  target="FLYBASENAME_GENE",
+                  addCol=F)
+
+## ----Expression, fig.cap="Normalized Gene Expression of specific genes"-------
+#set up the genes of interest:
+genes<-c("Ldh","dac","Hsp70Bb","rut","tmod")
+barGene(genes=genes,
+        counts=symCounts, #Using symCounts because the rownames match the gene names that we're looking for
+        conditions=cond,
+        title="Genes of interest - normalized Expression",
+        norm=NULL, #Set this to a character of the control condition to plot the relative expression (i.e. set this condition to a value of 1)
+        eb="sd", #Error bars, 'sd' = standard devation, 'se' = standard error, a value of zero (0; no quotes) will remove error bars altogether - this may be useful if plotting relative expression
+        returnDat=F, #Return the values if you want to plot this elsewhere (graphpad/excel) to match figures made by researchers
+        col="Dark2", #Colour scheme, can be RColourBrewer palette name, or vector of colours in rgb(), hexadecimal, or colour names
+        ord=c("WT","KO")) #If the order of the conditions in the plot is not what you wanted, you can set this to reorder the conditions in any way you want
+#Mess around with it:
+barGene(genes=genes,
+        counts=log10(1+symCounts),
+        conditions=cond,
+        title="log10 (1+normCounts)",
+        norm="WT",
+        eb="se",
+        col=c("blue","yellow"),
+        ord=NULL)
+
+## ----Correlations, fig.cap="Spearman Correlations of samples"-----------------
+#We can plot the correlation heatmap of all samples using corHeat
+corHeat(counts=symCounts, #Counts object
+        method="spearman", #Correlation method
+        title="Spearman Correlation",#Plot title
+        hmcol=colorRampPalette(c("red","grey","blue"))(100), #heatmap colours
+        showNum=T) #Show correlation coefficients?
+
+#Plot a gene-by-gene correlation
+expCor(counts=symCounts, #Counts object
+       cond=cond, #Conditions
+       title="Correlation KO vs WT", #Plot title
+       method="spearman", #Correlation method
+       transform="log10", #Transformation of counts? "none","log10", or "log2"
+       printInd=F) #Print individual correlation plots in addition to paired plot?
+
+
+## ----Differential, fig.cap="Differentially expressed genes"-------------------
+DEG<-volcanoPlot(res=symRes, #Results object
+                 title="KO vs WT",
+                 p=0.05, #adjusted p-value threshold for DEGs
+                 pval=NULL, #unadjusted p-value threshold for DEGs (in case you don't want to use adjusted)
+                 FC=log2(1.5), #log2FoldChange threshold for DEGs (can be 0)
+                 lab=genes, #list of genes to label (NULL to not label any)
+                 col=genes, #list of genes to colour (NULL to not colour any)
+                 fclim=NULL, #x-axis (log2FoldChange) limits, genes passing this limit will be represented as triangles on the edge of the plot - good if you have some extreme outliers
+                 showNum=T, #Show the numbers of genes on the plot?
+                 returnDEG=T, #Return list of DEGs (Down, Up) - this is good for running GO later on
+                 expScale=F, #Scale point size to mean expression?
+                 upcol=NULL, #Colour value for upregulated genes, NULL will be red
+                 dncol=NULL) #Colour value for downregulated genes, NULL will be blue)
+MA_Plot(res=symRes,
+        title="KO vs WT",
+        p=0.05,
+        pval=NULL,
+        FC=log2(1.5),
+        lab=genes,
+        col=genes,
+        fclim=NULL, #Same as volcano plot, but will act on y-axis, not x
+        showNum=T,
+        returnDEG=F,
+        sigScale=F, #Scale point size to significance?
+        upcol=NULL,
+        dncol=NULL)
+
+## ----GO, fig.cap="Top Significant/Enriched Terms for DEGs"--------------------
+dir.create("GO") #Make a directory for output
+GO_res<-GO_GEM(geneList=DEG,
+               species="dmelanogaster",
+               bg=rownames(symRes), #A character vector of genes indicating the background for the GO analysis. Leave NULL to use all genes (if you don't have one)
+               source="GO:BP", #A character indicating the source - see documentation for all of them
+               corr="fdr", #How to correct the p-values
+               iea=F, #Remove genes in terms 'inferred by electronic analysis' ?
+               prefix="GO/", #Character for output prefix. If named list is provided as geneList, names of the list will be added to the prefix
+               ts=c(10,500), #numeric of length 2 indicating minimum/maximum term size for results plots
+               pdf=F, #print figures to pdf?
+               fig=T, #Show figures in plots in RStudio?
+               figCols=c("blue","orange"), #colours for enrichment/significance in plots
+               returnGost=F, #Return gprofiler2 gost object
+               writeRes=F, #Write results to ".GO.txt" file
+               writeGem=F, #Write gem file?
+               writeGene=F, #Write genes in query to file?
+               returnRes=T) #Return the results table (only one of returnRes or returnGost can be T, not both)
+
+GO_gost<-GO_GEM(geneList=DEG,
+                species="dmelanogaster",
+                bg=rownames(symRes),
+                source="GO:BP",
+                prefix="GO/",
+                pdf=F,
+                fig=F,
+                returnGost=T,
+                writeRes=F)
+
+## ----GO2, fig.cap="Combined top terms for down/up-regulated genes"------------
+BinfTools:::combGO_plot(GOresList=GO_res,
+                        title="Biological process - significant",
+                        ts=c(10,500),
+                        sig=T,
+                        numTerm=10,
+                        upcols=c("lightpink","red"),
+                        downcols=c("lightblue","blue"))
+
+BinfTools:::combGO_plot(GOresList=GO_res,
+                        title="Biological process - enriched",
+                        ts=c(10,500),
+                        sig=F,
+                        numTerm=10,
+                        upcols=c("lightpink","red"),
+                        downcols=c("lightblue","blue"))
+
+## ----GSEA, fig.cap="Top positively/negatively enriched processes from GSEA"----
+#First start by ranking the genes
+rnk<-GenerateGSEA(res=symRes, #Results object
+                  filename="GSEA.rnk", #Output rnk file name for GSEA preranked outside of R
+                  bystat=T, #Rank genes by stats? will use Wald statistic or if not nere, -log10(p-value) with the direction from the log2FoldChange
+                  byFC=F, #Rank genes by log2FoldChange? I like to use this with the shrunken log fold change from DESEq2
+                  retRNK=T) #Return the RNK object? yes, to run GSEA in R
+library(gpGeneSets)
+gsea_res<-GSEA(rnk=rnk, #Rnk object
+               gmt=gp_dm, #either .gmt filename or a loaded gene set
+               pval=1, #adjusted p-value threshold for terms to return, set to 1 to return all terms and filter later
+               ts=c(10,600), #min/max term sizes to filter terms BEFORE analysis
+               nperm=10000, #number of permuations for p-value generation
+               parseBader=F) #Set to TRUE if using Bader Lab genesets - it will parse the term names so it looks neater. I'm not using gary's genesets here, so we will set to FALSE
+
+## ----enrichmentPlot, fig.cap="Enrichment plot of top positive and negative enriched pathways"----
+rows<-c(1, nrow(gsea_res))
+enPlot(gseaRes=gsea_res[rows,], #GSEA results table subset into the rows of interest to make a plot
+       rnk=rnk, #Original rnk object used to make gsea_res
+       gmt=gp_dm, #Original gmt object/filename used to make gsea_res
+       title=NULL) #character vector of length (nrow(gseaRes)) for custom titles, or leave NULL for automatic titles - works better for Gary's genesets
+
+## ----customGMT, fig.cap="Word cloud and Venn Diagram"-------------------------
+#Make a word cloud, to find some ideal keywords:
+PathWC(text=GO_res$Down$term_name, #Character vector of text to be converted to a word cloud, for pathway results, specify the coloumn of the results with the term/pathway names to investigate
+       cols="Dark2",#Colour scheme for the word cloud
+       retTerms=F, #Return a data frame with the word frequencies?
+       minfreq=3, #How many times must a words show up before you include it in the cloud?
+       rmwords=c("regulation","process","positive", "negative","mediated","cell","cellular","protein"))#Words not to include in the word cloud (because they don't mean anything specific, biologically - these 8 words are set to filter out by default, but you can either set to NULL to keep all words, or uses any combination of these or other words you'd like)
+
+#Make a custom GMT from the GO_gost object and gpGeneSets
+#We want it to be as unbiased as possible, so we'll combind up and downregulated GO results:
+rhodopsin<-c(customGMT(gost=GO_gost$Down, #gost object from GO_GEM and returnGost=T
+                     key="rhodopsin", #keyword to pull gene sets - this is a grep, so anything with this key will be pulled - the resulting geneset may require some manual curation so check the names
+                     gmt=gp_dm), #The gpGeneSets object containing the complete gene sets 'gp_hs' for human, 'gp_mm' for mouse and 'gp_dm' for drosophila
+             customGMT(gost=GO_gost$Up,
+                       key="rhodopsin",
+                       gmt=gp_dm))
+
+#Now we have a geneset of rhodospin-related terms and if we want to write it to a gmt file, we can use:
+write.gmt(geneSet=rhodopsin,
+          filename="rhodopsin.gmt")
+
+#if we have a gene set from outside R, we can read it in using qusage:
+
+rhodopsin<-qusage::read.gmt(file="rhodopsin.gmt")
+
+#And let's say we want to look at the overlap of the rhodopsin genes with DEGs. We can make a Venn diagram:
+
+#plotVenn takes a named list of up to length 5:
+forVenn<-list(DE_Up=DEG$Up,
+              DE_Down=DEG$Down,
+              Rhodopsin=unique(unlist(rhodopsin)))
+
+plotVenn(x=forVenn, #name list for plotting Venn diagram
+         title="Rhodopsin genes",
+         cols="Dark2", #Colour scheme for plot
+         lty="blank", #outlines for circles
+         scale=F, #Scale to list sizes?
+         retVals=F) #Return list of values in overlaps?
+
+## ----gsva, fig.cap="single sample GSEA using GSVA for rhodopsin genesets"-----
+gsva_plot(counts=as.matrix(symCounts), #counts object (as matrix), make sure rownames are the same nomenclature as the gene symbols in geneset
+          geneset=rhodopsin,
+          method="gsva", #Method for gsva plot - see documentation for options
+          condition=cond,
+          con="WT", #Indicate the control condition
+          title="Rhodospin ssGSEA", 
+          compare=NULL, #for pairwise t-tests, leave NULL to do all possible comparisons, or provide a list of vectors, length 2 indicating the conditions to compare
+          col="Dark2", #Colour scheme, can be RColourBrewer palette name, or vector of rgb(), hexadecimal, or colour names
+          style="violin") #If not 'violin' it will be a box plot
+
+## ----countPlot, fig.cap="Normalized expression of rhodopsin genes in WT vs KO"----
+count_plot(counts=symCounts,
+           scaling="none", #Can be "zscore" to emphasize differences, or 'log10', or "none"
+           genes=unique(unlist(rhodopsin)), #Character vector of gene names - need to unlist the geneset for this
+           condition=cond,
+           con="WT",
+           title="Rhodopsin Genes Expression",
+           compare=NULL,
+           col="Dark2",
+           method="perMean", #What method to plot? "mean", "median", "perMean", "ind", "geoMean"
+           pair=F, #Paired t-tests?
+           pc=1, #pseudocount if scaling="log10"
+           yax="Percent Mean Expression", #y-axis label if default isn't descriptive enough
+           showStat=T, #Show statistics on plot?
+           style="box") #Default is violin
+
+## ----heatmap, fig.cap="Row z-scores of rhodopsin gene expression in all samples"----
+htree<-zheat(genes=unique(unlist(rhodopsin)), #Character vector of genes to plot in heatmap, NULL will plot all genes
+      counts=symCounts,
+      conditions=cond,
+      con="WT",
+      title="Rhodopsin genes",
+      labgenes="",#Character vecotr of gene names to label in heatmap, NULL labels all, "" will label none
+      zscore=T, #Plot row-zscore? if FALSE, probably want to log transform counts
+      rclus=T, #TRUE=hierarchical clustering, FALSE=order in decreasing expression in control condition, can also give it a dataframe with rownames=gene names and the first column with an identifier to cluster genes
+      hmcol=NULL, #colorRampPalette of length 100 for custom heatmap colours (NULL=default colours)
+      retClus=T) #return clustered objects if rclus=T - will be used to pull clustered genes later
+
+## ----cutHeat, fig.cap="Clustered tree cutting and annotated heatmap"----------
+#Cut the hierarchical tree at a certain level (use outputted figure to refine where you're cutting) and output a data frame of genes belonging to each cluster
+annodf<-BinfTools:::heatClus(out=htree,
+                             level=3)
+head(annodf)
+
+zheat(genes=unique(unlist(rhodopsin)),
+      counts=symCounts,
+      conditions=cond,
+      con="WT",
+      title="Rhodopsin - cut tree clusters",
+      labgenes=NULL,
+      zscore=T,
+      rclus=annodf)
+
+## ----explore------------------------------------------------------------------
+app<-exploreData(res=symRes, #Results object, or named list of results objects
+                 counts=symCounts, #Normalized counts or name list of normalized counts - must be same names as res
+                 cond=cond) #Conditions or named list of conditions (same names as above)
+
+#Now the app is it's own object and can be run by:
+
+#app
+
+#You can save it in an RData object and send (with chunk no. 1 of this Rmd file) to a collaborator to run
+
