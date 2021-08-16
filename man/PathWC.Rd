@@ -10,7 +10,8 @@ PathWC(
   retTerms = F,
   minfreq = 3,
   rmwords = c("regulation", "process", "positive", "negative", "mediated", "cell",
-    "cellular", "protein")
+    "cellular", "protein"),
+  title = ""
 )
 }
 \arguments{
@@ -23,6 +24,8 @@ PathWC(
 \item{minfreq}{Minimum frequency for a word to be included in the word cloud. Default=3}
 
 \item{rmwords}{Character vector of words to be filtered out (in addition to the default english stop words and words shorter than 3 letters) - defaults to c("regulation","process","positive","negative","mediated", "cell","cellular", "protein")}
+
+\item{title}{Character indicating title of word cloud. Defaults to blank "".}
 }
 \value{
 A Word cloud showing most frequent words in input text, and if indicated, a data frame of word frequencies.
