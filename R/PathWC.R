@@ -8,12 +8,13 @@
 #' @param retTerms Boolean if term-document matrix dataframe should be returned. Default=F
 #' @param minfreq Minimum frequency for a word to be included in the word cloud. Default=3
 #' @param rmwords Character vector of words to be filtered out (in addition to the default english stop words and words shorter than 3 letters) - defaults to c("regulation","process","positive","negative","mediated", "cell","cellular", "protein")
+#' @param title Character indicating title of word cloud. Defaults to blank "".
 #' @return A Word cloud showing most frequent words in input text, and if indicated, a data frame of word frequencies.
 #' @export
 
 PathWC<-function(text, cols="Dark2", retTerms=F, minfreq=3,
                            rmwords=c("regulation","process","positive","negative","mediated", "cell",
-                                     "cellular", "protein")){
+                                     "cellular", "protein"), title=""){
   text<-sapply(strsplit(text, "%", T),'[[',1)
   docs<-text
   suppressWarnings(docs<-tm::Corpus(tm::VectorSource(text)))
@@ -41,10 +42,12 @@ PathWC<-function(text, cols="Dark2", retTerms=F, minfreq=3,
   v<-sort(rowSums(m), decreasing=T)
   d<-data.frame(word=names(v), freq=v)
   #Generate the Word cloud
+  grid::grid.newpage()
   set.seed(1234)
   wordcloud::wordcloud(words=d$word, freq=d$freq, min.freq=minfreq,
                        max.words=200, random.order=FALSE, rot.per=0.35,
                        colors=colPal(cols))
+  grid::grid.text(title, x=0.5, y=0.9)
   if(isTRUE(retTerms)){
     return(d)
   }
