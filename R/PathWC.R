@@ -42,7 +42,6 @@ PathWC<-function(text, cols="Dark2", retTerms=F, minfreq=3,
   v<-sort(rowSums(m), decreasing=T)
   d<-data.frame(word=names(v), freq=v)
   #Generate the Word cloud
-  grid::grid.newpage()
   set.seed(1234)
   wordcloud::wordcloud(words=d$word, freq=d$freq, min.freq=minfreq,
                        max.words=200, random.order=FALSE, rot.per=0.35,
