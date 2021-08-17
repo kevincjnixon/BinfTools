@@ -156,7 +156,7 @@ enPlot<-function(gseaRes, rnk, gmt, title=NULL){
   }
   myGO<-gmt
   if(is.character(gmt)){
-    myGO<-qusage::read.gmt(gmt)
+    myGO<-fgsea::gmtPathways(gmt)
   }
   #parse through names in gseaRes table, pull the unique identifiers from the names and use it with myGO:
   for(i in 1:nrow(gseaRes)){
@@ -192,7 +192,7 @@ enPlot<-function(gseaRes, rnk, gmt, title=NULL){
 #' @export
 gsea_gmt<-function(terms, gmt){
   if(is.character(gmt)){
-    gmt<-qusage::read.gmt(gmt)
+    gmt<-fgsea::gmtPathways(gmt)
   }
   pb<-txtProgressBar(min=0, max=length(terms), style=3)
   res<-list()

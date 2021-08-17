@@ -8,8 +8,6 @@
 #'@param maxClus Maximum number of clusters to test, minimum 3. Default 10. NOTE: The more, the longer it takes.
 #'@param iter Number of bootstrapping iterations for calculating gap statistic. Default 10. NOTE: the more, the longer it takes.
 #'@return A vector of length 2 containing the maximum gap statistic and the optimal number of k-means clusters, respectively.
-#'@export
-
 calcGaps<-function(resList, maxClus=10, iter=10){
   #Make sure there is more than one entry in the list
   if(length(resList)<2){
