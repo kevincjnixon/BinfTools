@@ -22,7 +22,6 @@ Imports:
   pheatmap,
   tidyr,
   GSVA,
-  SAGx,
   magrittr,
   dplyr,
   forcats,
@@ -34,7 +33,6 @@ Imports:
   fgsea,
   gage,
   GGally,
-  qusage,
   tm,
   wordcloud
 Suggests: 
