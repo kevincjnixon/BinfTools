@@ -11,7 +11,7 @@ Installation
 ============
 ```
 #Bioconductor packages don't install automatically on BinfTools install
-BiocManager::install("SAGx")
+BiocManager::install("SAGx") #This package isn't available for the latest version of R. It has been removed as a dependency
 BiocManager::install("GSVA")
 BiocManager::install("fgsea")
 BiocManager::install("gage")
