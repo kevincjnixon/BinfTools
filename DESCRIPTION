@@ -34,7 +34,8 @@ Imports:
   gage,
   GGally,
   tm,
-  wordcloud
+  wordcloud,
+  scales
 Suggests: 
     rmarkdown,
     knitr
