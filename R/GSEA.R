@@ -166,7 +166,7 @@ enPlot<-function(gseaRes, rnk, gmt, title=NULL){
       #message("Standard names detected...")
       id<-paste0(":",sapply(strsplit(gseaRes$pathway[i],":",T),'[[',2),"$")
       if(is.null(title)){
-        main<-paste(sapply(strsplit(gseaRes$pathway[i],":",T),'[[',1), "NES:", round(gseaRes$NES[i], digits=3), "padj:", signif(gseaRes$padj[i], digits=3))
+        main<-paste(gseaRes$pathway[i], "NES:", round(gseaRes$NES[i], digits=3), "padj:", signif(gseaRes$padj[i], digits=3))
       }
     }
     if(length(grep("%", gseaRes$pathway[i]))>0){
@@ -180,7 +180,16 @@ enPlot<-function(gseaRes, rnk, gmt, title=NULL){
     if(!is.null(title)){
       main<-title[i]
     }
-    print(plotEnrichment(myGO[[grep(id, names(myGO))[1]]], rnk, NES=gseaRes$NES[i], title=main))
+    grid::grid.newpage()
+    grid::pushViewport(grid::viewport(layout=grid::grid.layout(2,1, heights=grid::unit(c(0.75,0.25),"npc"))))
+    print(plotEnrichment(myGO[[grep(id, names(myGO))[1]]], rnk, NES=gseaRes$NES[i], title=main), vp=grid::viewport(layout.pos.row = 1))
+    rnk2<-data.frame(row.names=names(rnk),
+                     RNK=rnk)
+    rnk2<-as.data.frame(rnk2[order(rnk2$RNK, decreasing = T),,drop=F])
+    g<-ggplot2::ggplot(rnk2, ggplot2::aes(x=seq(1:nrow(rnk2)), y=RNK))+
+      ggplot2::geom_bar(stat="identity", fill="lightgrey")+ggplot2::theme_classic() +
+      ggplot2::labs(x="Rank", y="Score") +ggplot2::theme(axis.line.x=ggplot2::element_blank())
+    print(g, vp=grid::viewport(layout.pos.row = 2))
   }
 }
 
