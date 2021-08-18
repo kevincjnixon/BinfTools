@@ -117,6 +117,7 @@ plotEnrichment<-function (pathway, stats, gseaParam = 1, ticksSize = 0.2, NES=NU
     axis<-min(bottoms)-diff/2.25
   #}
   hmcol<-c(colorRampPalette(c("red","grey"))(length(rnk[rnk>0])), colorRampPalette(c("grey"))(length(rnk[rnk==0])), colorRampPalette(c("grey","blue"))(length(rnk[rnk<0])))
+  hmscale<-c(max(rnk),0,min(rnk))
   sz<-12
   if(nchar(title)>60){
     sz<-10
@@ -135,7 +136,7 @@ plotEnrichment<-function (pathway, stats, gseaParam = 1, ticksSize = 0.2, NES=NU
                  colour = "black") +
     ggplot2::theme(axis.line.x=ggplot2::element_blank()) +
     ggplot2::labs(x = "Rank", y = "Enrichment Score", title=title) +
-    ggplot2::scale_colour_gradientn(colours=hmcol) + #, values=c(0:length(rnk))/length(rnk)) + 
+    ggplot2::scale_colour_gradientn(colours=c("red","grey","blue"), values=scales::rescale(hmscale)) + 
     ggplot2::theme(legend.position="none", title=ggplot2::element_text(size=sz))
   g
 }
