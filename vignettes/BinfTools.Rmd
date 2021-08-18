@@ -141,7 +141,20 @@ MA_Plot(res=symRes,
         upcol=NULL,
         dncol=NULL)
 ```
+BinfTools also uses plotly to create interactive volcano and MA plots - you can hover your cursor over points to see the individual genes:
+```{r, eval=F}
+interVP(res=symRes,
+        title="Volcano Plot",
+        p=0.05,
+        pval=NULL,
+        FC=log2(1.5))
 
+interMA(res=symRes,
+        title="MA Plot",
+        p=0.05,
+        pval=NULL,
+        FC=log2(1.5))
+```
 Now for some pathway enrichment analyses. The GO_GEM() function is a wrapper for gprofiler2::gost() and will output results in a ".GO.txt" file, a GEM file (for Cytoscape) in ".gem.txt", a pdf of the top 10 enriched and significant terms, and a list of genes in ".genes.txt". GO_GEM can take either a character vector of genes or a named list of genes (for example, the DEG list from volcanoPlot). It can export a gprofiler2 'gost' object (for use with other gprofiler2 function and the customGMT() function) and a results table for use with other functions.
  
 
@@ -197,9 +210,10 @@ Now, if we want to run a GSEA, we can do so, but we need to either load a gmt fo
 ```{r GSEA, fig.cap="Top positively/negatively enriched processes from GSEA"}
 #First start by ranking the genes
 rnk<-GenerateGSEA(res=symRes, #Results object
-                  filename="GSEA.rnk", #Output rnk file name for GSEA preranked outside of R
+                  filename="GSEA.rnk", #Output rnk file name for GSEA preranked outside of R. Set to NULL to skip writing out to file
                   bystat=T, #Rank genes by stats? will use Wald statistic or if not nere, -log10(p-value) with the direction from the log2FoldChange
                   byFC=F, #Rank genes by log2FoldChange? I like to use this with the shrunken log fold change from DESEq2
+                  plotRNK=T, #Plot the distribution of scores by rank - useful to see if your scoring is skewed prior to GSEA
                   retRNK=T) #Return the RNK object? yes, to run GSEA in R
 library(gpGeneSets)
 gsea_res<-GSEA(rnk=rnk, #Rnk object
