@@ -30,9 +30,10 @@ plotrnk<-function(rnk){
   rnk2<-data.frame(row.names=names(rnk),
                    RNK=rnk)
   rnk<-as.data.frame(rnk2[order(rnk2$RNK, decreasing = T),,drop=F])
-  ggplot2::ggplot(rnk, ggplot2::aes(x=seq(1:nrow(rnk)), y=RNK))+
+  g<-ggplot2::ggplot(rnk, ggplot2::aes(x=seq(1:nrow(rnk)), y=RNK))+
     ggplot2::geom_bar(stat="identity", fill="lightgrey")+ggplot2::theme_minimal() +
     ggplot2::labs(x="Rank", y="Score")
+  print(g)
 }
 
 #' Create a rnk file for Gene Set Enrichment Analysis
