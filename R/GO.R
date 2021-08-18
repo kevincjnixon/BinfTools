@@ -184,20 +184,21 @@ GO_plot<-function(GOres, prefix, ts, pdf, fig, col, print=c("both","sig","enr"))
 #'@param numTerm Numeric indicating the number of top terms to plot. Default is 10.
 #'@param upcols character vector of length 2 indicating the colour for upregulated enrichment and significance bars
 #'@param downcols character vector of length 2 indicating the colour for downregulated enrichment and significance bars
+#'@param labs character vector of length 2 indicating the specific legend labels for the entries in GOresList. Default=c("Downregulated","Upgreulated")
 #'@return A plot of top GO results
 #'@export
 
-combGO_plot<-function(GOresList, title, ts=c(10,500), sig=T, numTerm=10, upcols=c("lightpink","red"),
-                      downcols=c("lightblue","blue")){
+combGO_plot<-function(GOresList, title="GO results", ts=c(10,500), sig=T, numTerm=10, upcols=c("lightpink","red"),
+                      downcols=c("lightblue","blue"), labs=c("Downregulated","Upregulated")){
   if(length(GOresList)!=2){
     stop("length(GOresList) must be 2!")
   }
   #print(names(GOresList))
   #message("Down should be first. Up second.")
-  GOresList[[1]]$dir<-factor(rep("Down", nrow(GOresList[[1]])))
+  GOresList[[1]]$dir<-factor(rep(labs[1], nrow(GOresList[[1]])))
   GOresList[[1]]$enrichment<-GOresList[[1]]$enrichment*-1
   GOresList[[1]]$sig<-(-log10(GOresList[[1]]$p_value))*-1
-  GOresList[[2]]$dir<-factor(rep("Up", nrow(GOresList[[2]])))
+  GOresList[[2]]$dir<-factor(rep(labs[2], nrow(GOresList[[2]])))
   GOresList[[2]]$sig<-(-log10(GOresList[[2]]$p_value))
   filtRes<-NULL
   if(isTRUE(sig)){
@@ -231,11 +232,11 @@ combGO_plot<-function(GOresList, title, ts=c(10,500), sig=T, numTerm=10, upcols=
   #names(colos) = 1:length(colos)
   names(colos)=c("Up_Enrichment","Up_Significance","Down_Enrichment", "Down_Significance")
   #filtRes$Index = as.factor(1:nrow(filtRes))
-  filtRes$fill_E=c(rep(downcols[1], length(filtRes$dir[which(filtRes$dir %in% "Down")])),
-                   rep(upcols[1], length(filtRes$dir[which(filtRes$dir %in% "Up")])))
+  filtRes$fill_E=c(rep(downcols[1], length(filtRes$dir[which(filtRes$dir %in% labs[1])])),
+                   rep(upcols[1], length(filtRes$dir[which(filtRes$dir %in% labs[2])])))
   filtRes$Enrichment=filtRes$dir
-  filtRes$fill_S=c(rep(downcols[2], length(filtRes$dir[which(filtRes$dir %in% "Down")])),
-                   rep(upcols[2], length(filtRes$dir[which(filtRes$dir %in% "Up")])))
+  filtRes$fill_S=c(rep(downcols[2], length(filtRes$dir[which(filtRes$dir %in% labs[1])])),
+                   rep(upcols[2], length(filtRes$dir[which(filtRes$dir %in% labs[2])])))
   filtRes$Significance=filtRes$dir
   #print(head(filtRes))
   #print(tail(filtRes))
