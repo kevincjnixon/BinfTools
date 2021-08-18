@@ -6,12 +6,13 @@
 \usage{
 combGO_plot(
   GOresList,
-  title,
+  title = "GO results",
   ts = c(10, 500),
   sig = T,
   numTerm = 10,
   upcols = c("lightpink", "red"),
-  downcols = c("lightblue", "blue")
+  downcols = c("lightblue", "blue"),
+  labs = c("Downregulated", "Upregulated")
 )
 }
 \arguments{
@@ -28,6 +29,8 @@ combGO_plot(
 \item{upcols}{character vector of length 2 indicating the colour for upregulated enrichment and significance bars}
 
 \item{downcols}{character vector of length 2 indicating the colour for downregulated enrichment and significance bars}
+
+\item{labs}{character vector of length 2 indicating the specific legend labels for the entries in GOresList. Default=c("Downregulated","Upgreulated")}
 }
 \value{
 A plot of top GO results
