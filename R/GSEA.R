@@ -136,7 +136,7 @@ plotEnrichment<-function (pathway, stats, gseaParam = 1, ticksSize = 0.2, NES=NU
                  colour = "black") +
     ggplot2::theme(axis.line.x=ggplot2::element_blank()) +
     ggplot2::labs(x = "Rank", y = "Enrichment Score", title=title) +
-    ggplot2::scale_colour_gradientn(colours=c("red","grey","blue"), values=scales::rescale(hmscale)) + 
+    ggplot2::scale_colour_gradientn(colours=c("blue","grey","red"), values=scales::rescale(hmscale)) + 
     ggplot2::theme(legend.position="none", title=ggplot2::element_text(size=sz))
   g
 }
