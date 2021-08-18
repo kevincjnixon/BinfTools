@@ -20,20 +20,36 @@ GSEAclus<-function(gsFile, term, clusName, dir, retRNK=F){
   }
 }
 
+#' Plot the distribution of scores by gene rank
+#'
+#' @param rnk rnk object obtained from GeneratedGSEA() with retRNK=T
+#' @return Plot of scores in ranked gene list
+#' @export
+
+plotrnk<-function(rnk){
+  rnk2<-data.frame(row.names=names(rnk),
+                   RNK=rnk)
+  rnk<-as.data.frame(rnk2[order(rnk2$RNK, decreasing = T),,drop=F])
+  ggplot2::ggplot(rnk, ggplot2::aes(x=seq(1:nrow(rnk)), y=RNK))+
+    ggplot2::geom_bar(stat="identity", fill="lightgrey")+ggplot2::theme_minimal() +
+    ggplot2::labs(x="Rank", y="Score")
+}
+
 #' Create a rnk file for Gene Set Enrichment Analysis
 #'
 #' This function creates a ranked list of genes for use with a PreRanked
 #' Gene Set Enrichment Analysis (GSEA) (www.gsea-msigdb.org/gsea)
 #'
 #' @param res A DESeq2 results object obtained from 'results(dds)' or a data.frame with the same column name values as a DESeq2 results object and rownames as genes
-#' @param filename Path to the output .rnk file. Default is "./GSEA.rnk"
+#' @param filename Path to the output .rnk file. Default is "./GSEA.rnk". Set NULL to not write out to file.
 #' @param bystat Boolean values determining if genes should be ranked by column 'stat'. If TRUE, and no column 'stat', genes will be ranked using the -log10 of column 'pvalue'. Default is TRUE.
 #' @param byFC Boolean values determining if genes should be ranked by column 'log2FoldChange'Default is FALSE.
+#' @param plotRNK Boolean indicating if ranked scores should be plotted. Default=T
 #' @param retRNK Boolean indicating if ranked list should be returned as data frame object
 #' @return Exports a ranked gene list. If both bystat and byFC are true, ranking will be abs(stat)*log2FoldChange.
 #' @export
 
-GenerateGSEA<-function(res, filename="GSEA.rnk", bystat=T, byFC=F, retRNK=F){
+GenerateGSEA<-function(res, filename="GSEA.rnk", bystat=T, byFC=F, plotRNK=T, retRNK=F){
   GSEA<-data.frame(NAME=rownames(res), Rank=rep(NA,nrow(res)))
   #res<-res[complete.cases(res),]
   #Check to see if there is a column named 'stat', if not, rename 'pvalue' to stat
@@ -72,11 +88,17 @@ GenerateGSEA<-function(res, filename="GSEA.rnk", bystat=T, byFC=F, retRNK=F){
 		}
 	  }
   }
+  if(!is.null(filename)){
   write.table(GSEA[complete.cases(GSEA),], filename, quote=FALSE, row.names=FALSE, sep="\t")
+  }
+
+  GSEA<-GSEA[complete.cases(GSEA),]
+  rnk<-GSEA$Rank
+  names(rnk)<-GSEA$NAME
+  if(isTRUE(plotRNK)){
+    plotRNK(rnk)
+  }
   if(isTRUE(retRNK)){
-    GSEA<-GSEA[complete.cases(GSEA),]
-    rnk<-GSEA$Rank
-    names(rnk)<-GSEA$NAME
     return(rnk)
   }
 }
