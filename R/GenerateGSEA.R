@@ -96,7 +96,7 @@ GenerateGSEA<-function(res, filename="GSEA.rnk", bystat=T, byFC=F, plotRNK=T, re
   rnk<-GSEA$Rank
   names(rnk)<-GSEA$NAME
   if(isTRUE(plotRNK)){
-    plotRNK(rnk)
+    plotrnk(rnk)
   }
   if(isTRUE(retRNK)){
     return(rnk)
