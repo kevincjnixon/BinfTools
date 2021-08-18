@@ -4,16 +4,25 @@
 \alias{GenerateGSEA}
 \title{Create a rnk file for Gene Set Enrichment Analysis}
 \usage{
-GenerateGSEA(res, filename = "GSEA.rnk", bystat = T, byFC = F, retRNK = F)
+GenerateGSEA(
+  res,
+  filename = "GSEA.rnk",
+  bystat = T,
+  byFC = F,
+  plotRNK = T,
+  retRNK = F
+)
 }
 \arguments{
 \item{res}{A DESeq2 results object obtained from 'results(dds)' or a data.frame with the same column name values as a DESeq2 results object and rownames as genes}
 
-\item{filename}{Path to the output .rnk file. Default is "./GSEA.rnk"}
+\item{filename}{Path to the output .rnk file. Default is "./GSEA.rnk". Set NULL to not write out to file.}
 
 \item{bystat}{Boolean values determining if genes should be ranked by column 'stat'. If TRUE, and no column 'stat', genes will be ranked using the -log10 of column 'pvalue'. Default is TRUE.}
 
 \item{byFC}{Boolean values determining if genes should be ranked by column 'log2FoldChange'Default is FALSE.}
+
+\item{plotRNK}{Boolean indicating if ranked scores should be plotted. Default=T}
 
 \item{retRNK}{Boolean indicating if ranked list should be returned as data frame object}
 }
