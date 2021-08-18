@@ -174,17 +174,18 @@ GO_gost<-GO_GEM(geneList=DEG,
                 returnGost=T,
                 writeRes=F)
 ```
-If we want to plot GO results for DEGs (up/down, specifically), we can use this experimental function using the GO_res (must be name list with 'Down', 'Up')
+If we want to plot GO results for DEGs (up/down, specifically), we can use this function using the GO_res (must be list of length 2 with 'Down', 'Up' in that order)
 ```{r GO2, fig.cap="Combined top terms for down/up-regulated genes"}
-BinfTools:::combGO_plot(GOresList=GO_res,
-                        title="Biological process - significant",
-                        ts=c(10,500),
-                        sig=T,
-                        numTerm=10,
-                        upcols=c("lightpink","red"),
-                        downcols=c("lightblue","blue"))
+combGO_plot(GOresList=GO_res, #results table from GO_GEM() (set returnRes=T)
+                        title="Biological process - significant", #Plot title
+                        ts=c(10,500), #min, max term sizes for filtering, respectively
+                        sig=T, #Plot top significant results? FALSE means plot top enriched results
+                        numTerm=10, #Number of top terms to include in the figure
+                        upcols=c("lightpink","red"), #Colours for enrichment, significance respectively for entry 2 (upregulated)
+                        downcols=c("lightblue","blue"),#Colours for enrichment, significance respectively for entry 1 (downregulated)
+                        labs=c("Downregulated","Upregulated")) #Legend labels for entries 1 and 2, respectively
 
-BinfTools:::combGO_plot(GOresList=GO_res,
+combGO_plot(GOresList=GO_res,
                         title="Biological process - enriched",
                         ts=c(10,500),
                         sig=F,
