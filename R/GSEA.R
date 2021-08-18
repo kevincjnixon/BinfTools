@@ -116,7 +116,7 @@ plotEnrichment<-function (pathway, stats, gseaParam = 1, ticksSize = 0.2, NES=NU
     hm<-min(bottoms)-(diff*1.25)
     axis<-min(bottoms)-diff/2.25
   #}
-  hmcol<-c(colorRampPalette(c("red","grey","blue"))(length(rnk[rnk>0])), colorRampPalette(c("grey"))(length(rnk[rnk==0])), colorRampPalette(c("grey","blue"))(length(rnk[rnk<0])))
+  hmcol<-c(colorRampPalette(c("red","grey"))(length(rnk[rnk>0])), colorRampPalette(c("grey"))(length(rnk[rnk==0])), colorRampPalette(c("grey","blue"))(length(rnk[rnk<0])))
   sz<-12
   if(nchar(title)>60){
     sz<-10
