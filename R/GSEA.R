@@ -116,8 +116,7 @@ plotEnrichment<-function (pathway, stats, gseaParam = 1, ticksSize = 0.2, NES=NU
     hm<-min(bottoms)-(diff*1.25)
     axis<-min(bottoms)-diff/2.25
   #}
-  hmcol<-c(colorRampPalette(c("red","grey"))(length(rnk[rnk>0])), colorRampPalette(c("grey"))(length(rnk[rnk==0])), colorRampPalette(c("grey","blue"))(length(rnk[rnk<0])))
-  hmscale<-c(max(rnk),0,min(rnk))
+  hmcol<-colorRampPalette(c("red","grey","blue"))(length(rnk))
   sz<-12
   if(nchar(title)>60){
     sz<-10
@@ -136,8 +135,7 @@ plotEnrichment<-function (pathway, stats, gseaParam = 1, ticksSize = 0.2, NES=NU
                  colour = "black") +
     ggplot2::theme(axis.line.x=ggplot2::element_blank()) +
     ggplot2::labs(x = "Rank", y = "Enrichment Score", title=title) +
-    ggplot2::scale_colour_gradientn(colours=c("blue","grey","red"), values=scales::rescale(hmscale)) + 
-    ggplot2::theme(legend.position="none", title=ggplot2::element_text(size=sz))
+    ggplot2::scale_colour_gradientn(colours=hmcol) + ggplot2::theme(legend.position="none", title=ggplot2::element_text(size=sz))
   g
 }
 
@@ -185,10 +183,10 @@ enPlot<-function(gseaRes, rnk, gmt, title=NULL){
     grid::grid.newpage()
     grid::pushViewport(grid::viewport(layout=grid::grid.layout(2,1, heights=grid::unit(c(0.75,0.25),"npc"))))
     print(plotEnrichment(myGO[[grep(id, names(myGO))[1]]], rnk, NES=gseaRes$NES[i], title=main), vp=grid::viewport(layout.pos.row = 1))
-    rnk2<-data.frame(row.names=names(rnk),
-                     RNK=rnk)
-    rnk2<-as.data.frame(rnk2[order(rnk2$RNK, decreasing = T),,drop=F])
-    g<-ggplot2::ggplot(rnk2, ggplot2::aes(x=seq(1:nrow(rnk2)), y=RNK))+
+
+    rnk2<-as.data.frame(rnk, row.names=names(rnk))
+    rnk2<-as.data.frame(rnk2[order(rnk2$rnk, decreasing = T),,drop=F])
+    g<-ggplot2::ggplot(rnk2, ggplot2::aes(x=seq(1:nrow(rnk2)), y=rnk))+
       ggplot2::geom_bar(stat="identity", fill="lightgrey")+ggplot2::theme_classic() +
       ggplot2::labs(x="Rank", y="Score") +ggplot2::theme(axis.line.x=ggplot2::element_blank())
     print(g, vp=grid::viewport(layout.pos.row = 2))

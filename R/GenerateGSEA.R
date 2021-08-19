@@ -27,10 +27,9 @@ GSEAclus<-function(gsFile, term, clusName, dir, retRNK=F){
 #' @export
 
 plotrnk<-function(rnk){
-  rnk2<-data.frame(row.names=names(rnk),
-                   RNK=rnk)
-  rnk<-as.data.frame(rnk2[order(rnk2$RNK, decreasing = T),,drop=F])
-  g<-ggplot2::ggplot(rnk, ggplot2::aes(x=seq(1:nrow(rnk)), y=RNK))+
+  rnk2<-as.data.frame(rnk, row.names=names(rnk))
+  rnk2<-as.data.frame(rnk2[order(rnk2$rnk, decreasing = T),,drop=F])
+  g<-ggplot2::ggplot(rnk2, ggplot2::aes(x=seq(1:nrow(rnk2)), y=rnk))+
     ggplot2::geom_bar(stat="identity", fill="lightgrey")+ggplot2::theme_minimal() +
     ggplot2::labs(x="Rank", y="Score")
   print(g)
@@ -97,7 +96,7 @@ GenerateGSEA<-function(res, filename="GSEA.rnk", bystat=T, byFC=F, plotRNK=T, re
   rnk<-GSEA$Rank
   names(rnk)<-GSEA$NAME
   if(isTRUE(plotRNK)){
-    plotrnk(rnk)
+    print(plotrnk(rnk))
   }
   if(isTRUE(retRNK)){
     return(rnk)
