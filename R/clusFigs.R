@@ -152,3 +152,25 @@ clusRelev<-function(clusRes, cluslev, rename=T, title="Releveled Clusters", col=
   #return the cluster clusResrix
   return(clusRes)
 }
+
+#Subset results objects using various parameters
+
+subRes<-function(res, genes=NULL, p=NULL, pval=NULL, FC=NULL){
+  if(!is.null(genes)){
+    message("subsetting using ", length(genes)," genes.")
+    res<-res[which(rownames(res) %in% genes),]
+  }
+  if(!is.null(p)){
+    message("subsetting using padj<",p,".")
+    res<-subset(res, padj<p)
+  }
+  if(!is.null(pval)){
+    message("subsetting using pvalue<",pval,".")
+    res<-subset(res, pvalue<pval)
+  }
+  if(!is.null(FC)){
+    message("subsetting using absolute log2FoldChange>", FC,".")
+    res<-subset(res, abs(log2FoldChange)>FC)
+  }
+  return(res)
+}
