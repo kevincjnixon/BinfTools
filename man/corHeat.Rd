@@ -9,7 +9,10 @@ corHeat(
   method = "spearman",
   title = "Spearman Correlation",
   hmcol = NULL,
-  showNum = T
+  showNum = T,
+  showTree = F,
+  annodf = NULL,
+  annoCols = "Dark2"
 )
 }
 \arguments{
@@ -22,6 +25,12 @@ corHeat(
 \item{hmcol}{Color ramp palette to use for heatmap colours. Defaults to 'RdYlBu' colours}
 
 \item{showNum}{Boolean indicating if correlation coefficients should be displayed on heatmap. Default=TRUE.}
+
+\item{showTree}{Boolean indicating if hierarchical clustering trees should be shown. Default=F}
+
+\item{annodf}{Data frame with rownames=sample names and columns of annotation data to be plotted. Leave NULL if none.}
+
+\item{annoCols}{Colour palette for annotations}
 }
 \value{
 Heatmap with clustered rows/columns of correlation between samples
