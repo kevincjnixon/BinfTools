@@ -36,15 +36,35 @@ avgExp<-function(counts, cond, method=c("mean","median","geoMean")){
 #' @param title character indicating plot title
 #' @param hmcol Color ramp palette to use for heatmap colours. Defaults to 'RdYlBu' colours
 #' @param showNum Boolean indicating if correlation coefficients should be displayed on heatmap. Default=TRUE.
+#' @param showTree Boolean indicating if hierarchical clustering trees should be shown. Default=F
+#' @param annodf Data frame with rownames=sample names and columns of annotation data to be plotted. Leave NULL if none.
+#' @param annoCols Colour palette for annotations
 #' @return Heatmap with clustered rows/columns of correlation between samples
 #' @export
 
-corHeat<-function(counts, method="spearman", title="Spearman Correlation", hmcol=NULL, showNum=T){
+corHeat<-function(counts, method="spearman", title="Spearman Correlation", hmcol=NULL, showNum=T, showTree=F, annodf=NULL, annoCols="Dark2"){
   M<-cor(counts, method=method)
   if (is.null(hmcol)) {
-    hmcol <- colorRampPalette(rev(colPal("RdYlBu")[c(1:7)]))(100)
+    hmcol <- colorRampPalette(rev(colPal("RdYlBu")))(100)
   }
-  pheatmap::pheatmap(M, color=hmcol, main=title, display_numbers=showNum, treeheight_col = 0, treeheight_row = 0)
+  treeheight=50
+  if(isFALSE(showTree)){
+    treeheight=0
+  }
+  if(is.null(annodf)){
+    annoCols=NULL
+  } else {
+    cols<-colPal(annoCols)
+    annoCols<-list()
+    for(i in 1:ncol(annodf)){
+      annodf[,i]<-factor(annodf[,i])
+      annoCols[[i]]<-cols[1:length(levels(annodf[,i]))]
+      names(annoCols[[i]])<-levels(annodf[,i])
+      names(annoCols)[i]<-colnames(annodf)[i]
+    }
+  }
+  pheatmap::pheatmap(M, color=hmcol, main=title, display_numbers=showNum, treeheight_col = treeheight, treeheight_row = treeheight,
+                     annotation_row=annodf, annotation_col=annodf, annotation_colors = annoCols)
 }
 
 ## colInds is indices of columns in data.frame
