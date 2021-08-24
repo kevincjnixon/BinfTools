@@ -78,6 +78,9 @@ zheat<-function(genes=NULL, counts, conditions, con="WT", title="DEGs", labgenes
   if(isTRUE(zscore)){
     lim<-c(max(abs(zmat[is.finite(zmat)]))*-1,max(abs(zmat[is.finite(zmat)])))
   }
+  if(!is.logical(zscore) && zscore=="keepMin"){
+    lim<-c(max(abs(zmat[is.finite(zmat)]))*-1,max(abs(zmat[is.finite(zmat)])))
+  }
   #print(lim)
   #Check to see if 'genes' is null and if it's not, replace it with a vector of length rownames
   #Where genes specified in 'genes' are in the correct place, and all other values are " "
