@@ -23,7 +23,7 @@ getSym<-function(object, obType=c("res","counts"), species="hsapiens", target="H
     target<-"ENSG"
   }
   if(obType=="res"){
-    y<-gprofiler2::gconvert(genes, organism=species, target=target, mthreshold=1)
+    y<-gprofiler2::gconvert(genes, organism=species, target=target, mthreshold=1, filter_na=F)
     sym<-y$target
     if(isTRUE(addCol)){
       x$SYMBOL<-sym
@@ -50,7 +50,7 @@ getSym<-function(object, obType=c("res","counts"), species="hsapiens", target="H
     }
   }
   if(obType=="counts"){
-    y<-gprofiler2::gconvert(genes, organism=species, target=target, mthreshold=1)
+    y<-gprofiler2::gconvert(genes, organism=species, target=target, mthreshold=1, filter_na=F)
     sym<-y$target
     if(isTRUE(addCol)){
       x$SYMBOL<-sym
