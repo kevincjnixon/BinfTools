@@ -31,6 +31,8 @@ getSym<-function(object, obType=c("res","counts"), species="hsapiens", target="H
       x$tmp<-sym
       #Order based on expression (decreasing)
       x<-x[order(x$baseMean, decreasing=T),]
+      #Remove NAs
+      x<-x[complete.cases(x$tmp),]
       #Check to see if there are any duplicated symbols in x$tmp
       dups<-unique(x$tmp[duplicated(x$tmp)])
       if(length(dups)>=1){
@@ -58,6 +60,8 @@ getSym<-function(object, obType=c("res","counts"), species="hsapiens", target="H
       x$tmp<-sym
       #Order based on expression (decreasing)
       x<-x[order(rowMeans(object), decreasing = T),]
+      #Remove NAs
+      x<-x[complete.cases(x$tmp),]
       #Check to see if there are any duplicated symbols in x$tmp
       dups<-unique(x$tmp[duplicated(x$tmp)])
       if(length(dups)>=1){
