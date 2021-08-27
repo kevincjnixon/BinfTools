@@ -13,7 +13,8 @@ gsva_plot(
   title = "ssGSEA",
   compare = NULL,
   col = "Dark2",
-  style = "violin"
+  style = "violin",
+  showStat = T
 )
 }
 \arguments{
@@ -34,6 +35,8 @@ gsva_plot(
 \item{col}{Character indicating the RColorBrewer palette name or list of colours (hex, name, rgb()) to be used. Default is "Dark2".}
 
 \item{style}{Character indicating the style of plot ("violin" or "box"). Defaults to "violin".}
+
+\item{showStat}{Boolean indicating if p-values should be plotted on figure.}
 }
 \value{
 Violin or box plot of normalized enrichment scores for genesets between conditions
