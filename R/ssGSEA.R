@@ -12,10 +12,11 @@
 #' @param compare List of character vectors (each of length 2) indicating the pairwise comparisons to be made between conditions. Leave NULL for all comparisons to be made
 #' @param col Character indicating the RColorBrewer palette name or list of colours (hex, name, rgb()) to be used. Default is "Dark2".
 #' @param style Character indicating the style of plot ("violin" or "box"). Defaults to "violin".
+#' @param showStat Boolean indicating if p-values should be plotted on figure
 #' @return Violin or box plot of normalized enrichment scores for genesets between conditions
 #' @export
 
-gsva_plot<-function(counts, geneset, method="ssgsea", condition, con=NULL, title="ssGSEA", compare=NULL, col="Dark2", style="violin"){
+gsva_plot<-function(counts, geneset, method="ssgsea", condition, con=NULL, title="ssGSEA", compare=NULL, col="Dark2", style="violin", showStat=T){
   progressBar<-txtProgressBar()
   #run the gsva
 	res<-as.data.frame(GSVA::gsva(counts,geneset, method=method))
@@ -42,14 +43,15 @@ gsva_plot<-function(counts, geneset, method="ssgsea", condition, con=NULL, title
 	if(style=="violin"){
 	p<- ggpubr::ggviolin(x, x="group", y="NES", fill="group") +
 	  ggplot2::geom_boxplot(width=0.1, fill="white") +
-		ggpubr::stat_pvalue_manual(pwc, label="p.adj", tip.length=0, step.increase=0.1) +
 	  ggplot2::labs(title=title, y="Normalized Enrichment Score", x="Condition") + ggplot2::theme_minimal() +
 	  ggplot2::scale_fill_manual(values=colPal(col))
 	} else {
 	  p<- ggpubr::ggboxplot(x, x="group", y="NES", fill="group") +
-	    ggpubr::stat_pvalue_manual(pwc, label="p.adj", tip.length=0, step.increase=0.1) +
 	    ggplot2::labs(title=title, y="Normalized Enrichment Score", x="Condition") + ggplot2::theme_minimal() +
 	    ggplot2::scale_fill_manual(values=colPal(col))
+	}
+	if(isTRUE(showStat)){
+	  p<-p+ggpubr::stat_pvalue_manual(pwc, label="p.adj", tip.length=0, step.increase=0.1)
 	}
 	print(p)
 }
