@@ -63,8 +63,13 @@ corHeat<-function(counts, method="spearman", title="Spearman Correlation", hmcol
       names(annoCols)[i]<-colnames(annodf)[i]
     }
   }
+  
+  lim<-NULL
+  if(min(M)<0){
+    lim<-seq(from=-1, to=1, length.out=100)
+  }
   pheatmap::pheatmap(M, color=hmcol, main=title, display_numbers=showNum, treeheight_col = treeheight, treeheight_row = treeheight,
-                     annotation_row=annodf, annotation_col=annodf, annotation_colors = annoCols)
+                     annotation_row=annodf, annotation_col=annodf, annotation_colors = annoCols, breaks=lim)
 }
 
 ## colInds is indices of columns in data.frame
