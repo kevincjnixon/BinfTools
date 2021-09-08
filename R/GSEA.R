@@ -210,11 +210,14 @@ gsea_gmt<-function(terms, gmt, leadingEdge=F){
   for(i in 1:length(terms)){
     if(isFALSE(leadingEdge)){
       tryCatch({res[[index]]<-gmt[[grep(terms[i], names(gmt), ignore.case=T)]]
+                names(res)[index]<-terms[i]
+      index<-index+1}, error=function(e) NULL)
     } else {
         res[[index]]<-gmt[which(gmt$pathway == terms[i]),]$leadingEdge
+      names(res)[index]<-terms[i]
+      index<-index+1
     }
-    names(res)[index]<-terms[i]
-    index<-index+1}, error=function(e) NULL)
+    
     setTxtProgressBar(pb, i)
   }
   return(res)
