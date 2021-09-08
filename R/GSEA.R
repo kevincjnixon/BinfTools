@@ -196,10 +196,11 @@ enPlot<-function(gseaRes, rnk, gmt, title=NULL){
 #' Make a custom gmt from GSEA terms
 #'
 #' @param terms Character vector of GSEA terms (pathway column from results of GSEA() function)
-#' @param gmt GMT file name or R object used to generate the gsea results using GSEA()
+#' @param gmt GMT file name or R object used to generate the gsea results using GSEA(). Can be GSEA results object if setting leadingEdge=T.
+#' @param leadingEdge Boolean indicating if the leading edge genes only should be extracted. Default=F
 #' @return List gmt object of genesets with terms from GSEA analysis
 #' @export
-gsea_gmt<-function(terms, gmt){
+gsea_gmt<-function(terms, gmt, leadingEdge=F){
   if(is.character(gmt)){
     gmt<-fgsea::gmtPathways(gmt)
   }
@@ -207,7 +208,11 @@ gsea_gmt<-function(terms, gmt){
   res<-list()
   index<-1
   for(i in 1:length(terms)){
-    tryCatch({res[[index]]<-gmt[[grep(terms[i], names(gmt), ignore.case=T)]]
+    if(isFALSE(leadingEdge)){
+      tryCatch({res[[index]]<-gmt[[grep(terms[i], names(gmt), ignore.case=T)]]
+    } else {
+        res[[index]]<-gmt[which(gmt$pathway == terms[i]),]$leadingEdge
+    }
     names(res)[index]<-terms[i]
     index<-index+1}, error=function(e) NULL)
     setTxtProgressBar(pb, i)
