@@ -13,7 +13,11 @@
 customGMT<-function(gost, key, gmt){
   #Using the gost object, grep for a term, grab the GO ID, and then return the
   #genesets related to the term
-  y<-gost$result[,-14]
+  if(class(gost) != "data.frame"){
+    y<-gost$result[,-14]
+  } else {
+    y<-gost
+  }
   IDs<-y[grep(key, y$term_name, ignore.case = T),]$term_id
   terms<-grep(key, y$term_name, ignore.case = T, value = T)
   x<-gmt[IDs]
