@@ -255,7 +255,7 @@ write.gmt(geneSet=rhodopsin,
 
 #if we have a gene set from outside R, we can read it in using qusage:
 
-rhodopsin<-qusage::read.gmt(file="rhodopsin.gmt")
+#rhodopsin<-qusage::read.gmt(file="rhodopsin.gmt")
 
 #And let's say we want to look at the overlap of the rhodopsin genes with DEGs. We can make a Venn diagram:
 
