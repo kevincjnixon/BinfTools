@@ -9,13 +9,13 @@
 #' @export
 
 clusGO<-function(clusRes, species="hsapiens", bg=rownames(clusRes), source=NULL, corr="fdr", iea=FALSE, prefix="ClusGO", ts=c(10,500),
-                 pdf=T, fig=T, returnGost=F, writeRes=T, writeGem=T, returnRes=F, writeGene=F){
+                 pdf=T, fig=T, returnGost=F, writeRes=T, writeGem=F, returnRes=F, writeGene=F){
 
   clusGenes<-lapply(split(clusRes, clusRes$cluster), rownames)
   names(clusGenes)<-paste0("cluster",names(clusGenes))
 
   return(BinfTools::GO_GEM(clusGenes, species=species, bg=bg, source=source, corr=corr,
-                           iea=iea, prefix=prefix, ts=ts, pdf=pdf, fig=fig, returnRes=returnRes, returnGost=returnGost))
+                           iea=iea, prefix=prefix, ts=ts, pdf=pdf, fig=fig, returnRes=returnRes, returnGost=returnGost, writeGene=writeGene, writeGeme=writeGeme, writeRes=writeRes))
 
   # clusRes<-clusRes[order(clusRes$cluster),]
   # clusters<-unique(clusRes$cluster)
