@@ -24,7 +24,11 @@ GSEA = function(rnk, gmt, pval=1, ts=c(10,600), nperm=10000, parseBader=T) {
     rnk = sort(rnk, decreasing = TRUE)
   }
   if(is.character(gmt)){
-    myGO = fgsea::gmtPathways(gmt)
+    if(grep("http", gmt)>0){
+      myGO = fgsea::gmtPathways(url(gmt))
+   } else {
+      myGO = fgsea::gmtPathways(gmt)
+   }
   } else {
     myGO = gmt
   }
@@ -156,7 +160,11 @@ enPlot<-function(gseaRes, rnk, gmt, title=NULL){
   }
   myGO<-gmt
   if(is.character(gmt)){
+     if(grep("http", gmt)>0){
+      myGO = fgsea::gmtPathways(url(gmt))
+   } else {
     myGO<-fgsea::gmtPathways(gmt)
+   }
   }
   #parse through names in gseaRes table, pull the unique identifiers from the names and use it with myGO:
   for(i in 1:nrow(gseaRes)){
@@ -202,7 +210,11 @@ enPlot<-function(gseaRes, rnk, gmt, title=NULL){
 #' @export
 gsea_gmt<-function(terms, gmt, leadingEdge=F){
   if(is.character(gmt)){
+     if(grep("http", gmt)>0){
+      myGO = fgsea::gmtPathways(url(gmt))
+   } else {
     gmt<-fgsea::gmtPathways(gmt)
+   }
   }
   pb<-txtProgressBar(min=0, max=length(terms), style=3)
   res<-list()
