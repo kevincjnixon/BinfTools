@@ -236,7 +236,7 @@ gsea_gmt<-function(terms, gmt, leadingEdge=F){
 }
 
                
-GSEA_EM<-function(gsea, rnk, prefix=NULL){
+GSEA_EM<-function(gsea, rnk, prefix=NULL, gmt=NULL){
   N=length(rnk)
   df<-data.frame(NAME=gsea$pathway,
                  "GS <br> follow link to MSigDB"=gsea$pathway,
@@ -262,8 +262,26 @@ GSEA_EM<-function(gsea, rnk, prefix=NULL){
   if(is.null(prefix)){
     write.table(neg, file="GSEA_neg_report.tsv", quote=F, row.names=F, sep="\t")
     write.table(pos, file="GSEA_pos_report.tsv", quote=F, row.names=F, sep="\t")
+    if(!is.null(gmt)){
+      if(is.character(gmt)){
+        if(grep("https",gmt)>0){
+          gmt<-fgsea::gmtPathways(url(gmt))
+        } else {
+          gmt<-fgsea::gmtPathways(gmt)
+        }
+      write.gmt(gmt, filename="GSEA_gmt.gmt")
+    }
   } else {
     write.table(neg, file=paste0(prefix, "_neg_report.tsv"), quote=F, row.names=F, sep="\t")
     write.table(pos, file=paste0(prefix, "_pos_report.tsv"), quote=F, row.names=F, sep="\t")
+    if(!is.null(gmt)){
+      if(is.character(gmt)){
+        if(grep("https",gmt)>0){
+          gmt<-fgsea::gmtPathways(url(gmt))
+        } else {
+          gmt<-fgsea::gmtPathways(gmt)
+        }
+      write.gmt(gmt, filename=paste0(prefix, "_gmt.gmt"))
+    }
   }
 }
