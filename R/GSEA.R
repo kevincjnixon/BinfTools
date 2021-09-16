@@ -269,6 +269,7 @@ GSEA_EM<-function(gsea, rnk, prefix=NULL, gmt=NULL){
         } else {
           gmt<-fgsea::gmtPathways(gmt)
         }
+      }
       write.gmt(gmt, filename="GSEA_gmt.gmt")
     }
   } else {
@@ -281,6 +282,7 @@ GSEA_EM<-function(gsea, rnk, prefix=NULL, gmt=NULL){
         } else {
           gmt<-fgsea::gmtPathways(gmt)
         }
+      }
       write.gmt(gmt, filename=paste0(prefix, "_gmt.gmt"))
     }
   }
