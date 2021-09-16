@@ -222,3 +222,36 @@ gsea_gmt<-function(terms, gmt, leadingEdge=F){
   }
   return(res)
 }
+
+               
+GSEA_EM<-function(gsea, rnk, prefix=NULL){
+  N=length(rnk)
+  df<-data.frame(NAME=gsea$pathway,
+                 "GS <br> follow link to MSigDB"=gsea$pathway,
+                 "GS DETAILS"=rep("Details...", nrow(gsea)),
+                 SIZE=gsea$size,
+                 ES=gsea$ES,
+                 NES=gsea$NES,
+                 "NOM p-val"=gsea$pval,
+                 "FDR p-val"=gsea$padj,
+                 "FWER p-val"=gsea$padj,
+                 "RANK AT MAX"=rep(0, nrow(gsea)),
+                 "LEADING EDGE"=rep(NA, nrow(gsea)),
+                 check.names=F)
+  for(i in 1:nrow(gsea)){
+    LE<-lengths(gsea$leadingEdge[i])
+    tags<-LE/gsea$size[i]
+    genes<-LE/N
+    signal<-((tags*(1-genes))*(N/(N-gsea$size[i])))
+    df$`LEADING EDGE`[i]<-paste0("tags=",round(tags*100),"%, list=",round(genes*100),"%, signal=",round(signal*100),"%")
+  }
+  neg<-subset(df, NES < 0)
+  pos<-subset(df, NES > 0)
+  if(is.null(prefix)){
+    write.table(neg, file="GSEA_neg_report.tsv", quote=F, row.names=F, sep="\t")
+    write.table(pos, file="GSEA_pos_report.tsv", quote=F, row.names=F, sep="\t")
+  } else {
+    write.table(neg, file=paste0(prefix, "_neg_report.tsv"), quote=F, row.names=F, sep="\t")
+    write.table(pos, file=paste0(prefix, "_pos_report.tsv"), quote=F, row.names=F, sep="\t")
+  }
+}
