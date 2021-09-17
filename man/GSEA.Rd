@@ -4,7 +4,15 @@
 \alias{GSEA}
 \title{Gene Set Enrichment Analysis}
 \usage{
-GSEA(rnk, gmt, pval = 1, ts = c(10, 600), nperm = 10000, parseBader = T)
+GSEA(
+  rnk,
+  gmt,
+  pval = 1,
+  ts = c(10, 600),
+  nperm = 10000,
+  parseBader = T,
+  plot.title = "Gene Set Enrichment Analysis"
+)
 }
 \arguments{
 \item{rnk}{named vector of gene rankings (names are genes with matching nomenclature of geneset file)}
@@ -18,6 +26,8 @@ GSEA(rnk, gmt, pval = 1, ts = c(10, 600), nperm = 10000, parseBader = T)
 \item{nperm}{integer indicating number of permutations to run. Default is 10000}
 
 \item{parseBader}{Boolean indicating if gene set names should be parsed for the output figure following Bader Lab nomenclature (i.e. '\%' as delimiter)}
+
+\item{plot.title}{Title for the plot}
 }
 \value{
 A data frame of GSEA results and a figure showing normalized enrichment scores (NES) for top positive and negative enriched gene sets.

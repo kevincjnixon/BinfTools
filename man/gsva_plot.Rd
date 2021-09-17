@@ -36,7 +36,7 @@ gsva_plot(
 
 \item{style}{Character indicating the style of plot ("violin" or "box"). Defaults to "violin".}
 
-\item{showStat}{Boolean indicating if p-values should be plotted on figure.}
+\item{showStat}{Boolean indicating if p-values should be plotted on figure}
 }
 \value{
 Violin or box plot of normalized enrichment scores for genesets between conditions
