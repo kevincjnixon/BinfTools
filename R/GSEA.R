@@ -264,7 +264,7 @@ GSEA_EM<-function(gsea, rnk, prefix=NULL, gmt=NULL){
     write.table(pos, file="GSEA_pos_report.tsv", quote=F, row.names=F, sep="\t")
     if(!is.null(gmt)){
       if(is.character(gmt)){
-        if(grep("https",gmt)>0){
+        if(grep("http",gmt)>0){
           gmt<-fgsea::gmtPathways(url(gmt))
         } else {
           gmt<-fgsea::gmtPathways(gmt)
@@ -277,7 +277,7 @@ GSEA_EM<-function(gsea, rnk, prefix=NULL, gmt=NULL){
     write.table(pos, file=paste0(prefix, "_pos_report.tsv"), quote=F, row.names=F, sep="\t")
     if(!is.null(gmt)){
       if(is.character(gmt)){
-        if(grep("https",gmt)>0){
+        if(grep("http",gmt)>0){
           gmt<-fgsea::gmtPathways(url(gmt))
         } else {
           gmt<-fgsea::gmtPathways(gmt)
