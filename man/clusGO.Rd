@@ -17,7 +17,7 @@ clusGO(
   fig = T,
   returnGost = F,
   writeRes = T,
-  writeGem = T,
+  writeGem = F,
   returnRes = F,
   writeGene = F
 )

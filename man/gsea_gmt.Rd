@@ -4,14 +4,14 @@
 \alias{gsea_gmt}
 \title{Make a custom gmt from GSEA terms}
 \usage{
-gsea_gmt(terms, gmt, leadingEdge=F)
+gsea_gmt(terms, gmt, leadingEdge = F)
 }
 \arguments{
 \item{terms}{Character vector of GSEA terms (pathway column from results of GSEA() function)}
 
 \item{gmt}{GMT file name or R object used to generate the gsea results using GSEA(). Can be GSEA results object if setting leadingEdge=T.}
-                                                                                 
-]item{leadingEdge}{Boolean indicating if the leading edge genes only should be extracted. Default=F}
+
+\item{leadingEdge}{Boolean indicating if the leading edge genes only should be extracted. Default=F}
 }
 \value{
 List gmt object of genesets with terms from GSEA analysis

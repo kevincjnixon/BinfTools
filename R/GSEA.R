@@ -8,10 +8,11 @@
 #' @param ts numeric vector of length two indicating the minimum and maximum gene set sizes
 #' @param nperm integer indicating number of permutations to run. Default is 10000
 #' @param parseBader Boolean indicating if gene set names should be parsed for the output figure following Bader Lab nomenclature (i.e. '%' as delimiter)
+#' @param plot.title Title for the plot
 #' @return A data frame of GSEA results and a figure showing normalized enrichment scores (NES) for top positive and negative enriched gene sets.
 #' @export
 
-GSEA = function(rnk, gmt, pval=1, ts=c(10,600), nperm=10000, parseBader=T) {
+GSEA = function(rnk, gmt, pval=1, ts=c(10,600), nperm=10000, parseBader=T, plot.title = "Gene Set Enrichment Analysis") {
   set.seed(54321)
   require(dplyr, quietly=T)
 
@@ -83,7 +84,7 @@ GSEA = function(rnk, gmt, pval=1, ts=c(10,600), nperm=10000, parseBader=T) {
     ggplot2::scale_fill_manual(values = colos ) +
     ggplot2::coord_flip() +
     ggplot2::labs(x="Pathway", y="Normalized Enrichment Score",
-         title="Gene Set Enrichment Analysis") +
+         title=plot.title) +
     ggplot2::theme_minimal() + ggplot2::theme(legend.position="none")#, title=element_text(size=1))
 
   print(g)
@@ -229,13 +230,13 @@ gsea_gmt<-function(terms, gmt, leadingEdge=F){
       names(res)[index]<-terms[i]
       index<-index+1
     }
-    
+
     setTxtProgressBar(pb, i)
   }
   return(res)
 }
 
-               
+
 GSEA_EM<-function(gsea, rnk, prefix=NULL, gmt=NULL){
   N=length(rnk)
   df<-data.frame(NAME=gsea$pathway,

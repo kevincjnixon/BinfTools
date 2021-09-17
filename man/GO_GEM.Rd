@@ -43,7 +43,7 @@ GO_GEM(
 \item{pdf}{Boolean indicating if bar plots should be exported to pdf. Default is TRUE.}
 
 \item{fig}{Boolean indicating if bar plots should be printed to R output. Default is TRUE.}
-  
+
 \item{figCols}{Character indicating the RColorBrewer palette name or list of colours (hex, name, rgb()) to be used for enrichment and significance, respectively in the output figures. Default is c("blue","orange").}
 
 \item{returnGost}{Boolean indicating if gost results should be returned for future use with gprofiler2 functions. Default is FALSE.}
@@ -52,7 +52,7 @@ GO_GEM(
 
 \item{writeGem}{Boolean indicating if gem.txt results should be written to file.}
 
-\item{writeGene}{Boolean indicating if gene.txt results should be writted to file.}
+\item{writeGene}{Boolean indicating if gene.txt results should be written to file.}
 }
 \value{
 Exports a table of analysis results in 'prefix.GO.txt', a gem file in 'prefix.gem', and a pdf with two figures: top ten enriched terms followed by top ten significant terms in 'prefix.top10.pdf'
