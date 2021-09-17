@@ -25,7 +25,7 @@ GSEA = function(rnk, gmt, pval=1, ts=c(10,600), nperm=10000, parseBader=T, plot.
     rnk = sort(rnk, decreasing = TRUE)
   }
   if(is.character(gmt)){
-    if(grep("http", gmt)>0){
+    if(length(grep("http", gmt)) > 0){
       myGO = fgsea::gmtPathways(url(gmt))
    } else {
       myGO = fgsea::gmtPathways(gmt)
@@ -161,7 +161,7 @@ enPlot<-function(gseaRes, rnk, gmt, title=NULL){
   }
   myGO<-gmt
   if(is.character(gmt)){
-     if(grep("http", gmt)>0){
+     if(length(grep("http", gmt)) > 0){
       myGO = fgsea::gmtPathways(url(gmt))
    } else {
     myGO<-fgsea::gmtPathways(gmt)
@@ -211,7 +211,7 @@ enPlot<-function(gseaRes, rnk, gmt, title=NULL){
 #' @export
 gsea_gmt<-function(terms, gmt, leadingEdge=F){
   if(is.character(gmt)){
-     if(grep("http", gmt)>0){
+     if(length(grep("http", gmt)) > 0){
       myGO = fgsea::gmtPathways(url(gmt))
    } else {
     gmt<-fgsea::gmtPathways(gmt)
@@ -265,7 +265,7 @@ GSEA_EM<-function(gsea, rnk, prefix=NULL, gmt=NULL){
     write.table(pos, file="GSEA_pos_report.tsv", quote=F, row.names=F, sep="\t")
     if(!is.null(gmt)){
       if(is.character(gmt)){
-        if(grep("http",gmt)>0){
+        if(length(grep("http", gmt)) > 0){
           gmt<-fgsea::gmtPathways(url(gmt))
         } else {
           gmt<-fgsea::gmtPathways(gmt)
@@ -278,7 +278,7 @@ GSEA_EM<-function(gsea, rnk, prefix=NULL, gmt=NULL){
     write.table(pos, file=paste0(prefix, "_pos_report.tsv"), quote=F, row.names=F, sep="\t")
     if(!is.null(gmt)){
       if(is.character(gmt)){
-        if(grep("http",gmt)>0){
+        if(length(grep("http", gmt)) > 0){
           gmt<-fgsea::gmtPathways(url(gmt))
         } else {
           gmt<-fgsea::gmtPathways(gmt)
