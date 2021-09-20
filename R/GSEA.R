@@ -226,7 +226,7 @@ gsea_gmt<-function(terms, gmt, leadingEdge=F){
                 names(res)[index]<-terms[i]
       index<-index+1}, error=function(e) NULL)
     } else {
-        res[[index]]<-gmt[which(gmt$pathway == terms[i]),]$leadingEdge
+        res[[index]]<-unlist(gmt[which(gmt$pathway == terms[i]),]$leadingEdge)
       names(res)[index]<-terms[i]
       index<-index+1
     }
