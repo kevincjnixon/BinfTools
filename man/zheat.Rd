@@ -14,7 +14,8 @@ zheat(
   zscore = T,
   rclus = F,
   hmcol = NULL,
-  retClus = F
+  retClus = F,
+  annoCols="Dark2"
 )
 }
 \arguments{
@@ -37,6 +38,8 @@ zheat(
 \item{hmcol}{Color ramp palette of length 100 for custom heatmap colouring. Leave NULL for defaults.}
 
 \item{retClus}{Boolean indicating if clustered row names should be returnd. Default=FALSE.}
+             
+\item{annoCols}{Character vector indicating RColorBrewer palette name or colours for annotation colours if rclus is provided a data.frame.}
 }
 \value{
 Heatmap of z-score normalized gene expression with control condition samples appearing first.
