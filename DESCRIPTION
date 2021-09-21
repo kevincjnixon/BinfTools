@@ -35,7 +35,9 @@ Imports:
   GGally,
   tm,
   wordcloud,
-  scales
+  scales,
+  gt,
+  webshot
 Suggests: 
     rmarkdown,
     knitr
