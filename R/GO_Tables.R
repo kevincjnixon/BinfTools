@@ -71,7 +71,7 @@ GO_Table<-function(GOres, title=NULL, subtitle=NULL, sig=T, ts=c(10,500), colnam
 #' @return A table of class gt of the top GO results for each entry in the list of GO results.
 #' @export
 
-listGO_Table<-function(GOres, title=NULL, subtitle=NULL, sig=T, ts=c(10,500), colnames=c("Term", "Fold Enrichment", "FDR"), numTerm=10, retGT=F, printGT=T){
+listGO_Table<-function(GOres, title=NULL, subtitle=NULL, sig=T, ts=c(10,500), colnames=c("Term", "Enrichment", "FDR"), numTerm=10, retGT=F, printGT=T){
   require(gt, quietly=T)
   require(dplyr, quietly = T)
   if(length(which(unlist(lapply(GOres, class)) !="data.frame"))>0){
