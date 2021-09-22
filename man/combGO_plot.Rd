@@ -12,7 +12,8 @@ combGO_plot(
   numTerm = 10,
   upcols = c("lightpink", "red"),
   downcols = c("lightblue", "blue"),
-  labs = c("Downregulated", "Upregulated")
+  labs = c("Downregulated", "Upregulated"),
+  textsize = NULL
 )
 }
 \arguments{
@@ -31,6 +32,8 @@ combGO_plot(
 \item{downcols}{character vector of length 2 indicating the colour for downregulated enrichment and significance bars}
 
 \item{labs}{character vector of length 2 indicating the specific legend labels for the entries in GOresList. Default=c("Downregulated","Upgreulated")}
+
+\item{textsize}{numeric indicating text size for plot. Leave NULL to keep default size.}
 }
 \value{
 A plot of top GO results

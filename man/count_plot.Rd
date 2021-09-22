@@ -18,7 +18,8 @@ count_plot(
   pc = 1,
   yax = NULL,
   showStat = T,
-  style = "violin"
+  style = "violin",
+  textsize = NULL
 )
 }
 \arguments{
@@ -49,6 +50,8 @@ count_plot(
 \item{showStat}{Boolean indicating if statistics should be plotted.}
 
 \item{style}{Character indicating the style of plot ("violin" or "box"). Defaults to "violin".}
+
+\item{textsize}{Numeric indicating text size for the plot. Leave NULL for default.}
 }
 \value{
 Generates a violin or box plot

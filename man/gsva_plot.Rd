@@ -14,7 +14,8 @@ gsva_plot(
   compare = NULL,
   col = "Dark2",
   style = "violin",
-  showStat = T
+  showStat = T,
+  textsize = NULL
 )
 }
 \arguments{
@@ -37,6 +38,8 @@ gsva_plot(
 \item{style}{Character indicating the style of plot ("violin" or "box"). Defaults to "violin".}
 
 \item{showStat}{Boolean indicating if p-values should be plotted on figure}
+
+\item{textsize}{Numeric indicating text size for plot. Leave NULL for default.}
 }
 \value{
 Violin or box plot of normalized enrichment scores for genesets between conditions
