@@ -185,11 +185,12 @@ GO_plot<-function(GOres, prefix, ts, pdf, fig, col, print=c("both","sig","enr"))
 #'@param upcols character vector of length 2 indicating the colour for upregulated enrichment and significance bars
 #'@param downcols character vector of length 2 indicating the colour for downregulated enrichment and significance bars
 #'@param labs character vector of length 2 indicating the specific legend labels for the entries in GOresList. Default=c("Downregulated","Upgreulated")
+#'@param textsize numeric indicating text size for plot. Leave NULL to keep default size.
 #'@return A plot of top GO results
 #'@export
 
 combGO_plot<-function(GOresList, title="GO results", ts=c(10,500), sig=T, numTerm=10, upcols=c("lightpink","red"),
-                      downcols=c("lightblue","blue"), labs=c("Downregulated","Upregulated")){
+                      downcols=c("lightblue","blue"), labs=c("Downregulated","Upregulated"), textsize=NULL){
   if(length(GOresList)!=2){
     stop("length(GOresList) must be 2!")
   }
@@ -251,7 +252,7 @@ combGO_plot<-function(GOresList, title="GO results", ts=c(10,500), sig=T, numTer
     ggplot2::scale_y_continuous(name="Enrichment", sec.axis=ggplot2::sec_axis(~(. -a)/b, name="-Log10 P-value")) +
     ggplot2::labs(title=title) +
     ggplot2::coord_flip() +
-    ggplot2::theme_minimal() + ggplot2::theme(legend.position="right")
+    ggplot2::theme_minimal() + ggplot2::theme(legend.position="right", text=ggplot2::element_text(size=textsize))
   print(g)
   #return(filtRes)
 }
