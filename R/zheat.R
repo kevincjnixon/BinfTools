@@ -97,11 +97,11 @@ zheat<-function(genes=NULL, counts, conditions, con="WT", title="DEGs", labgenes
   } else {
     cols<-colPal(annoCols)
     annoCols<-list()
-    for(i in 1:ncol(annodf)){
-      annodf[,i]<-factor(annodf[,i])
-      annoCols[[i]]<-cols[1:length(levels(annodf[,i]))]
-      names(annoCols[[i]])<-levels(annodf[,i])
-      names(annoCols)[i]<-colnames(annodf)[i]
+    for(i in 1:ncol(rclus)){
+      rclus[,i]<-factor(rclus[,i])
+      annoCols[[i]]<-cols[1:length(levels(rclus[,i]))]
+      names(annoCols[[i]])<-levels(rclus[,i])
+      names(annoCols)[i]<-colnames(rclus)[i]
     }
   }
   #Now make a heatmap
