@@ -14,10 +14,11 @@
 #' @param style Character indicating the style of plot ("violin" or "box"). Defaults to "violin".
 #' @param showStat Boolean indicating if p-values should be plotted on figure
 #' @param textsize Numeric indicating text size for plot. Leave NULL for default.
+#' @param retGP Boolean indicating if ggplots2 object should be returned for further editing. Default=F.
 #' @return Violin or box plot of normalized enrichment scores for genesets between conditions
 #' @export
 
-gsva_plot<-function(counts, geneset, method="ssgsea", condition, con=NULL, title="ssGSEA", compare=NULL, col="Dark2", style="violin", showStat=T, textsize=NULL){
+gsva_plot<-function(counts, geneset, method="ssgsea", condition, con=NULL, title="ssGSEA", compare=NULL, col="Dark2", style="violin", showStat=T, textsize=NULL, retGP=F){
   progressBar<-txtProgressBar()
   #run the gsva
 	res<-as.data.frame(GSVA::gsva(counts,geneset, method=method))
@@ -54,5 +55,9 @@ gsva_plot<-function(counts, geneset, method="ssgsea", condition, con=NULL, title
 	if(isTRUE(showStat)){
 	  p<-p+ggpubr::stat_pvalue_manual(pwc, label="p.adj", tip.length=0, step.increase=0.1)
 	}
-	print(p)
+	if(isTRUE(retGP)){
+	  return(p)
+	} else {
+	  print(p)
+	}
 }

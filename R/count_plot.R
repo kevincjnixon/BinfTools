@@ -45,10 +45,11 @@ perMean<-function(counts, condition){
 #' @param showStat Boolean indicating if statistics should be plotted.
 #' @param style Character indicating the style of plot ("violin" or "box"). Defaults to "violin".
 #' @param textsize Numeric indicating text size for the plot. Leave NULL for default.
+#' @param retGP Boolean indicating if ggplots2 object should be returned for further editing. Default=F
 #' @return Generates a violin or box plot
 #' @export
 
-count_plot<-function(counts, scaling="zscore", genes, condition, con=NULL, title="expression", compare=NULL, col="Dark2", method="ind", pair=F, pc=1, yax=NULL, showStat=T, style="violin", textsize=NULL){
+count_plot<-function(counts, scaling="zscore", genes, condition, con=NULL, title="expression", compare=NULL, col="Dark2", method="ind", pair=F, pc=1, yax=NULL, showStat=T, style="violin", textsize=NULL, retGP=F){
   #Pull the normalized counts of genes
   res<-counts[which(rownames(counts) %in% genes),]
   ylab="z-score Normalized Expression"
@@ -151,5 +152,9 @@ count_plot<-function(counts, scaling="zscore", genes, condition, con=NULL, title
   if(isTRUE(showStat)){
     p <- p + ggpubr::stat_pvalue_manual(pwc, label="p.adj", tip.length=0, step.increase=0.1)
   }
-  print(p)
+  if(isTRUE(retGP)){
+    return(p)
+  } else {
+    print(p)
+  }
 }
