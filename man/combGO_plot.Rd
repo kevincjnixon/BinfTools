@@ -13,7 +13,8 @@ combGO_plot(
   upcols = c("lightpink", "red"),
   downcols = c("lightblue", "blue"),
   labs = c("Downregulated", "Upregulated"),
-  textsize = NULL
+  textsize = NULL,
+  retGP = F
 )
 }
 \arguments{
@@ -34,6 +35,8 @@ combGO_plot(
 \item{labs}{character vector of length 2 indicating the specific legend labels for the entries in GOresList. Default=c("Downregulated","Upgreulated")}
 
 \item{textsize}{numeric indicating text size for plot. Leave NULL to keep default size.}
+
+\item{retGP}{Booliean indicating if the ggplot2 object should be returned for further editing. Default=F.}
 }
 \value{
 A plot of top GO results

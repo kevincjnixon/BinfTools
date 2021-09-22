@@ -15,7 +15,8 @@ gsva_plot(
   col = "Dark2",
   style = "violin",
   showStat = T,
-  textsize = NULL
+  textsize = NULL,
+  retGP = F
 )
 }
 \arguments{
@@ -40,6 +41,8 @@ gsva_plot(
 \item{showStat}{Boolean indicating if p-values should be plotted on figure}
 
 \item{textsize}{Numeric indicating text size for plot. Leave NULL for default.}
+
+\item{retGP}{Boolean indicating if ggplots2 object should be returned for further editing. Default=F.}
 }
 \value{
 Violin or box plot of normalized enrichment scores for genesets between conditions
