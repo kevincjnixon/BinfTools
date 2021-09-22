@@ -143,10 +143,10 @@ count_plot<-function(counts, scaling="zscore", genes, condition, con=NULL, title
   if(style=="violin"){
     p<- ggpubr::ggviolin(x, x="group", y="Expression", fill="group") +
       ggplot2::geom_boxplot(width=0.1, fill="white") +
-      ggplot2::labs(title=title, y=ylab, x="Condition") + ggplot2::theme_minimal() + ggplot2::scale_fill_manual(values=colPal(col))+ ggplot2::theme(text=ggplot2::element_test(size=textsize))
+      ggplot2::labs(title=title, y=ylab, x="Condition") + ggplot2::theme_minimal() + ggplot2::scale_fill_manual(values=colPal(col))+ ggplot2::theme(text=ggplot2::element_text(size=textsize))
   } else {
     p<- ggpubr::ggboxplot(x, x="group", y="Expression", fill="group") +
-      ggplot2::labs(title=title, y=ylab, x="Condition") + ggplot2::theme_minimal() + ggplot2::scale_fill_manual(values=colPal(col))+ ggplot2::theme(text=ggplot2::element_test(size=textsize))
+      ggplot2::labs(title=title, y=ylab, x="Condition") + ggplot2::theme_minimal() + ggplot2::scale_fill_manual(values=colPal(col))+ ggplot2::theme(text=ggplot2::element_text(size=textsize))
   }
   if(isTRUE(showStat)){
     p <- p + ggpubr::stat_pvalue_manual(pwc, label="p.adj", tip.length=0, step.increase=0.1)
