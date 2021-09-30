@@ -9,10 +9,11 @@
 #' @param nperm integer indicating number of permutations to run. Default is 10000
 #' @param parseBader Boolean indicating if gene set names should be parsed for the output figure following Bader Lab nomenclature (i.e. '%' as delimiter)
 #' @param plot.title Title for the plot
+#' @param useGAGE Boolean indicating if GAGE results should be used to filter fgsea results. Default=T
 #' @return A data frame of GSEA results and a figure showing normalized enrichment scores (NES) for top positive and negative enriched gene sets.
 #' @export
 
-GSEA = function(rnk, gmt, pval=1, ts=c(10,600), nperm=10000, parseBader=T, plot.title = "Gene Set Enrichment Analysis") {
+GSEA = function(rnk, gmt, pval=1, ts=c(10,600), nperm=10000, parseBader=T, plot.title = "Gene Set Enrichment Analysis", useGAGE=T) {
   set.seed(54321)
   require(dplyr, quietly=T)
 
@@ -42,7 +43,8 @@ GSEA = function(rnk, gmt, pval=1, ts=c(10,600), nperm=10000, parseBader=T, plot.
     as.data.frame() %>%
     dplyr::filter(padj < !!pval)
   #print(dim(fgRes))
-
+  
+  if(isTRUE(useGAGE)){
   ## Filter FGSEA by using gage results. Must be significant and in same direction to keep
   gaRes = gage::gage(rnk, gsets=myGO, same.dir=TRUE, set.size =ts)
 
@@ -62,8 +64,10 @@ GSEA = function(rnk, gmt, pval=1, ts=c(10,600), nperm=10000, parseBader=T, plot.
   keepdowns = fgRes[fgRes$NES < 0 & !is.na(match(fgRes$pathway, downs$Pathway)), ]
 
   fgRes = fgRes[ !is.na(match(fgRes$pathway,
-                              c( keepups$pathway, keepdowns$pathway))), ] %>%
-    arrange(desc(NES))
+                              c( keepups$pathway, keepdowns$pathway))), ]
+  }
+   fgRes = fgRes %>% arrange(desc(NES))
+   
   fgRes$pathway = stringr::str_replace(fgRes$pathway, "GO_" , "")
 
   fgRes$Enrichment = ifelse(fgRes$NES > 0, "Up-regulated", "Down-regulated")
