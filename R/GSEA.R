@@ -71,8 +71,8 @@ GSEA = function(rnk, gmt, pval=1, ts=c(10,600), nperm=10000, parseBader=T, plot.
   fgRes$pathway = stringr::str_replace(fgRes$pathway, "GO_" , "")
 
   fgRes$Enrichment = ifelse(fgRes$NES > 0, "Up-regulated", "Down-regulated")
-  filtRes = rbind(head(fgRes, n = 10),
-                  tail(fgRes, n = 10 ))
+  filtRes = unique(rbind(head(fgRes, n = 10),
+                  tail(fgRes, n = 10 )))
 
 
   upcols =  colorRampPalette(colors = c("red4", "red1", "lightpink"))( sum(filtRes$Enrichment == "Up-regulated"))
