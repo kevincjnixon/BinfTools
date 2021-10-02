@@ -43,7 +43,7 @@ GSEA = function(rnk, gmt, pval=1, ts=c(10,600), nperm=10000, parseBader=T, plot.
     as.data.frame() %>%
     dplyr::filter(padj < !!pval)
   #print(dim(fgRes))
-  
+
   if(isTRUE(useGAGE)){
   ## Filter FGSEA by using gage results. Must be significant and in same direction to keep
   gaRes = gage::gage(rnk, gsets=myGO, same.dir=TRUE, set.size =ts)
@@ -67,7 +67,7 @@ GSEA = function(rnk, gmt, pval=1, ts=c(10,600), nperm=10000, parseBader=T, plot.
                               c( keepups$pathway, keepdowns$pathway))), ]
   }
    fgRes = fgRes %>% arrange(desc(NES))
-   
+
   fgRes$pathway = stringr::str_replace(fgRes$pathway, "GO_" , "")
 
   fgRes$Enrichment = ifelse(fgRes$NES > 0, "Up-regulated", "Down-regulated")
@@ -181,13 +181,15 @@ enPlot<-function(gseaRes, rnk, gmt, title=NULL){
       if(is.null(title)){
         main<-paste(gseaRes$pathway[i], "NES:", round(gseaRes$NES[i], digits=3), "padj:", signif(gseaRes$padj[i], digits=3))
       }
-    }
-    if(length(grep("%", gseaRes$pathway[i]))>0){
+    }else  if(length(grep("%", gseaRes$pathway[i]))>0){
       #message("BaderLab names detected....")
       id<-sapply(strsplit(gseaRes$pathway[i],"%",T),'[[',3)
       if(is.null(title)){
         main<-paste(sapply(strsplit(gseaRes$pathway[i],"%",T),'[[',1), "NES:", round(gseaRes$NES[i], digits=3), "padj:", signif(gseaRes$padj[i], digits=3))
       }
+    }else{
+      id <- gseaRes$pathway[i]
+      main<-paste(gseaRes$pathway[i], "NES:", round(gseaRes$NES[i], digits=3), "padj:", signif(gseaRes$padj[i], digits=3))
     }
 
     if(!is.null(title)){
