@@ -29,7 +29,7 @@ GSEA(
 \item{parseBader}{Boolean indicating if gene set names should be parsed for the output figure following Bader Lab nomenclature (i.e. '\%' as delimiter)}
 
 \item{plot.title}{Title for the plot}
-                  
+
 \item{useGAGE}{Boolean indicating if GAGE results should be used to filter fgsea results. Default=T}
 }
 \value{

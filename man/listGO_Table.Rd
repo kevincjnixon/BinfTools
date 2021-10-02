@@ -10,7 +10,7 @@ listGO_Table(
   subtitle = NULL,
   sig = T,
   ts = c(10, 500),
-  colnames = c("Term", "Fold Enrichment", "FDR"),
+  colnames = c("Term", "Enrichment", "FDR"),
   numTerm = 10,
   retGT = F,
   printGT = T
