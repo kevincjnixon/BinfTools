@@ -242,7 +242,14 @@ gsea_gmt<-function(terms, gmt, leadingEdge=F){
   return(res)
 }
 
-
+#' Make Enrichment map files
+#'
+#' @param gsea To be documented!
+#' @param rnk To be documented!
+#' @param prefix To be documented!
+#' @param gmt To be documented!
+#' @return To be documented!
+#' @export
 GSEA_EM<-function(gsea, rnk, prefix=NULL, gmt=NULL){
   N=length(rnk)
   df<-data.frame(NAME=gsea$pathway,
