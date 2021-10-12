@@ -186,6 +186,6 @@ MA_Plot<-function(res, title, p=NULL, pval=NULL, FC=1, lab=NULL, col=NULL, fclim
     return(list(Down=numdown,Up=numup,No_Change=numnc))
   }
   if(isTRUE(returnDEG)){
-    return(list(Down=DEdown, Up=DEup))
+    return(list(Down=c(DEdown,rownames(subset(zeroes, log2FoldChange < -FC)), Up=c(DEup, rownames(subset(zeroes, log2FoldChange > FC))))
   }
 }
