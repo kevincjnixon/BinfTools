@@ -78,7 +78,7 @@ interMA<-function(res, title="MA Plot", p=NULL, pval=NULL, FC=1){
                    yaxis=list(title="log2 Fold-Change Expression", showgrid=F,
                               showline=T, zeroline=F, ticks="outside"))
 
-  print(fig)
+  return(fig)
   #return(res)
 }
 
@@ -166,6 +166,6 @@ interVP<-function(res, title="Volcano Plot", p=NULL, pval=NULL, FC=1){
                    yaxis=list(title="-log 10 p-value", showgrid=F,
                               showline=T, zeroline=F, ticks="outside"))
 
-  print(fig)
+  return(fig)
   #return(res)
 }
