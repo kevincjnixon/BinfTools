@@ -44,3 +44,17 @@ write.gmt<-function(geneSet, filename){
   message(paste0("Gene sets written to ", filename,"."))
   return(invisible())
 }
+
+#' Read a gmt file into R
+#'
+#' This function will read a gmt file into a list object in R
+#'
+#' @param gmt Character with path to file in .gmt format
+#' @export
+
+read.gmt<-function(gmt){
+  x<-strsplit(readLines(gmt),"\t")
+  y<-lapply(x, tail, -2)
+  names(y)<-sapply(x, head, 1)
+  return(y)
+}
