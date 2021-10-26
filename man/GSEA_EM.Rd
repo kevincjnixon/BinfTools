@@ -7,6 +7,7 @@
 GSEA_EM(gsea, rnk, prefix = NULL, gmt = NULL)
 }
 \arguments{
+
 \item{gsea}{GSEA results from GSEA() function}
 
 \item{rnk}{RNK object used to generate GSEA results}
@@ -14,6 +15,7 @@ GSEA_EM(gsea, rnk, prefix = NULL, gmt = NULL)
 \item{prefix}{Character of prefix for output files. Files will be named *prefix*_neg_report.tsv and *prefix*_pos_report.tsv. If NULL, prefix will be "GSEA"}
 
 \item{gmt}{file or address to gmt file used for gsea results. Use only if you need to save gmt to file (if you have it already saved to file, leave NULL)}
+
 }
 \description{
 Make Enrichment map files
