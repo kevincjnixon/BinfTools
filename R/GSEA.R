@@ -218,7 +218,7 @@ enPlot<-function(gseaRes, rnk, gmt, title=NULL){
 gsea_gmt<-function(terms, gmt, leadingEdge=F){
   if(is.character(gmt)){
      if(length(grep("http", gmt)) > 0){
-      myGO = fgsea::gmtPathways(url(gmt))
+      gmt <- fgsea::gmtPathways(url(gmt))
    } else {
     gmt<-fgsea::gmtPathways(gmt)
    }
