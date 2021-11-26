@@ -153,12 +153,12 @@ count_plot<-function(counts, scaling="zscore", genes, condition, con=NULL, title
   if(isTRUE(showStat)){
     p <- p + ggpubr::stat_pvalue_manual(pwc, label="p.adj", tip.length=0, step.increase=0.1)
   }
-  if(isTRUE(retStat)){
-    return(pwc)
-  }
   if(isTRUE(retGP)){
     return(p)
   } else {
     print(p)
+    if(isTRUE(retStat)){
+      return(pwc)
+    }
   }
 }
