@@ -76,6 +76,7 @@ zheat<-function(genes=NULL, counts, conditions, con="WT", title="DEGs", labgenes
   if(isTRUE(avgExp)){
     message("Averaging values within each condition...")
     zmat<-as.matrix(avgExp(zmat, conditions, "mean"))
+    zmat<-zmat[,levels(conditions)]
   }
   #print(head(zmat))
   tmp=NULL
