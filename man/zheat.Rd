@@ -12,6 +12,7 @@ zheat(
   title = "DEGs",
   labgenes = NULL,
   zscore = T,
+  avgExp = F,
   rclus = F,
   hmcol = NULL,
   retClus = F,
@@ -32,6 +33,8 @@ zheat(
 \item{labgenes}{Character vector corresponding to rownames(counts) of genes to be labelled on the side of the heatmap. Leave as NULL to label all genes. Use "" to label no genes.}
 
 \item{zscore}{Boolean indicating if counts should be z-score normalized (default=T)}
+  
+\item{avgExp}{Boolean indicating if values should be averaged within each condition (i.e. plot one value per condition). Default=F.}
 
 \item{rclus}{Boolean indicating if rows (genes) should be clustered. Leave FALSE for genes to be ordered on decreasing expression in 'con'.}
 

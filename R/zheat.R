@@ -17,6 +17,7 @@ heatClus<-function(out, level=round(max(out$tree_row$height))){
 #' @param title Character vector indicating the title of the figure
 #' @param labgenes Character vector corresponding to rownames(counts) of genes to be labelled on the side of the heatmap. Leave as NULL to label all genes. Use "" to label no genes.
 #' @param zscore Boolean indicating if counts should be z-score normalized (default=T)
+#' @param avgExp Boolean indicating if values should be averaged within each condition (i.e. plot one value per condition). Default=F.
 #' @param rclus Boolean indicating if rows (genes) should be clustered. Leave FALSE for genes to be ordered on decreasing expression in 'con'.
 #' @param hmcol Color ramp palette of length 100 for custom heatmap colouring. Leave NULL for defaults.
 #' @param retClus Boolean indicating if clustered row names should be returnd. Default=FALSE.
@@ -24,7 +25,7 @@ heatClus<-function(out, level=round(max(out$tree_row$height))){
 #' @return Heatmap of z-score normalized gene expression with control condition samples appearing first.
 #' @export
 
-zheat<-function(genes=NULL, counts, conditions, con="WT", title="DEGs", labgenes=NULL, zscore=T, rclus=F, hmcol=NULL, retClus=F, annoCols="Dark2"){
+zheat<-function(genes=NULL, counts, conditions, con="WT", title="DEGs", labgenes=NULL, zscore=T, avgExp=F, rclus=F, hmcol=NULL, retClus=F, annoCols="Dark2"){
   if(is.null(hmcol)){
     hmcol<-colorRampPalette(c("blue","grey","red"))(100)
     if(isFALSE(zscore)){
@@ -72,6 +73,11 @@ zheat<-function(genes=NULL, counts, conditions, con="WT", title="DEGs", labgenes
     #print(head(tmp))
   }
   zmat<-tmp
+  if(isTRUE(avgExp)){
+    message("Averaging values within each condition...")
+    zmat<-as.matrix(avgExp(zmat, conditions, "mean"))
+    zmat<-zmat[,levels(conditions)]
+  }
   #print(head(zmat))
   tmp=NULL
   #Get the absolute max value to centre the scale around 0:
