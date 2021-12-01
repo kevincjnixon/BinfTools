@@ -59,7 +59,7 @@ GenerateGSEA<-function(res, filename="GSEA.rnk", bystat=T, byFC=F, plotRNK=T, re
 	res$stat <- -log(res$stat, 10)
   }
   if(isTRUE(bystat) && isFALSE(byFC)){
-    GSEA$Rank <- res$stat
+    GSEA$Rank <- abs(res$stat) * sign(res$log2FoldChange)
 	#   for(i in 1:nrow(res)){
 	# 	if(res$log2FoldChange[i] > 0){
 	# 	  GSEA$Rank[i]<-(abs(res$stat[i]))
