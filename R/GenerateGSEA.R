@@ -59,40 +59,43 @@ GenerateGSEA<-function(res, filename="GSEA.rnk", bystat=T, byFC=F, plotRNK=T, re
 	res$stat <- -log(res$stat, 10)
   }
   if(isTRUE(bystat) && isFALSE(byFC)){
-	  for(i in 1:nrow(res)){
-		if(res$log2FoldChange[i] > 0){
-		  GSEA$Rank[i]<-(abs(res$stat[i]))
-		}
-		if(res$log2FoldChange[i] < 0 ){
-		  GSEA$Rank[i]<-(abs(res$stat[i]))*-1
-		}
-	  }
+    GSEA$Rank <- res$stat
+	#   for(i in 1:nrow(res)){
+	# 	if(res$log2FoldChange[i] > 0){
+	# 	  GSEA$Rank[i]<-(abs(res$stat[i]))
+	# 	}
+	# 	if(res$log2FoldChange[i] < 0 ){
+	# 	  GSEA$Rank[i]<-(abs(res$stat[i]))*-1
+	# 	}
+	#   }
   }
   if(isTRUE(byFC) && isFALSE(bystat)){
-	  for(i in 1:nrow(res)){
-		if(res$log2FoldChange[i] > 0){
-		  GSEA$Rank[i]<-res$log2FoldChange[i]
-		}
-		if(res$log2FoldChange[i] < 0 ){
-		  GSEA$Rank[i]<-res$log2FoldChange[i]
-		}
-	  }
+    GSEA$Rank <- res$log2FoldChange
+	#   for(i in 1:nrow(res)){
+	# 	if(res$log2FoldChange[i] > 0){
+	# 	  GSEA$Rank[i]<-res$log2FoldChange[i]
+	# 	}
+	# 	if(res$log2FoldChange[i] < 0 ){
+	# 	  GSEA$Rank[i]<-res$log2FoldChange[i]
+	# 	}
+	#   }
   }
   if(isTRUE(byFC) && isTRUE(bystat)){
-	  for(i in 1:nrow(res)){
-		if(res$log2FoldChange[i] > 0){
-		  GSEA$Rank[i]<-abs(res$stat[i])*abs(res$log2FoldChange[i])
-		}
-		if(res$log2FoldChange[i] < 0 ){
-		  GSEA$Rank[i]<-abs(res$stat[i])*abs(res$log2FoldChange[i])*-1
-		}
-	  }
+    GSEA$Rank <- abs(res$stat) * abs(res$log2FoldChange) * sign(res$log2FoldChange)
+	#   for(i in 1:nrow(res)){
+	# 	if(res$log2FoldChange[i] > 0){
+	# 	  GSEA$Rank[i]<-abs(res$stat[i])*abs(res$log2FoldChange[i])
+	# 	}
+	# 	if(res$log2FoldChange[i] < 0 ){
+	# 	  GSEA$Rank[i]<-abs(res$stat[i])*abs(res$log2FoldChange[i])*-1
+	# 	}
+	#   }
   }
   if(!is.null(filename)){
   write.table(GSEA[complete.cases(GSEA),], filename, quote=FALSE, row.names=FALSE, sep="\t")
   }
 
-  GSEA<-GSEA[complete.cases(GSEA),]
+  # GSEA<-GSEA[complete.cases(GSEA),]
   rnk<-GSEA$Rank
   names(rnk)<-GSEA$NAME
   if(isTRUE(plotRNK)){
