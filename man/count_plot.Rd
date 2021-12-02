@@ -54,7 +54,7 @@ count_plot(
 \item{style}{Character indicating the style of plot ("violin" or "box"). Defaults to "violin".}
 
 \item{textsize}{Numeric indicating text size for the plot. Leave NULL for default.}
-                
+
 \item{retStat}{Boolean indicating if the stats should be returned}
 
 \item{retGP}{Boolean indicating if ggplots2 object should be returned for further editing. Default=F}
