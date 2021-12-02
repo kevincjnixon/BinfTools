@@ -20,7 +20,7 @@
 #' @export
 
 gsva_plot<-function(counts, geneset, method="ssgsea", stat.test = "t-test", condition, con=NULL, title="ssGSEA", compare=NULL, col="Dark2", style="violin", showStat=T, textsize=NULL, retGP=F){
-  if (!test %in% c("t-test", "wilcoxon")){
+  if (!stat.test %in% c("t-test", "wilcoxon")){
     stop("Only t-test and wilcoxon tests are supported! Default is t-test.")
   }
   progressBar<-txtProgressBar()
