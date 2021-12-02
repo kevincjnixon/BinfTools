@@ -8,7 +8,7 @@ gsva_plot(
   counts,
   geneset,
   method = "ssgsea",
-  test = "t-test",
+  stat.test = "t-test",
   condition,
   con = NULL,
   title = "ssGSEA",
@@ -27,7 +27,7 @@ gsva_plot(
 
 \item{method}{Method to employ in estimation of gene-set enrichment scores. One of "ssgsea","gsva","zscore","plage". Default is "ssgsea}
 
-\item{test}{Test to employ in comparison of enrichment scores across conditions. Can only be "t-test" or "wilcoxon". Default is "t-test".}
+\item{stat.test}{Test to employ in comparison of enrichment scores across conditions. Can only be "t-test" or "wilcoxon". Default is "t-test".}
 
 \item{condition}{Character vector of conditions in the same order they appear as columns in 'counts'.}
 

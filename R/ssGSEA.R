@@ -6,7 +6,7 @@
 #' @param counts Normalized count matrix - preferably z-score normalized by row. E.g. t(scale(t(counts(dds, normalized=T))))
 #' @param geneset List with length > 1 of character vectors indicating gene sets of interest. Can be created using qusage::read.gmt("geneset.gmt")
 #' @param method Method to employ in estimation of gene-set enrichment scores. One of "ssgsea","gsva","zscore","plage". Default is "ssgsea
-#' @param test Test to employ in comparison of enrichment scores across conditions. Can only be "t-test" or "wilcoxon". Default is "t-test".
+#' @param stat.test Test to employ in comparison of enrichment scores across conditions. Can only be "t-test" or "wilcoxon". Default is "t-test".
 #' @param condition Character vector of conditions in the same order they appear as columns in 'counts'.
 #' @param con Character indicating the control condition (Condition to be plotted first). Default is NULL.
 #' @param title Character vector indicating the title of the plot
@@ -19,7 +19,7 @@
 #' @return Violin or box plot of normalized enrichment scores for genesets between conditions
 #' @export
 
-gsva_plot<-function(counts, geneset, method="ssgsea", test = "t-test", condition, con=NULL, title="ssGSEA", compare=NULL, col="Dark2", style="violin", showStat=T, textsize=NULL, retGP=F){
+gsva_plot<-function(counts, geneset, method="ssgsea", stat.test = "t-test", condition, con=NULL, title="ssGSEA", compare=NULL, col="Dark2", style="violin", showStat=T, textsize=NULL, retGP=F){
   if (!test %in% c("t-test", "wilcoxon")){
     stop("Only t-test and wilcoxon tests are supported! Default is t-test.")
   }
@@ -42,10 +42,10 @@ gsva_plot<-function(counts, geneset, method="ssgsea", test = "t-test", condition
 	}
 	x<-as.data.frame(x)
 	#Pairwise comparison
-	if (test == "t-test"){
+	if (stat.test == "t-test"){
 	  pwc<- x%>% rstatix::pairwise_t_test(NES ~ group, comparisons=compare, p.adjust.method="BH")
 	}
-	if (test == "wilcoxon"){
+	if (stat.test == "wilcoxon"){
 	  pwc<- x%>% rstatix::pairwise_wilcox_test(NES ~ group, comparisons=compare, p.adjust.method="BH")
 	}
 	pwc <- pwc %>% rstatix::add_xy_position(x="group")
