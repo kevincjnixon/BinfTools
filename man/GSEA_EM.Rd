@@ -2,21 +2,19 @@
 % Please edit documentation in R/GSEA.R
 \name{GSEA_EM}
 \alias{GSEA_EM}
-\title{Make Enrichment map files}
+\title{Export GSEA results to format compatible with enrichment map (cytoscape)}
 \usage{
 GSEA_EM(gsea, rnk, prefix = NULL, gmt = NULL)
 }
 \arguments{
-
 \item{gsea}{GSEA results from GSEA() function}
 
 \item{rnk}{RNK object used to generate GSEA results}
 
-\item{prefix}{Character of prefix for output files. Files will be named *prefix*_neg_report.tsv and *prefix*_pos_report.tsv. If NULL, prefix will be "GSEA"}
+\item{prefix}{Character of prefix for output files. Files will be named \emph{prefix}_neg_report.tsv and \emph{prefix}_pos_report.tsv. If NULL, prefix will be "GSEA"}
 
 \item{gmt}{file or address to gmt file used for gsea results. Use only if you need to save gmt to file (if you have it already saved to file, leave NULL)}
-
 }
 \description{
-Make Enrichment map files
+Export GSEA results to format compatible with enrichment map (cytoscape)
 }

@@ -2,13 +2,13 @@
 % Please edit documentation in R/gmt.R
 \name{read.gmt}
 \alias{read.gmt}
-\title{Read a gene set from file in gmt format}
+\title{Read a gmt file into R}
 \usage{
 read.gmt(gmt)
 }
 \arguments{
-\item{gmt}{character of path to file in gmt format}
+\item{gmt}{Character with path to file in .gmt format}
 }
 \description{
-This function read a gmt file to a list object in R
+This function will read a gmt file into a list object in R
 }

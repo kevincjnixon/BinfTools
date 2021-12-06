@@ -41,7 +41,7 @@ GSEA = function(rnk, gmt, pval=1, ts=c(10,600), nperm=10000, parseBader=T, plot.
                         maxSize=ts[2],
                         nperm=nperm) %>%
     as.data.frame() %>%
-    dplyr::filter(padj < !!pval)
+    dplyr::filter(padj <= !!pval)
   #print(dim(fgRes))
 
   if(isTRUE(useGAGE)){

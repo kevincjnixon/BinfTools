@@ -121,7 +121,7 @@ barGene<-function(genes, counts, conditions, title="Gene expression", norm=NULL,
   p<-ggplot2::ggplot(x, ggplot2::aes(x=gene, y=mean, fill=group)) +
     ggplot2::geom_bar(stat="identity", color="black", position=ggplot2::position_dodge()) +
     ggplot2::geom_errorbar(ggplot2::aes(ymin=mean-eb, ymax=mean+eb), width=.2, position=ggplot2::position_dodge(.9)) +
-    ggplot2::labs(title=title, y=paste0(ylab," Normalized Expression (+/-",eb,")"), x="Gene") +
+    ggplot2::labs(title=title, y=paste0(ylab," Expression (+/-",eb,")"), x="Gene") +
     ggplot2::theme_minimal() + ggplot2::theme(axis.text.x=ggplot2::element_text(angle=60, hjust=1)) +
     ggplot2::scale_fill_manual(values=colPal(col))
   if(!is.null(norm)){
