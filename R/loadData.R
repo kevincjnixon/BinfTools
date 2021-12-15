@@ -29,3 +29,16 @@ loadData<-function(sampleTable){
   colData<-sampleTable[,c(1,3:ncol(sampleTable))]
   return(list(Counts=x, colData=colData))
 }
+
+#' Function to load featureCounts data
+#'
+#' @param filename Character indicating the path to the featureCounts table to import
+#' @return A list of length 2: Counts=featureCount count matrix and annotation= Gene Annotation information from featureCounts
+#' @export
+
+loadFC<-function(filename){
+  x<-read.delim(filename, skip=1)
+  anno<-x[,c(1:6)]
+  counts<-x[,c(7:ncol(x))]
+  return(list(Counts=counts, annotation=anno))
+}
