@@ -39,7 +39,7 @@ loadData<-function(sampleTable){
 loadFC<-function(filename){
   x<-read.delim(filename, skip=1)
   anno<-x[,c(1:6)]
-  rownames(anno)<-x$Geneid
   counts<-x[,c(7:ncol(x))]
+  rownames(counts)<-x$Geneid
   return(list(Counts=counts, annotation=anno))
 }
