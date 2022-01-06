@@ -14,12 +14,13 @@
 #' @param col Character indicating the RColorBrewer palette name or list of colours (hex, name, rgb()) to be used. Default is "Dark2".
 #' @param style Character indicating the style of plot ("violin" or "box"). Defaults to "violin".
 #' @param showStat Boolean indicating if p-values should be plotted on figure
+#' @param retRes Boolean indicating if GSVA results should be returned. Default=FALSE. If both retRes and retGP are TRUE, only GSVA results will be returned.
 #' @param textsize Numeric indicating text size for plot. Leave NULL for default.
 #' @param retGP Boolean indicating if ggplots2 object should be returned for further editing. Default=F.
 #' @return Violin or box plot of normalized enrichment scores for genesets between conditions
 #' @export
 
-gsva_plot<-function(counts, geneset, method="ssgsea", stat.test = "t-test", condition, con=NULL, title="ssGSEA", compare=NULL, col="Dark2", style="violin", showStat=T, textsize=NULL, retGP=F){
+gsva_plot<-function(counts, geneset, method="ssgsea", stat.test = "t-test", condition, con=NULL, title="ssGSEA", compare=NULL, col="Dark2", style="violin", showStat=T, retRes=F, textsize=NULL, retGP=F){
   if (!stat.test %in% c("t-test", "wilcoxon")){
     stop("Only t-test and wilcoxon tests are supported! Default is t-test.")
   }
@@ -63,6 +64,10 @@ gsva_plot<-function(counts, geneset, method="ssgsea", stat.test = "t-test", cond
 	}
 	if(isTRUE(showStat)){
 	  p<-p+ggpubr::stat_pvalue_manual(pwc, label="p.adj", tip.length=0, step.increase=0.1)
+	}
+	if(isTRUE(retRes)){
+	  print(p)
+	  return(res)
 	}
 	if(isTRUE(retGP)){
 	  return(p)
