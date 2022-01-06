@@ -16,6 +16,7 @@ gsva_plot(
   col = "Dark2",
   style = "violin",
   showStat = T,
+  retRes = F,
   textsize = NULL,
   retGP = F
 )
@@ -25,7 +26,7 @@ gsva_plot(
 
 \item{geneset}{List with length > 1 of character vectors indicating gene sets of interest. Can be created using qusage::read.gmt("geneset.gmt")}
 
-\item{method}{Method to employ in estimation of gene-set enrichment scores. One of "ssgsea","gsva","zscore","plage". Default is "ssgsea}
+\item{method}{Method to employ in estimation of gene-set enrichment scores. One of "ssgsea","gsva","zscore","plage". Default is "ssgsea"}
 
 \item{stat.test}{Test to employ in comparison of enrichment scores across conditions. Can only be "t-test" or "wilcoxon". Default is "t-test".}
 
@@ -42,6 +43,8 @@ gsva_plot(
 \item{style}{Character indicating the style of plot ("violin" or "box"). Defaults to "violin".}
 
 \item{showStat}{Boolean indicating if p-values should be plotted on figure}
+ 
+\item{retRes}{Boolean indicating if GSVA results should be returned. Default=FALSE. If both retRes and retGP are TRUE, only GSVA results will be returned.}
 
 \item{textsize}{Numeric indicating text size for plot. Leave NULL for default.}
 
