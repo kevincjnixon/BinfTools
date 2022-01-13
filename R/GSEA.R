@@ -226,17 +226,14 @@ gsea_gmt<-function(terms, gmt, leadingEdge=F){
   pb<-txtProgressBar(min=0, max=length(terms), style=3)
   res<-list()
   index<-1
-  for(i in 1:length(terms)){
-    if(isFALSE(leadingEdge)){
-      tryCatch({res[[index]]<-gmt[[grep(terms[i], names(gmt), ignore.case=T)]]
-                names(res)[index]<-terms[i]
-      index<-index+1}, error=function(e) NULL)
-    } else {
-        res[[index]]<-unlist(gmt[which(gmt$pathway == terms[i]),]$leadingEdge)
+  if(isFALSE(leadingEdge)){
+    res<-gmt[which(names(gmt) %in% terms)]
+  } else {
+    for(i in 1:length(terms)){
+      res[[index]]<-unlist(gmt[which(gmt$pathway == terms[i]),]$leadingEdge)
       names(res)[index]<-terms[i]
       index<-index+1
     }
-
     setTxtProgressBar(pb, i)
   }
   return(res)
