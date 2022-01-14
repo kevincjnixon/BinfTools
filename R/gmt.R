@@ -18,8 +18,14 @@ customGMT<-function(gost, key, gmt){
   } else {
     y<-gost
   }
-  IDs<-y[grep(key, y$term_name, ignore.case = T),]$term_id
-  terms<-grep(key, y$term_name, ignore.case = T, value = T)
+  IDs<-c()
+  terms<-c()
+  pb<-txtProgressBar(min=0, max=length(key), style=3)
+  for(i in 1:length(key)){
+    IDs<-y[grep(key[i], y$term_name, ignore.case = T),]$term_id
+    terms<-grep(key[i], y$term_name, ignore.case = T, value = T)
+    setTxtProgressBar(pb, i)
+  }
   x<-gmt[IDs]
   names(x)<-terms
   return(x)
