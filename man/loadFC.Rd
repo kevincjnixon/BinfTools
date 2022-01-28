@@ -7,10 +7,11 @@
 loadFC(filename)
 }
 \arguments{
-\item{filename}{Character indicating the path to the featureCounts table to import.}
+\item{filename}{Character indicating the path to the featureCounts table to import}
 }
 \value{
- A list of length 2: Counts=featureCount count matrix and annotation= Gene Annotation information from featureCounts
+A list of length 2: Counts=featureCount count matrix and annotation= Gene Annotation information from featureCounts
+}
 \description{
 Function to load featureCounts data
 }
