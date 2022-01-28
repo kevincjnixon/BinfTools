@@ -77,13 +77,13 @@ zheat<-function(genes=NULL, counts, conditions, con="WT", title="DEGs", labgenes
   zmat<-tmp.zmat
   conditions <- tmp.conditions
   if(isTRUE(avgExp)){
-    print(head(zmat))
-    print(conditions)
-    print(levels(conditions))
+    #print(head(zmat))
+    #print(conditions)
+    #print(levels(conditions))
     message("Averaging values within each condition...")
     zmat<-as.matrix(avgExp(zmat, conditions, "mean"))
     #zmat<-zmat[,levels(conditions)]
-    print(head(zmat))
+    #print(head(zmat))
   }
   #print(head(zmat))
   tmp=NULL
@@ -95,7 +95,7 @@ zheat<-function(genes=NULL, counts, conditions, con="WT", title="DEGs", labgenes
   if(!is.logical(zscore) && zscore=="keepMin"){
     lim<-c(max(abs(zmat[is.finite(zmat)]))*-1,max(abs(zmat[is.finite(zmat)])))
   }
-  print(lim)
+  #print(lim)
   #Check to see if 'genes' is null and if it's not, replace it with a vector of length rownames
   #Where genes specified in 'genes' are in the correct place, and all other values are " "
   if(!is.null(labgenes)){
