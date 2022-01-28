@@ -131,6 +131,27 @@ zheat<-function(genes=NULL, counts, conditions, con="WT", title="DEGs", labgenes
 }
 ######################################################################
 ######################################################################
+#' Z-score normalized heatmap of gene expression
+#'
+#' A function to generate a z-score normalized heatmap of gene expression from
+#' a DESeq2 counts object.
+#'
+#' @param genes A character vector of genes to subset from rownames(counts) to create the heatmap
+#' @param counts Normalized count matrix with rows as genes and columns as samples. Use 'counts(dds, normalized=T)'.
+#' @param conditions Character vector indicating conditions belonging to each sample (same order as colnames(counts))
+#' @param order.by Character vector indicating the arbitrary appearance order of the conditions level. Default is the default order of levels(conditions).
+#' @param sort.genes.by Character vector indicating the samples for sorting heatmap rows (genes).
+#' @param title Character vector indicating the title of the figure
+#' @param labgenes Character vector corresponding to rownames(counts) of genes to be labelled on the side of the heatmap. Leave as NULL to label all genes. Use "" to label no genes.
+#' @param zscore Boolean indicating if counts should be z-score normalized (default=T)
+#' @param avgExp Boolean indicating if values should be averaged within each condition (i.e. plot one value per condition). Default=F.
+#' @param rclus Boolean indicating if rows (genes) should be clustered. Leave FALSE for genes to be ordered on decreasing expression in 'con'.
+#' @param hmcol Color ramp palette of length 100 for custom heatmap colouring. Leave NULL for defaults.
+#' @param retClus Boolean indicating if clustered row names should be returnd. Default=FALSE.
+#' @param annoCols Character vector indicating RColorBrewer palette name or colours for annotation colours if rclus is provided a data.frame.
+#' @return Heatmap of z-score normalized gene expression with control condition samples appearing first.
+#' @export
+
 zheat_v2 <- function (genes = NULL, counts, conditions, order.by = NULL, sort.genes.by = NULL, title = "DEGs",
                       labgenes = NULL, zscore = T, avgExp = F, rclus = F, hmcol = NULL,
                       retClus = F, annoCols = "Dark2")
@@ -162,7 +183,7 @@ zheat_v2 <- function (genes = NULL, counts, conditions, order.by = NULL, sort.ge
     order.by <- levels(conditions)
   }else{
     if (length(order.by) != length(levels(factor(conditions)))){
-      stop("The order.by vector is for the arbitrary ordering of the conditions vector and must contain all the levels of the conditions vector")
+      stop("The order.by vector must be a permutation of the levels of the conditions vector")
     }
     conditions <- forcats::fct_relevel(conditions, order.by)
   }
@@ -170,7 +191,7 @@ zheat_v2 <- function (genes = NULL, counts, conditions, order.by = NULL, sort.ge
   if (is.null(sort.genes.by)){
     zmat <- zmat[order(rowMeans(zmat[, which(conditions == order.by[1])]), decreasing = T), ]
   }else{
-    zmat <- zmat[order(rowMeans(zmat[, which(conditions == sort.genes.by)]), decreasing = T), ]
+    zmat <- zmat[order(rowMeans(zmat[, which(conditions %in% sort.genes.by)]), decreasing = T), ]
   }
 
   tmp.zmat <- zmat[, which(conditions == levels(conditions)[1])]
