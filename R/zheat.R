@@ -66,13 +66,16 @@ zheat<-function(genes=NULL, counts, conditions, con="WT", title="DEGs", labgenes
   #print(levels(conditions)[1])
   zmat<-zmat[order(rowMeans(zmat[,which(conditions==con[1])]), decreasing=T),]
   #Now reorder the zmat to match the order of conditions (control then RNF)
-  tmp<-zmat[,which(conditions==levels(conditions)[1])]
-  #print(head(tmp))
+  tmp.zmat<-zmat[,which(conditions==levels(conditions)[1])]
+  tmp.conditions <- conditions[which(conditions == levels(conditions)[1])]
+  #print(head(tmp.zmat))
   for(i in 2:length(levels(conditions))){
-    tmp<-cbind(tmp, zmat[,which(conditions==levels(conditions)[i])])
-    #print(head(tmp))
+    tmp.zmat<-cbind(tmp.zmat, zmat[,which(conditions==levels(conditions)[i])])
+    tmp.conditions <- c(tmp.conditions, conditions[which(conditions == levels(conditions)[i])])
+    #print(head(tmp.zmat))
   }
-  zmat<-tmp
+  zmat<-tmp.zmat
+  conditions <- tmp.conditions
   if(isTRUE(avgExp)){
     message("Averaging values within each condition...")
     zmat<-as.matrix(avgExp(zmat, conditions, "mean"))
