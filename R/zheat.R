@@ -67,11 +67,11 @@ zheat<-function(genes=NULL, counts, conditions, con="WT", title="DEGs", labgenes
   zmat<-zmat[order(rowMeans(zmat[,which(conditions==con[1])]), decreasing=T),]
   #Now reorder the zmat to match the order of conditions (control then RNF)
   tmp.zmat<-zmat[,which(conditions==levels(conditions)[1])]
-  tmp.conditions <- conditions[which(conditions == levels(conditions)[1])]
+  tmp.conditions <- as.character(conditions[which(conditions == levels(conditions)[1])])
   #print(head(tmp.zmat))
   for(i in 2:length(levels(conditions))){
     tmp.zmat<-cbind(tmp.zmat, zmat[,which(conditions==levels(conditions)[i])])
-    tmp.conditions <- c(tmp.conditions, conditions[which(conditions == levels(conditions)[i])])
+    tmp.conditions <- c(tmp.conditions, as.character(conditions[which(conditions == levels(conditions)[i])]))
     #print(head(tmp.zmat))
   }
   zmat<-tmp.zmat
