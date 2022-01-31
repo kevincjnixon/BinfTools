@@ -272,6 +272,12 @@ GSEA_EM<-function(gsea, rnk, prefix=NULL, gmt=NULL){
   }
   neg<-subset(df, NES < 0)
   pos<-subset(df, NES > 0)
+  if(nrow(neg)<1){
+      neg[1,]<-c("TO_REMOVE","TO_REMOVE",1,1,1,1,1.1,1.1,1.1,0,1)
+    }
+  if(nrow(pos)<1){
+      pos[1,]<-c("TO_REMOVE","TO_REMOVE",1,1,1,1,1.1,1.1,1.1,0,1)
+    }
   if(is.null(prefix)){
     write.table(neg, file="GSEA_neg_report.tsv", quote=F, row.names=F, sep="\t")
     write.table(pos, file="GSEA_pos_report.tsv", quote=F, row.names=F, sep="\t")
