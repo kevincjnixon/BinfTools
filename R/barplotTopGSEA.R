@@ -13,7 +13,7 @@ barplotTopGSEA <- function(fgRes, n = 30, by = "padj", decreasing = FALSE, parse
   }
   fgRes <- fgRes[order(fgRes[[by]], decreasing = decreasing), ]
   filtRes = head(fgRes, n = n)
-  fgRes <- fgRes[order(fgRes[["NES"]], decreasing = T), ]
+  filtRes <- filtRes[order(filtRes[["NES"]], decreasing = T), ]
 
   upcols =  colorRampPalette(colors = c("red4", "red1", "lightpink"))( sum(filtRes$Enrichment == "Up-regulated"))
   downcols =  colorRampPalette(colors = c( "lightblue", "blue1", "blue4"))( sum(filtRes$Enrichment == "Down-regulated"))
