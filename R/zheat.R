@@ -209,7 +209,7 @@ zheat_v2 <- function (genes = NULL, counts, conditions, order.by = NULL, sort.ge
   conditions <- tmp.conditions
   if (isTRUE(avgExp)) {
     message("Averaging values within each condition...")
-    zmat <- as.matrix(myavgExp(zmat, conditions, "mean"))
+    zmat <- as.matrix(avgExp(zmat, conditions, "mean"))
     zmat <- zmat[, levels(conditions)]
   }
   tmp = NULL
