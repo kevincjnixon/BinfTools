@@ -4,7 +4,14 @@
 \alias{barplotTopGSEA}
 \title{Plot top n pathways according to given stat}
 \usage{
-barplotTopGSEA(fgRes, n = 30, by = "padj", decreasing = FALSE, parseBader = T)
+barplotTopGSEA(
+  fgRes,
+  n = 30,
+  by = "padj",
+  decreasing = FALSE,
+  parseBader = T,
+  plot.title = "GSEA Bar plot"
+)
 }
 \arguments{
 \item{n}{number of pathways to plot, default is 30.}
@@ -14,6 +21,8 @@ barplotTopGSEA(fgRes, n = 30, by = "padj", decreasing = FALSE, parseBader = T)
 \item{decreasing}{Should the sort order be increasing or decreasing? Default is False.}
 
 \item{parseBader}{Boolean indicating if gene set names should be parsed for the output figure following Bader Lab nomenclature (i.e. '\%' as delimiter)}
+
+\item{plot.title}{arbitrary plot title}
 
 \item{fgsea}{GSEA results from GSEA() function}
 }

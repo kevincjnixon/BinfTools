@@ -5,8 +5,9 @@
 #' @param by The stat for selecting top pathways, default is padj
 #' @param decreasing Should the sort order be increasing or decreasing? Default is False.
 #' @param parseBader Boolean indicating if gene set names should be parsed for the output figure following Bader Lab nomenclature (i.e. '%' as delimiter)
+#' @param plot.title arbitrary plot title
 #' @export
-barplotTopGSEA <- function(fgRes, n = 30, by = "padj", decreasing = FALSE, parseBader = T){
+barplotTopGSEA <- function(fgRes, n = 30, by = "padj", decreasing = FALSE, parseBader = T, plot.title = "GSEA Bar plot"){
 
   if (!by %in% colnames(fgRes)){
     stop("The input dataframe does not contain the provided stat!")
