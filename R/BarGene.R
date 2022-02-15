@@ -125,7 +125,7 @@ barGene<-function(genes, counts, conditions, title="Gene expression", norm=NULL,
     pwc <- y %>%
     dplyr::group_by(gene) %>%
     rstatix::t_test(expression ~ group) %>%
-    rstatix::adjust_pvalue(method = "bonferroni") %>%
+    rstatix::adjust_pvalue(method = "BH") %>%
     rstatix::add_significance("p.adj")
 	  
   #pwc <- pwc %>% tibble::add_column(gene=rep(unique(x$gene), each=length(unique(conditions))-1))
@@ -134,7 +134,9 @@ barGene<-function(genes, counts, conditions, title="Gene expression", norm=NULL,
     pwc <- pwc %>% rstatix::add_xy_position(x="gene", dodge=0.8)
     #Now make a pwc containing only the control condition
     conRows<-c(grep(con, pwc$group1),grep(con, pwc$group2))
-    p_pwc<-pwc[conRows,]
+    p_pwc<-pwc[conRows,-which(colnames(pwc) %in% c("p.adj","p.adj.signif")]
+	  p_pwc <- p_pwc %>% rstatix::adjust_pvalue(method="BH") %>%
+			      rstatix::add_significance("p.adj")
   #get y-values for pwc
   #i<-1
   #yvals<-c()
@@ -163,7 +165,7 @@ barGene<-function(genes, counts, conditions, title="Gene expression", norm=NULL,
   print(p) #Print the plot (was saved to 'p')
   if(isTRUE(returnDat)){
     if(!is.null(con)){
-	  return(list(rawData=y, Summary=x, Stats=pwc)) #Return a list with the raw and summarized data - if you want to invesigate it later
+	  return(list(rawData=y, Summary=x, Stats=pwc, Plotted_Stats=p_pwc)) #Return a list with the raw and summarized data - if you want to invesigate it later
     } else {
       return(list(rawData=y, Summary=x))
     }
