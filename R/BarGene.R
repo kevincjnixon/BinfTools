@@ -159,7 +159,7 @@ barGene<-function(genes, counts, conditions, title="Gene expression", norm=NULL,
     p_pwc<- p_pwc%>% dplyr::mutate(gene=forcats::fct_relevel(gene, genes))
     #p_pwc<- p_pwc%>% dplyr::mutate(group2=forcats::fct_relevel(group2, tmp))
     p_pwc <- p_pwc %>% rstatix::add_xy_position(x="gene", dodge=0.8)
-    print(p_pwc[,12:16])
+    #print(p_pwc[,12:16])
   #get y-values for pwc
   #i<-1
   #yvals<-c()
@@ -191,9 +191,9 @@ barGene<-function(genes, counts, conditions, title="Gene expression", norm=NULL,
    }
    for(i in 1:nrow(p_pwc)){
      if(as.numeric(sapply(strsplit(as.character(p_pwc$xmax[i]),".",T),'[[',2))<5){
-       p_pwc$xmax[i]<-as.numeric(paste(as.character(p_pwc$x[i]-1), sapply(strsplit(as.character(p_pwc$xmax[i]),".",T),'[[',2),sep="."))
-     } else {
        p_pwc$xmax[i]<-as.numeric(paste(as.character(p_pwc$x[i]), sapply(strsplit(as.character(p_pwc$xmax[i]),".",T),'[[',2),sep="."))
+     } else {
+       p_pwc$xmax[i]<-as.numeric(paste(as.character(p_pwc$x[i]-1), sapply(strsplit(as.character(p_pwc$xmax[i]),".",T),'[[',2),sep="."))
      }
      #r<-diff(c(p_pwc$xmin[i], p_pwc$xmax[i]))
      #If the difference is negative, the lines will start where they need to end, and end after where they should, so fix it
