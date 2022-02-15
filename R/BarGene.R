@@ -134,7 +134,7 @@ barGene<-function(genes, counts, conditions, title="Gene expression", norm=NULL,
     pwc <- pwc %>% rstatix::add_xy_position(x="gene", dodge=0.8)
     #Now make a pwc containing only the control condition
     conRows<-c(grep(con, pwc$group1),grep(con, pwc$group2))
-    p_pwc<-pwc[conRows,-which(colnames(pwc) %in% c("p.adj","p.adj.signif")]
+    p_pwc<-pwc[conRows,-which(colnames(pwc) %in% c("p.adj","p.adj.signif"))]
 	  p_pwc <- p_pwc %>% rstatix::adjust_pvalue(method="BH") %>%
 			      rstatix::add_significance("p.adj")
   #get y-values for pwc
