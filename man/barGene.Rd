@@ -13,7 +13,8 @@ barGene(
   eb = "sd",
   returnDat = F,
   col = "Dark2",
-  ord = NULL
+  ord = NULL,
+  con = NULL
 )
 }
 \arguments{
@@ -34,6 +35,8 @@ barGene(
 \item{col}{character indicating the RColorBrewer palette name or list of colours (hex, name, rgb()) to be used. Default is "Dark2"}
 
 \item{ord}{character indicating the order in which the samples should appear (overrides any ordering from using 'norm' argument). Default is NULL.}
+
+\item{con}{character indicating control condition if pairswise t-tests are to be performed. Leave NULL to not include stats.}
 }
 \value{
 Bar plot of gene expression and list of length 2 containing 'rawData' and 'Summary' of gene expression data if 'returnDat' is TRUE.
