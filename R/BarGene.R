@@ -144,17 +144,17 @@ barGene<-function(genes, counts, conditions, title="Gene expression", norm=NULL,
       }
     }
     tmp<-levels(x$group)[-which(levels(x$group) %in% con)]
-    newtmp<-NULL
-    for(i in 1:length(genes)){
-      tm<-p_pwc %>% dplyr::filter(gene==genes[i])
-      tm<-tm[match(tmp, tm$group2),]
-      if(i==1){
-	newtmp<-tm
-      } else {
-        newtmp<-dplyr::bind_rows(newtmp, tm)
-      }
-    }
-    p_pwc<-newtmp
+    #newtmp<-NULL
+    #for(i in 1:length(genes)){
+    #  tm<-p_pwc %>% dplyr::filter(gene==genes[i])
+    #  tm<-tm[match(tmp, tm$group2),]
+    #  if(i==1){
+#	newtmp<-tm
+#      } else {
+ #       newtmp<-dplyr::bind_rows(newtmp, tm)
+ #     }
+ #   }
+  #  p_pwc<-newtmp
     p_pwc<- p_pwc%>% dplyr::mutate(gene=forcats::fct_relevel(gene, genes))
     p_pwc<- p_pwc%>% dplyr::mutate(group2=forcats::fct_relevel(group2, tmp))
     p_pwc <- p_pwc %>% rstatix::add_xy_position(x="gene", dodge=0.8)
