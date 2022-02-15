@@ -129,9 +129,9 @@ barGene<-function(genes, counts, conditions, title="Gene expression", norm=NULL,
     rstatix::adjust_pvalue(method = "BH") %>%
     rstatix::add_significance("p.adj")
     
-    pwc<- y %>% rstatix::pairwise_t_test(expression ~ group, p.adjust.method="BH")
-    pwc <- pwc %>% rstatix::add_significance("p.adj")
-    print(pwc)
+    #pwc<- y %>% rstatix::pairwise_t_test(expression ~ group, p.adjust.method="BH")
+    #pwc <- pwc %>% rstatix::add_significance("p.adj")
+    #print(pwc)
     #Now make a pwc containing only the control condition
     conRows<-c(grep(con, pwc$group1),grep(con, pwc$group2))
     p_pwc<-pwc[conRows,-which(colnames(pwc) %in% c("p.adj.signif"))]
