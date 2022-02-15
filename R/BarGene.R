@@ -198,7 +198,7 @@ barGene<-function(genes, counts, conditions, title="Gene expression", norm=NULL,
    #  }
    #}
    #Fix the xmin
-   p_pwc$xmin=p_pwx$xmin-1
+   p_pwc$xmin=p_pwc$xmin-1
    p<- p + ggpubr::stat_pvalue_manual(p_pwc, label="p.adj.signif",
                                tip.length=0, inherit.aes=F, hide.ns=T)#, step.increase=0,
                                #x="gene", y="y")
