@@ -122,6 +122,7 @@ barGene<-function(genes, counts, conditions, title="Gene expression", norm=NULL,
   pwc<-c()
   p_pwc<-c()
   if(!is.null(con)){  
+    y<-y%>% dplyr::mutate(group=forcats::fct_relevel(group, levels(x$group)))
     pwc <- y %>%
     dplyr::group_by(gene) %>%
     rstatix::t_test(expression ~ group) %>%
@@ -137,13 +138,13 @@ barGene<-function(genes, counts, conditions, title="Gene expression", norm=NULL,
     p_pwc$p.adj<-p.adjust(p_pwc$p, method="BH")
     p_pwc <- p_pwc %>% rstatix::add_significance("p.adj")
     #reorder so the xy positions are added to the correct places
-    for (i in 1:nrow(p_pwc)){
-      if(p_pwc$group1[i]!=con){
-        p_pwc$group2[i]<-p_pwc$group1[i]
-	p_pwc$group1[i]<-con
-      }
-    }
-    tmp<-levels(x$group)[-which(levels(x$group) %in% con)]
+    #for (i in 1:nrow(p_pwc)){
+    #  if(p_pwc$group1[i]!=con){
+    #    p_pwc$group2[i]<-p_pwc$group1[i]
+#	p_pwc$group1[i]<-con
+ #     }
+ #   }
+ #   tmp<-levels(x$group)[-which(levels(x$group) %in% con)]
     #newtmp<-NULL
     #for(i in 1:length(genes)){
     #  tm<-p_pwc %>% dplyr::filter(gene==genes[i])
@@ -155,8 +156,8 @@ barGene<-function(genes, counts, conditions, title="Gene expression", norm=NULL,
  #     }
  #   }
   #  p_pwc<-newtmp
-    p_pwc<- p_pwc%>% dplyr::mutate(gene=forcats::fct_relevel(gene, genes))
-    p_pwc<- p_pwc%>% dplyr::mutate(group2=forcats::fct_relevel(group2, tmp))
+    #p_pwc<- p_pwc%>% dplyr::mutate(gene=forcats::fct_relevel(gene, genes))
+    #p_pwc<- p_pwc%>% dplyr::mutate(group2=forcats::fct_relevel(group2, tmp))
     p_pwc <- p_pwc %>% rstatix::add_xy_position(x="gene", dodge=0.8)
     print(p_pwc)
   #get y-values for pwc
