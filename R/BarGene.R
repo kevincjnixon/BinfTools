@@ -167,7 +167,7 @@ barGene<-function(genes, counts, conditions, title="Gene expression", norm=NULL,
   }
   print(p) #Print the plot (was saved to 'p')
   if(isTRUE(returnDat)){
-	  return(list(rawData=y, Summary=x)) #Return a list with the raw and summarized data - if you want to invesigate it later
+	  return(list(rawData=y, Summary=x, Stats=pwc)) #Return a list with the raw and summarized data - if you want to invesigate it later
   }
 }
 
