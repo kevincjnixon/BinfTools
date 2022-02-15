@@ -121,10 +121,10 @@ barGene<-function(genes, counts, conditions, title="Gene expression", norm=NULL,
   #Perform stats if necessary
   if(!is.null(con)){  
     pwc <- y %>%
-    group_by(gene) %>%
-    t_test(expression ~ group) %>%
-    adjust_pvalue(method = "bonferroni") %>%
-    add_significance("p.adj")
+    dplyr::group_by(gene) %>%
+    rstatix::t_test(expression ~ group) %>%
+    rstatix::adjust_pvalue(method = "bonferroni") %>%
+    rstatix::add_significance("p.adj")
 	  
   #pwc <- pwc %>% tibble::add_column(gene=rep(unique(x$gene), each=length(unique(conditions))-1))
   #pwc$group1<-sapply(strsplit(pwc$group1,"_",T),'[[',1)
