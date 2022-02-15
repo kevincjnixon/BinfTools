@@ -181,6 +181,15 @@ barGene<-function(genes, counts, conditions, title="Gene expression", norm=NULL,
     p<- p + ggplot2::geom_hline(yintercept=1, linetype="dashed", color="black")
   }
   if(!is.null(con)){
+   #Make sure the stats are over the right genes
+   if(con=="show.all"){
+     p_pwc<-pwc
+   }
+   for(i in 1:length(genes)){
+     p_pwc[which(p_pwc$gene %in% genes[i]),]$x<-i
+     p_pwc$xmin[which(p_pwc$gene %in% genes[i])]<-as.numeric(paste(i, sapply(strsplit(as.character(p_pwc$xmin[which(p_pwc$gene %in% genes[i])]),".",T),'[[',2),sep="."))
+     p_pwc$xmax[which(p_pwc$gene %in% genes[i])]<-as.numeric(paste(i, sapply(strsplit(as.character(p_pwc$xmax[which(p_pwc$gene %in% genes[i])]),".",T),'[[',2),sep="."))
+   }
    p<- p + ggpubr::stat_pvalue_manual(p_pwc, label="p.adj.signif",
                                tip.length=0, inherit.aes=F, hide.ns=T)#, step.increase=0,
                                #x="gene", y="y")
