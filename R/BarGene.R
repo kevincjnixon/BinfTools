@@ -128,47 +128,20 @@ barGene<-function(genes, counts, conditions, title="Gene expression", norm=NULL,
     rstatix::t_test(expression ~ group) %>%
     rstatix::adjust_pvalue(method = "BH") %>%
     rstatix::add_significance("p.adj")
-	  
-  #pwc <- pwc %>% tibble::add_column(gene=rep(unique(x$gene), each=length(unique(conditions))-1))
-  #pwc$group1<-sapply(strsplit(pwc$group1,"_",T),'[[',1)
-  #pwc$group2<-sapply(strsplit(pwc$group2,"_",T),'[[',1)
+    
+    pwc<- y %>% rstatix::pairwise_t_test(expression ~ group, p.adjust.method="BH")
+    pwc <- pwc %>% rstatix::add_significance("p.adj")
+    print(pwc)
     #Now make a pwc containing only the control condition
     conRows<-c(grep(con, pwc$group1),grep(con, pwc$group2))
     p_pwc<-pwc[conRows,-which(colnames(pwc) %in% c("p.adj.signif"))]
     p_pwc$p.adj<-p.adjust(p_pwc$p, method="BH")
     p_pwc <- p_pwc %>% rstatix::add_significance("p.adj")
-    #reorder so the xy positions are added to the correct places
-    #for (i in 1:nrow(p_pwc)){
-    #  if(p_pwc$group1[i]!=con){
-    #    p_pwc$group2[i]<-p_pwc$group1[i]
-#	p_pwc$group1[i]<-con
- #     }
- #   }
- #   tmp<-levels(x$group)[-which(levels(x$group) %in% con)]
-    #newtmp<-NULL
-    #for(i in 1:length(genes)){
-    #  tm<-p_pwc %>% dplyr::filter(gene==genes[i])
-    #  tm<-tm[match(tmp, tm$group2),]
-    #  if(i==1){
-#	newtmp<-tm
-#      } else {
- #       newtmp<-dplyr::bind_rows(newtmp, tm)
- #     }
- #   }
-  #  p_pwc<-newtmp
+    
     p_pwc<- p_pwc%>% dplyr::mutate(gene=forcats::fct_relevel(gene, genes))
-    #p_pwc<- p_pwc%>% dplyr::mutate(group2=forcats::fct_relevel(group2, tmp))
+
     p_pwc <- p_pwc %>% rstatix::add_xy_position(x="gene", dodge=0.8)
     #print(p_pwc[,12:16])
-  #get y-values for pwc
-  #i<-1
-  #yvals<-c()
-  #while(i <= length(unique(x$gene))){
-  #  tmp<-subset(x, gene==unique(x$gene)[i])
-  #  yvals<-c(yvals, max(tmp$mean)*1.1)
-  #  i<-i+1
-  #}
-  #pwc <- pwc %>% tibble::add_column(y=rep(yvals, each=length(unique(conditions))-1))
   }
   #And now, we're ready for plotting
   p<-ggplot2::ggplot(x, ggplot2::aes(x=gene, y=mean, fill=group)) +
@@ -189,20 +162,14 @@ barGene<-function(genes, counts, conditions, title="Gene expression", norm=NULL,
      p_pwc[which(p_pwc$gene %in% genes[i]),]$x<-i
      p_pwc$xmin[which(p_pwc$gene %in% genes[i])]<-as.numeric(paste(i-1, sapply(strsplit(as.character(p_pwc$xmin[which(p_pwc$gene %in% genes[i])]),".",T),'[[',2),sep="."))
    }
+   #fix the xmin
    for(i in 1:nrow(p_pwc)){
      if(as.numeric(sapply(strsplit(as.character(p_pwc$xmax[i]),".",T),'[[',2))<5){
        p_pwc$xmax[i]<-as.numeric(paste(as.character(p_pwc$x[i]), sapply(strsplit(as.character(p_pwc$xmax[i]),".",T),'[[',2),sep="."))
      } else {
        p_pwc$xmax[i]<-as.numeric(paste(as.character(p_pwc$x[i]-1), sapply(strsplit(as.character(p_pwc$xmax[i]),".",T),'[[',2),sep="."))
      }
-     #r<-diff(c(p_pwc$xmin[i], p_pwc$xmax[i]))
-     #If the difference is negative, the lines will start where they need to end, and end after where they should, so fix it
-     #if(r<0){
-     #  p_pwc$xmin[i]<-p_pwc$xmin[i]+2*r #This will move the start to where it should be
-     #}
    }
-   #Fix the xmin
-   #p_pwc$xmin=p_pwc$xmin-1
    p<- p + ggpubr::stat_pvalue_manual(p_pwc, label="p.adj.signif",
                                tip.length=0, inherit.aes=F, hide.ns=T)#, step.increase=0,
                                #x="gene", y="y")
