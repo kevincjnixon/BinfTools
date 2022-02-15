@@ -171,7 +171,7 @@ barGene<-function(genes, counts, conditions, title="Gene expression", norm=NULL,
     if(!is.null(con)){
 	  return(list(rawData=y, Summary=x, Stats=pwc)) #Return a list with the raw and summarized data - if you want to invesigate it later
     } else {
-      return(lis(rawData=y, Summary=x)
+      return(list(rawData=y, Summary=x))
     }
   }
 }
