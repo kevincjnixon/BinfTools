@@ -119,6 +119,8 @@ barGene<-function(genes, counts, conditions, title="Gene expression", norm=NULL,
     }
   }
   #Perform stats if necessary
+  pwc<-c()
+  p_pwc<-c()
   if(!is.null(con)){  
     pwc <- y %>%
     dplyr::group_by(gene) %>%
