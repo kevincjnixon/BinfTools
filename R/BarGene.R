@@ -140,7 +140,7 @@ barGene<-function(genes, counts, conditions, title="Gene expression", norm=NULL,
     }
   pwc<- y %>% rstatix::pairwise_t_test(expression ~ comp, comparisons=comps, p.adjust.method="BH")
 	  
-  pwc <- pwc %>% tibble::add_column(gene=unique(x$gene))
+  pwc <- pwc %>% tibble::add_column(gene=rep(unique(x$gene), each=length(unique(conditions))-1))
   #get y-values for pwc
   i<-1
   yvals<-c()
@@ -149,7 +149,7 @@ barGene<-function(genes, counts, conditions, title="Gene expression", norm=NULL,
     yvals<-c(yvals, max(tmp$mean)*1.1)
     i<-i+1
   }
-  pwc <- pwc %>% tibble::add_column(y=yvals)
+  pwc <- pwc %>% tibble::add_column(y=rep(yvals, each=length(unique(conditions))-1))
   }
   #And now, we're ready for plotting
   p<-ggplot2::ggplot(x, ggplot2::aes(x=gene, y=mean, fill=group)) +
