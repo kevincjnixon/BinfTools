@@ -146,7 +146,7 @@ barGene<-function(genes, counts, conditions, title="Gene expression", norm=NULL,
   yvals<-c()
   while(i <= length(unique(x$gene))){
     tmp<-subset(x, gene==unique(x$gene)[i])
-    yvals<-c(yvals, max(tmp$mean[i])*1.1)
+    yvals<-c(yvals, max(tmp$mean)*1.1)
     i<-i+1
   }
   pwc <- pwc %>% tibble::add_column(y=yvals)
