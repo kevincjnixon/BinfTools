@@ -80,10 +80,11 @@ data_sum<-function(data, eb){
 #'@param returnDat Boolean indicating if list of raw and summarized data should be returned for further analysis. Default is FALSE.
 #'@param col character indicating the RColorBrewer palette name or list of colours (hex, name, rgb()) to be used. Default is "Dark2"
 #'@param ord character indicating the order in which the samples should appear (overrides any ordering from using 'norm' argument). Default is NULL.
+#'@param con character indicating control condition if pairswise t-tests are to be performed. Leave NULL to not include stats.
 #'@return Bar plot of gene expression and list of length 2 containing 'rawData' and 'Summary' of gene expression data if 'returnDat' is TRUE.
 #'@export
 
-barGene<-function(genes, counts, conditions, title="Gene expression", norm=NULL, eb="sd", returnDat=F, col="Dark2", ord=NULL){
+barGene<-function(genes, counts, conditions, title="Gene expression", norm=NULL, eb="sd", returnDat=F, col="Dark2", ord=NULL, con=NULL){
   ylab="Mean"
   #norm is the condition to normalize expression to for relative expression
   counts<-counts[which(rownames(counts) %in% genes),]
@@ -117,6 +118,38 @@ barGene<-function(genes, counts, conditions, title="Gene expression", norm=NULL,
       message("length(ord) is not equal to length(levels(factor(conditions))). Ignoring...")
     }
   }
+  #Perform stats if necessary
+  if(!is.null(con)){
+    comps<-list()
+    #Make a column for the stats
+    y$comp<-as.factor(paste(y$group,y$gene,sep="_"))
+    #Run pairwise comparisons for each condition to con
+    i<-1
+    index<-1
+    #Start by going through each gene
+    while(i <= length(levels(y$gene))){
+      #Then go through each condition
+      for(k in 1:length(levels(y$group))){
+        #Check to see if current condition is the control condition
+        if(levels(y$group)[k]!=con){
+          comps[[index]]<-c(paste(con, as.character(levels(y$gene)[i]), sep="_"), paste(as.character(levels(y$group)[k]), as.character(levels(y$gene)[i]), sep="_"))
+          index<-index+1
+        }
+      }
+      i<-i+1
+    }
+  pwc<- y %>% rstatix::pairwise_t_test(expression ~ comp, comparisons=comps, p.adjust.method="BH")
+	  
+  pwc <- pwc %>% tibble::add_column(gene=unique(x$gene))
+  #get y-values for pwc
+  i<-1
+  yvals<-c()
+  while(i < length(x$mean)){
+    yvals<-c(yvals, max(c(x$mean[i], x$mean[i+1]))*1.1)
+    i<-i+2
+  }
+  pwc <- pwc %>% tibble::add_column(y=yvals)
+  }
   #And now, we're ready for plotting
   p<-ggplot2::ggplot(x, ggplot2::aes(x=gene, y=mean, fill=group)) +
     ggplot2::geom_bar(stat="identity", color="black", position=ggplot2::position_dodge()) +
@@ -126,6 +159,11 @@ barGene<-function(genes, counts, conditions, title="Gene expression", norm=NULL,
     ggplot2::scale_fill_manual(values=colPal(col))
   if(!is.null(norm)){
     p<- p + ggplot2::geom_hline(yintercept=1, linetype="dashed", color="black")
+  }
+  if(!is.null(con)){
+   p<- p + ggpubr::stat_pvalue_manual(pwc, label="p.adj.signif",
+                               tip.length=0, step.increase=0,
+                               x="gene", y="y", inherit.aes=F)
   }
   print(p) #Print the plot (was saved to 'p')
   if(isTRUE(returnDat)){
