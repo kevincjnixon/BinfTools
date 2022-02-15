@@ -190,6 +190,13 @@ barGene<-function(genes, counts, conditions, title="Gene expression", norm=NULL,
      p_pwc$xmin[which(p_pwc$gene %in% genes[i])]<-as.numeric(paste(i, sapply(strsplit(as.character(p_pwc$xmin[which(p_pwc$gene %in% genes[i])]),".",T),'[[',2),sep="."))
      p_pwc$xmax[which(p_pwc$gene %in% genes[i])]<-as.numeric(paste(i, sapply(strsplit(as.character(p_pwc$xmax[which(p_pwc$gene %in% genes[i])]),".",T),'[[',2),sep="."))
    }
+   for(i in 1:nrow(p_pwc)){
+     r<-diff(c(p_pwc$xmin[i], p_pwc$xmax[i]))
+     #If the difference is negative, the lines will start where they need to end, and end after where they should, so fix it
+     if(r<0){
+       p_pwc$xmin[i]<-p_pwc$xmin[i]+2*r #This will move the start to where it should be
+     }
+   }
    p<- p + ggpubr::stat_pvalue_manual(p_pwc, label="p.adj.signif",
                                tip.length=0, inherit.aes=F, hide.ns=T)#, step.increase=0,
                                #x="gene", y="y")
