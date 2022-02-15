@@ -120,30 +120,19 @@ barGene<-function(genes, counts, conditions, title="Gene expression", norm=NULL,
   }
   #Perform stats if necessary
   if(!is.null(con)){  
-    comps<-list()
-    #Make a column for the stats
-    y$comp<-as.factor(paste(y$group,y$gene,sep="_"))
-    #Run pairwise comparisons for each condition to con
-    i<-1
-    index<-1
-    #Start by going through each gene
-    while(i <= length(levels(y$gene))){
-      #Then go through each condition
-      for(k in 1:length(levels(y$group))){
-        #Check to see if current condition is the control condition
-        if(levels(y$group)[k]!=con){
-          comps[[index]]<-c(paste(con, as.character(levels(y$gene)[i]), sep="_"), paste(as.character(levels(y$group)[k]), as.character(levels(y$gene)[i]), sep="_"))
-          index<-index+1
-        }
-      }
-      i<-i+1
-    }
-  pwc<- y %>% rstatix::pairwise_t_test(expression ~ comp, comparisons=comps, p.adjust.method="BH")
+    pwc <- y %>%
+    group_by(gene) %>%
+    t_test(expression ~ group) %>%
+    adjust_pvalue(method = "bonferroni") %>%
+    add_significance("p.adj")
 	  
-  pwc <- pwc %>% tibble::add_column(gene=rep(unique(x$gene), each=length(unique(conditions))-1))
-  pwc$group1<-sapply(strsplit(pwc$group1,"_",T),'[[',1)
-  pwc$group2<-sapply(strsplit(pwc$group2,"_",T),'[[',1)
-  pwc <- pwc %>% rstatix::add_xy_position(x="gene", dodge=0.9)
+  #pwc <- pwc %>% tibble::add_column(gene=rep(unique(x$gene), each=length(unique(conditions))-1))
+  #pwc$group1<-sapply(strsplit(pwc$group1,"_",T),'[[',1)
+  #pwc$group2<-sapply(strsplit(pwc$group2,"_",T),'[[',1)
+    pwc <- pwc %>% rstatix::add_xy_position(x="gene", dodge=0.8)
+    #Now make a pwc containing only the control condition
+    conRows<-c(grep(con, pwc$group1),grep(con, pwc$group2))
+    p_pwc<-pwc[conRows,]
   #get y-values for pwc
   #i<-1
   #yvals<-c()
@@ -165,7 +154,7 @@ barGene<-function(genes, counts, conditions, title="Gene expression", norm=NULL,
     p<- p + ggplot2::geom_hline(yintercept=1, linetype="dashed", color="black")
   }
   if(!is.null(con)){
-   p<- p + ggpubr::stat_pvalue_manual(pwc, label="p.adj.signif",
+   p<- p + ggpubr::stat_pvalue_manual(p_pwc, label="p.adj.signif",
                                tip.length=0, inherit.aes=F, hide.ns=T)#, step.increase=0,
                                #x="gene", y="y")
   }
