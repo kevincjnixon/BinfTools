@@ -140,16 +140,17 @@ barGene<-function(genes, counts, conditions, title="Gene expression", norm=NULL,
     }
   pwc<- y %>% rstatix::pairwise_t_test(expression ~ comp, comparisons=comps, p.adjust.method="BH")
 	  
-  pwc <- pwc %>% tibble::add_column(gene=rep(unique(x$gene), each=length(unique(conditions))-1))
+  #pwc <- pwc %>% tibble::add_column(gene=rep(unique(x$gene), each=length(unique(conditions))-1))
+  pwc <- pwc %>% rstatix::add_xy_position(x="gene", dodge=0.9)
   #get y-values for pwc
-  i<-1
-  yvals<-c()
-  while(i <= length(unique(x$gene))){
-    tmp<-subset(x, gene==unique(x$gene)[i])
-    yvals<-c(yvals, max(tmp$mean)*1.1)
-    i<-i+1
-  }
-  pwc <- pwc %>% tibble::add_column(y=rep(yvals, each=length(unique(conditions))-1))
+  #i<-1
+  #yvals<-c()
+  #while(i <= length(unique(x$gene))){
+  #  tmp<-subset(x, gene==unique(x$gene)[i])
+  #  yvals<-c(yvals, max(tmp$mean)*1.1)
+  #  i<-i+1
+  #}
+  #pwc <- pwc %>% tibble::add_column(y=rep(yvals, each=length(unique(conditions))-1))
   }
   #And now, we're ready for plotting
   p<-ggplot2::ggplot(x, ggplot2::aes(x=gene, y=mean, fill=group)) +
@@ -163,8 +164,8 @@ barGene<-function(genes, counts, conditions, title="Gene expression", norm=NULL,
   }
   if(!is.null(con)){
    p<- p + ggpubr::stat_pvalue_manual(pwc, label="p.adj.signif",
-                               tip.length=0, step.increase=0,
-                               x="gene", y="y", inherit.aes=F)
+                               tip.length=0)#, step.increase=0,
+                               #x="gene", y="y", inherit.aes=F)
   }
   print(p) #Print the plot (was saved to 'p')
   if(isTRUE(returnDat)){
