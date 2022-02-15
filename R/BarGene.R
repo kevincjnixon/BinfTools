@@ -165,7 +165,7 @@ barGene<-function(genes, counts, conditions, title="Gene expression", norm=NULL,
    #fix the xmin
    for(i in 1:nrow(p_pwc)){
      #If the xmin variable is less than n.5, then we shouldn't have subtracted 1 from it before, so add it back (we still need earlier step to ensure the right stats go over the right gene)
-     if(as.numeric(sapply(strsplit(as.character(p_pwc$xmin[i]),".",T),'[[',1))<5){
+     if(as.numeric(sapply(strsplit(as.character(p_pwc$xmin[i]),".",T),'[[',2))<5){
         p_pwc$xmin[i]<-p_pwc$xmin[i]+1
      }
      if(as.numeric(sapply(strsplit(as.character(p_pwc$xmax[i]),".",T),'[[',2))<5){
