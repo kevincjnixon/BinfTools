@@ -164,8 +164,8 @@ barGene<-function(genes, counts, conditions, title="Gene expression", norm=NULL,
   }
   if(!is.null(con)){
    p<- p + ggpubr::stat_pvalue_manual(pwc, label="p.adj.signif",
-                               tip.length=0)#, step.increase=0,
-                               #x="gene", y="y", inherit.aes=F)
+                               tip.length=0, inherit.aes=F)#, step.increase=0,
+                               #x="gene", y="y")
   }
   print(p) #Print the plot (was saved to 'p')
   if(isTRUE(returnDat)){
