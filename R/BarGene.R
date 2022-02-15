@@ -156,7 +156,7 @@ barGene<-function(genes, counts, conditions, title="Gene expression", norm=NULL,
  #     }
  #   }
   #  p_pwc<-newtmp
-    #p_pwc<- p_pwc%>% dplyr::mutate(gene=forcats::fct_relevel(gene, genes))
+    p_pwc<- p_pwc%>% dplyr::mutate(gene=forcats::fct_relevel(gene, genes))
     #p_pwc<- p_pwc%>% dplyr::mutate(group2=forcats::fct_relevel(group2, tmp))
     p_pwc <- p_pwc %>% rstatix::add_xy_position(x="gene", dodge=0.8)
     print(p_pwc)
