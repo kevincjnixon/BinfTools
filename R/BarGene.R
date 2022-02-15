@@ -119,7 +119,7 @@ barGene<-function(genes, counts, conditions, title="Gene expression", norm=NULL,
     }
   }
   #Perform stats if necessary
-  if(!is.null(con)){
+  if(!is.null(con)){  
     comps<-list()
     #Make a column for the stats
     y$comp<-as.factor(paste(y$group,y$gene,sep="_"))
@@ -140,7 +140,9 @@ barGene<-function(genes, counts, conditions, title="Gene expression", norm=NULL,
     }
   pwc<- y %>% rstatix::pairwise_t_test(expression ~ comp, comparisons=comps, p.adjust.method="BH")
 	  
-  #pwc <- pwc %>% tibble::add_column(gene=rep(unique(x$gene), each=length(unique(conditions))-1))
+  pwc <- pwc %>% tibble::add_column(gene=rep(unique(x$gene), each=length(unique(conditions))-1))
+  pwc$group1<-sapply(strsplit(pwc$group1,"_",T),'[[',1)
+  pwc$group2<-sapply(strsplit(pwc$group2,"_",T),'[[',1)
   pwc <- pwc %>% rstatix::add_xy_position(x="gene", dodge=0.9)
   #get y-values for pwc
   #i<-1
@@ -164,7 +166,7 @@ barGene<-function(genes, counts, conditions, title="Gene expression", norm=NULL,
   }
   if(!is.null(con)){
    p<- p + ggpubr::stat_pvalue_manual(pwc, label="p.adj.signif",
-                               tip.length=0, inherit.aes=F)#, step.increase=0,
+                               tip.length=0, inherit.aes=F, hide.ns=T)#, step.increase=0,
                                #x="gene", y="y")
   }
   print(p) #Print the plot (was saved to 'p')
