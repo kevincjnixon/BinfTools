@@ -159,7 +159,7 @@ barGene<-function(genes, counts, conditions, title="Gene expression", norm=NULL,
     p_pwc<- p_pwc%>% dplyr::mutate(gene=forcats::fct_relevel(gene, genes))
     #p_pwc<- p_pwc%>% dplyr::mutate(group2=forcats::fct_relevel(group2, tmp))
     p_pwc <- p_pwc %>% rstatix::add_xy_position(x="gene", dodge=0.8)
-    print(p_pwc)
+    print(p_pwc[,12:16])
   #get y-values for pwc
   #i<-1
   #yvals<-c()
@@ -173,7 +173,7 @@ barGene<-function(genes, counts, conditions, title="Gene expression", norm=NULL,
   #And now, we're ready for plotting
   p<-ggplot2::ggplot(x, ggplot2::aes(x=gene, y=mean, fill=group)) +
     ggplot2::geom_bar(stat="identity", color="black", position=ggplot2::position_dodge()) +
-    ggplot2::geom_errorbar(ggplot2::aes(ymin=mean-eb, ymax=mean+eb), width=.2, position=ggplot2::position_dodge(.9)) +
+    ggplot2::geom_errorbar(ggplot2::aes(ymin=mean-eb, ymax=mean+eb), width=.2, position=ggplot2::position_dodge(0.9)) +
     ggplot2::labs(title=title, y=paste0(ylab," Expression (+/-",eb,")"), x="Gene") +
     ggplot2::theme_minimal() + ggplot2::theme(axis.text.x=ggplot2::element_text(angle=60, hjust=1)) +
     ggplot2::scale_fill_manual(values=colPal(col))
@@ -185,18 +185,20 @@ barGene<-function(genes, counts, conditions, title="Gene expression", norm=NULL,
    if(con=="show.all"){
      p_pwc<-pwc
    }
-   for(i in 1:length(genes)){
-     p_pwc[which(p_pwc$gene %in% genes[i]),]$x<-i
-     p_pwc$xmin[which(p_pwc$gene %in% genes[i])]<-as.numeric(paste(i, sapply(strsplit(as.character(p_pwc$xmin[which(p_pwc$gene %in% genes[i])]),".",T),'[[',2),sep="."))
-     p_pwc$xmax[which(p_pwc$gene %in% genes[i])]<-as.numeric(paste(i, sapply(strsplit(as.character(p_pwc$xmax[which(p_pwc$gene %in% genes[i])]),".",T),'[[',2),sep="."))
-   }
-   for(i in 1:nrow(p_pwc)){
-     r<-diff(c(p_pwc$xmin[i], p_pwc$xmax[i]))
-     #If the difference is negative, the lines will start where they need to end, and end after where they should, so fix it
-     if(r<0){
-       p_pwc$xmin[i]<-p_pwc$xmin[i]+2*r #This will move the start to where it should be
-     }
-   }
+   #for(i in 1:length(genes)){
+   #  p_pwc[which(p_pwc$gene %in% genes[i]),]$x<-i
+   #  p_pwc$xmin[which(p_pwc$gene %in% genes[i])]<-as.numeric(paste(i, sapply(strsplit(as.character(p_pwc$xmin[which(p_pwc$gene %in% genes[i])]),".",T),'[[',2),sep="."))
+   #  p_pwc$xmax[which(p_pwc$gene %in% genes[i])]<-as.numeric(paste(i, sapply(strsplit(as.character(p_pwc$xmax[which(p_pwc$gene %in% genes[i])]),".",T),'[[',2),sep="."))
+   #}
+   #for(i in 1:nrow(p_pwc)){
+   #  r<-diff(c(p_pwc$xmin[i], p_pwc$xmax[i]))
+   #  #If the difference is negative, the lines will start where they need to end, and end after where they should, so fix it
+   #  if(r<0){
+   #    p_pwc$xmin[i]<-p_pwc$xmin[i]+2*r #This will move the start to where it should be
+   #  }
+   #}
+   #Fix the xmin
+   p_pwc$xmin=p_pwx$xmin-1
    p<- p + ggpubr::stat_pvalue_manual(p_pwc, label="p.adj.signif",
                                tip.length=0, inherit.aes=F, hide.ns=T)#, step.increase=0,
                                #x="gene", y="y")
