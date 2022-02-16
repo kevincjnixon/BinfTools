@@ -81,10 +81,11 @@ data_sum<-function(data, eb){
 #'@param col character indicating the RColorBrewer palette name or list of colours (hex, name, rgb()) to be used. Default is "Dark2"
 #'@param ord character indicating the order in which the samples should appear (overrides any ordering from using 'norm' argument). Default is NULL.
 #'@param con character indicating control condition if pairswise t-tests are to be performed. Leave NULL to not include stats.
+#'@param stat.test character indicating either "t.test" or "wilcox" for stats when 'con' is defined. Default is "t.test"
 #'@return Bar plot of gene expression and list of length 2 containing 'rawData' and 'Summary' of gene expression data if 'returnDat' is TRUE.
 #'@export
 
-barGene<-function(genes, counts, conditions, title="Gene expression", norm=NULL, eb="sd", returnDat=F, col="Dark2", ord=NULL, con=NULL){
+barGene<-function(genes, counts, conditions, title="Gene expression", norm=NULL, eb="sd", returnDat=F, col="Dark2", ord=NULL, con=NULL, stat.test="t.test"){
   ylab="Mean"
   #norm is the condition to normalize expression to for relative expression
   counts<-counts[which(rownames(counts) %in% genes),]
@@ -123,11 +124,20 @@ barGene<-function(genes, counts, conditions, title="Gene expression", norm=NULL,
   p_pwc<-c()
   if(!is.null(con)){  
     y<-y%>% dplyr::mutate(group=forcats::fct_relevel(group, levels(x$group)))
-    pwc <- y %>%
-    dplyr::group_by(gene) %>%
-    rstatix::t_test(expression ~ group) %>%
-    rstatix::adjust_pvalue(method = "BH") %>%
-    rstatix::add_significance("p.adj")
+    if(stat.test=="t.test"){
+      pwc <- y %>%
+      dplyr::group_by(gene) %>%
+      rstatix::t_test(expression ~ group) %>%
+      rstatix::adjust_pvalue(method = "BH") %>%
+      rstatix::add_significance("p.adj")
+    }
+    if(stat.test=="wilcox"){
+      pwc <- y %>%
+      dplyr::group_by(gene) %>%
+      rstatix::wilcox_test(expression ~ group) %>%
+      rstatix::adjust_pvalue(method = "BH") %>%
+      rstatix::add_significance("p.adj")
+    }
     
     #pwc<- y %>% rstatix::pairwise_t_test(expression ~ group, p.adjust.method="BH")
     #pwc <- pwc %>% rstatix::add_significance("p.adj")
