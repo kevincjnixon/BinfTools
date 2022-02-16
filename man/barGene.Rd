@@ -14,7 +14,8 @@ barGene(
   returnDat = F,
   col = "Dark2",
   ord = NULL,
-  con = NULL
+  con = NULL,
+  stat.test = "t.test"
 )
 }
 \arguments{
@@ -37,6 +38,8 @@ barGene(
 \item{ord}{character indicating the order in which the samples should appear (overrides any ordering from using 'norm' argument). Default is NULL.}
 
 \item{con}{character indicating control condition if pairswise t-tests are to be performed. Leave NULL to not include stats.}
+
+\item{stat.test}{character indicating either "t.test" or "wilcox" for stats when 'con' is defined. Default is "t.test"}
 }
 \value{
 Bar plot of gene expression and list of length 2 containing 'rawData' and 'Summary' of gene expression data if 'returnDat' is TRUE.
