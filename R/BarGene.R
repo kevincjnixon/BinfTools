@@ -164,7 +164,7 @@ barGene<-function(genes, counts, conditions, title="Gene expression", norm=NULL,
    for(i in 1:nrow(p_pwc)){
      #check to see if the xmin has a decimal
      if(lengths(strsplit(as.character(p_pwc$xmin[i]),".",T))>1){
-       p_pwc$xmin[i]<-as.numeric(paste(i-1, sapply(strsplit(as.character(p_pwc$xmin[i]),".",T),'[[',2),sep="."))
+       p_pwc$xmin[i]<-as.numeric(paste(as.character(p_pwc$x[i]-1), sapply(strsplit(as.character(p_pwc$xmin[i]),".",T),'[[',2),sep="."))
      } else {
        #If no decimal, xmin should be x
        p_pwc$xmin[i]<-p_pwc$x[i]
