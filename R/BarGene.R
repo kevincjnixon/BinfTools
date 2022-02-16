@@ -165,14 +165,22 @@ barGene<-function(genes, counts, conditions, title="Gene expression", norm=NULL,
    #fix the xmin
    for(i in 1:nrow(p_pwc)){
      #If the xmin variable is less than n.5, then we shouldn't have subtracted 1 from it before, so add it back (we still need earlier step to ensure the right stats go over the right gene)
-     if(p_pwc$xmin[i]<as.numeric(paste(as.character(p_pwc$x[i]),"5",sep="."))){
+     if(p_pwc$xmin[i]<as.numeric(paste(as.character(p_pwc$x[i]-1),"5",sep="."))){
         p_pwc$xmin[i]<-p_pwc$xmin[i]+1
      }
-     if(p_pwc$xmax[i]<as.numeric(paste(as.character(p_pwc$x[i]),"5",sep="."))){
-     #if(as.numeric(sapply(strsplit(as.character(p_pwc$xmax[i]),".",T),'[[',2))<5){
-       p_pwc$xmax[i]<-as.numeric(paste(as.character(p_pwc$x[i]), sapply(strsplit(as.character(p_pwc$xmax[i]),".",T),'[[',2),sep="."))
+     #check to see if the xmax has a decimal
+     if(lengths(strsplit(as.character(p_pwc$xmax[i]),".",T))>1){
+       if(as.numeric(paste(as.character(p_pwc$x[i]),sapply(strsplit(as.character(p_pwc$xmax[i]),".",T),'[[',2),sep="."))<as.numeric(paste(as.character(p_pwc$x[i]),"5",sep="."))){
+	       #print(i)
+       #if(as.numeric(sapply(strsplit(as.character(p_pwc$xmax[i]),".",T),'[[',2))<5){
+         p_pwc$xmax[i]<-as.numeric(paste(as.character(p_pwc$x[i]), sapply(strsplit(as.character(p_pwc$xmax[i]),".",T),'[[',2),sep="."))
+       } else {
+         p_pwc$xmax[i]<-as.numeric(paste(as.character(p_pwc$x[i]-1), sapply(strsplit(as.character(p_pwc$xmax[i]),".",T),'[[',2),sep="."))
+       }
      } else {
-       p_pwc$xmax[i]<-as.numeric(paste(as.character(p_pwc$x[i]-1), sapply(strsplit(as.character(p_pwc$xmax[i]),".",T),'[[',2),sep="."))
+       #If there is no decimal, the number is whole and it should be equal to the corresponding x value
+       p_pwc$xmax[i]<-p_pwc$x[i]
+	     #print("no decimal")
      }
    }
    p<- p + ggpubr::stat_pvalue_manual(p_pwc, label="p.adj.signif",
