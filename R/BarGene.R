@@ -82,10 +82,11 @@ data_sum<-function(data, eb){
 #'@param ord character indicating the order in which the samples should appear (overrides any ordering from using 'norm' argument). Default is NULL.
 #'@param con character indicating control condition if pairswise t-tests are to be performed. Leave NULL to not include stats.
 #'@param stat.test character indicating either "t.test" or "wilcox" for stats when 'con' is defined. Default is "t.test"
+#'@param hide.ns logical value. If TRUE, hide ns symbol when displaying significance levels.
 #'@return Bar plot of gene expression and list of length 2 containing 'rawData' and 'Summary' of gene expression data if 'returnDat' is TRUE.
 #'@export
 
-barGene<-function(genes, counts, conditions, title="Gene expression", norm=NULL, eb="sd", returnDat=F, col="Dark2", ord=NULL, con=NULL, stat.test="t.test"){
+barGene<-function(genes, counts, conditions, title="Gene expression", norm=NULL, eb="sd", returnDat=F, col="Dark2", ord=NULL, con=NULL, stat.test="t.test", hide.ns = T){
   ylab="Mean"
   #norm is the condition to normalize expression to for relative expression
   counts<-counts[which(rownames(counts) %in% genes),]
@@ -122,7 +123,7 @@ barGene<-function(genes, counts, conditions, title="Gene expression", norm=NULL,
   #Perform stats if necessary
   pwc<-c()
   p_pwc<-c()
-  if(!is.null(con)){  
+  if(!is.null(con)){
     y<-y%>% dplyr::mutate(group=forcats::fct_relevel(group, levels(x$group)))
     if(stat.test=="t.test"){
       pwc <- y %>%
@@ -138,7 +139,7 @@ barGene<-function(genes, counts, conditions, title="Gene expression", norm=NULL,
       rstatix::adjust_pvalue(method = "BH") %>%
       rstatix::add_significance("p.adj")
     }
-    
+
     #pwc<- y %>% rstatix::pairwise_t_test(expression ~ group, p.adjust.method="BH")
     #pwc <- pwc %>% rstatix::add_significance("p.adj")
     #print(pwc)
@@ -147,7 +148,7 @@ barGene<-function(genes, counts, conditions, title="Gene expression", norm=NULL,
     p_pwc<-pwc[conRows,-which(colnames(pwc) %in% c("p.adj.signif"))]
     p_pwc$p.adj<-p.adjust(p_pwc$p, method="BH")
     p_pwc <- p_pwc %>% rstatix::add_significance("p.adj")
-    
+
     p_pwc<- p_pwc%>% dplyr::mutate(gene=forcats::fct_relevel(gene, genes))
 
     p_pwc <- p_pwc %>% rstatix::add_xy_position(x="gene", dodge=0.8)
@@ -202,7 +203,7 @@ barGene<-function(genes, counts, conditions, title="Gene expression", norm=NULL,
      }
    }
    p<- p + ggpubr::stat_pvalue_manual(p_pwc, label="p.adj.signif",
-                               tip.length=0, inherit.aes=F, hide.ns=T)#, step.increase=0,
+                               tip.length=0, inherit.aes=F, hide.ns= hide.ns)#, step.increase=0,
                                #x="gene", y="y")
   }
   print(p) #Print the plot (was saved to 'p')
