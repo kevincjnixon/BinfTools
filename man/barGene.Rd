@@ -38,7 +38,7 @@ barGene(
 
 \item{ord}{character indicating the order in which the samples should appear (overrides any ordering from using 'norm' argument). Default is NULL.}
 
-\item{con}{character indicating control condition if pairswise t-tests are to be performed. Leave NULL to not include stats.}
+\item{con}{character indicating control condition if pairswise t-tests are to be performed. Leave NULL to not include stats. Set to 'show.all' to show all pairwise comparisons within each gene.}
 
 \item{stat.test}{character indicating either "t.test" or "wilcox" for stats when 'con' is defined. Default is "t.test"}
 
