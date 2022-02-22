@@ -15,7 +15,8 @@ barGene(
   col = "Dark2",
   ord = NULL,
   con = NULL,
-  stat.test = "t.test"
+  stat.test = "t.test",
+  hide.ns = T
 )
 }
 \arguments{
@@ -40,6 +41,8 @@ barGene(
 \item{con}{character indicating control condition if pairswise t-tests are to be performed. Leave NULL to not include stats.}
 
 \item{stat.test}{character indicating either "t.test" or "wilcox" for stats when 'con' is defined. Default is "t.test"}
+
+\item{hide.ns}{logical value. If TRUE, hide ns symbol when displaying significance levels.}
 }
 \value{
 Bar plot of gene expression and list of length 2 containing 'rawData' and 'Summary' of gene expression data if 'returnDat' is TRUE.
