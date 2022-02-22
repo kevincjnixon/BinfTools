@@ -80,7 +80,7 @@ data_sum<-function(data, eb){
 #'@param returnDat Boolean indicating if list of raw and summarized data should be returned for further analysis. Default is FALSE.
 #'@param col character indicating the RColorBrewer palette name or list of colours (hex, name, rgb()) to be used. Default is "Dark2"
 #'@param ord character indicating the order in which the samples should appear (overrides any ordering from using 'norm' argument). Default is NULL.
-#'@param con character indicating control condition if pairswise t-tests are to be performed. Leave NULL to not include stats.
+#'@param con character indicating control condition if pairswise t-tests are to be performed. Leave NULL to not include stats. Set to 'show.all' to show all pairwise comparisons within each gene.
 #'@param stat.test character indicating either "t.test" or "wilcox" for stats when 'con' is defined. Default is "t.test"
 #'@param hide.ns logical value. If TRUE, hide ns symbol when displaying significance levels.
 #'@return Bar plot of gene expression and list of length 2 containing 'rawData' and 'Summary' of gene expression data if 'returnDat' is TRUE.
