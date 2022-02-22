@@ -152,6 +152,9 @@ barGene<-function(genes, counts, conditions, title="Gene expression", norm=NULL,
     p_pwc<- p_pwc%>% dplyr::mutate(gene=forcats::fct_relevel(gene, genes))
 
     p_pwc <- p_pwc %>% rstatix::add_xy_position(x="gene", dodge=0.8)
+	  
+    pwc <- pwc %>% dplyr::mutate(gene=forcats::fct_relevel(gene, genes))
+    pwc <- pwc %>% rstatix::add_xy_position(x="gene", dodge=0.8)
     #print(p_pwc[,12:16])
   }
   #And now, we're ready for plotting
