@@ -79,6 +79,51 @@ nonOL<-function(x, OL){
   return(y)
 }
 
+makeNames<-function(x){
+  y<-x
+  for(i in 1:length(x)){
+    if(i < length(x)){
+      for(j in (i+1):length(x)){
+        y<-c(y, paste(x[i],x[j],sep="_")) 
+      }
+    }
+  }
+  if(length(x)>2){
+    for(i in 1:length(x)){
+      if(i<length(x)){
+        for(j in (i+1):length(x)){
+          if(j<length(x)){
+            for(k in (j+1):length(x)){
+              y<-c(y, paste(x[i],x[j],x[k], sep="_"))
+            }
+          }
+        }
+      }
+    }
+  }
+  if(length(x)>3){
+    for(i in 1:length(x)){
+      if(i<length(x)){
+        for(j in (i+1):length(x)){
+          if(j<length(x)){
+            for(k in (j+1):length(x)){
+              if(k<length(x)){
+                for(d in (k+1):length(x)){
+                  y<-c(y, paste(x[i],x[j],x[k],x[d],sep="_"))
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+  if(length(x)==5){
+    y<-c(y, paste(x[1],x[2],x[3],x[4],x[5], sep="_"))
+  }
+  return(y)
+}
+
 #' Make a Venn diagram
 #'
 #' Make a Venn diagram from a named list of genes. Uses functions from the VennDiagram package.
@@ -165,6 +210,8 @@ plotVenn<-function(x, title="Venn Diagram", cols="Dark2", lty="blank", scale=F, 
   if(isTRUE(retVals)){
       res<-getOL(x, retVals=retVals)
       res<-c(nonOL(x, res), res)
+      names(res)<-getNames(names(x))
+      res<-res[which(lengths(res)>0)]
       return(res)
   }
 }
