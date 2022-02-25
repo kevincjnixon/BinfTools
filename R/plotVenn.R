@@ -210,7 +210,7 @@ plotVenn<-function(x, title="Venn Diagram", cols="Dark2", lty="blank", scale=F, 
   if(isTRUE(retVals)){
       res<-getOL(x, retVals=retVals)
       res<-c(nonOL(x, res), res)
-      names(res)<-getNames(names(x))
+      names(res)<-makeNames(names(x))
       res<-res[which(lengths(res)>0)]
       return(res)
   }
