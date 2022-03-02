@@ -153,12 +153,13 @@ zheat<-function(genes=NULL, counts, conditions, con="WT", title="DEGs", labgenes
 #' @param hmcol Color ramp palette of length 100 for custom heatmap colouring. Leave NULL for defaults.
 #' @param retClus Boolean indicating if clustered row names should be returnd. Default=FALSE.
 #' @param annoCols Character vector indicating RColorBrewer palette name or colours for annotation colours if rclus is provided a data.frame.
+#' @param border_color color of cell borders on heatmap, use NA if no border should be drawn.
 #' @return Heatmap of z-score normalized gene expression with control condition samples appearing first.
 #' @export
 
 zheat_v2 <- function (genes = NULL, counts, conditions, order.by = NULL, sort.genes.by = NULL, title = "DEGs",
                       labgenes = NULL, zscore = T, avgExp = F, rclus = F, hmcol = NULL,
-                      retClus = F, annoCols = "Dark2")
+                      retClus = F, annoCols = "Dark2", border_color = "grey60")
 {
   if (is.null(hmcol)) {
     hmcol <- colorRampPalette(c("blue", "grey", "red"))(100)
@@ -243,7 +244,7 @@ zheat_v2 <- function (genes = NULL, counts, conditions, order.by = NULL, sort.ge
   out <- NULL
   if (is.logical(rclus)) {
     out <- pheatmap::pheatmap(zmat, color = hmcol, show_colnames = T,
-                              cluster_cols = F, cluster_rows = rclus, main = title,
+                              cluster_cols = F, cluster_rows = rclus, main = title, border_color = border_color,
                               labels_row = labgenes, breaks = seq(from = lim[1],
                                                                   to = lim[2], length.out = 100))
   }
@@ -252,7 +253,7 @@ zheat_v2 <- function (genes = NULL, counts, conditions, order.by = NULL, sort.ge
     zmat <- zmat[match(rownames(rclus), rownames(zmat)),
     ]
     out <- pheatmap::pheatmap(zmat, color = hmcol, show_colnames = T,
-                              cluster_cols = F, cluster_rows = F, main = title,
+                              cluster_cols = F, cluster_rows = F, main = title, border_color = border_color,
                               annotation_row = rclus, annotation_colors = annoCols,
                               labels_row = labgenes, breaks = seq(from = lim[1],
                                                                   to = lim[2], length.out = 100))
