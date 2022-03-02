@@ -17,7 +17,8 @@ zheat_v2(
   rclus = F,
   hmcol = NULL,
   retClus = F,
-  annoCols = "Dark2"
+  annoCols = "Dark2",
+  border_color = "grey60"
 )
 }
 \arguments{
@@ -46,6 +47,8 @@ zheat_v2(
 \item{retClus}{Boolean indicating if clustered row names should be returnd. Default=FALSE.}
 
 \item{annoCols}{Character vector indicating RColorBrewer palette name or colours for annotation colours if rclus is provided a data.frame.}
+
+\item{border_color}{color of cell borders on heatmap, use NA if no border should be drawn.}
 }
 \value{
 Heatmap of z-score normalized gene expression with control condition samples appearing first.
