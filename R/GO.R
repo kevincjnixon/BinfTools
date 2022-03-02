@@ -261,3 +261,35 @@ combGO_plot<-function(GOresList, title="GO results", ts=c(10,500), sig=T, numTer
   }
   #return(filtRes)
 }
+
+
+GOHeat<-function(GOresList, termList, hmcol=colorRampPalette(c("white","darkblue"))(100), width=NA, height=NA){
+  retP<-function(GOres, term){
+    p_val<-GOres$p_value[which(GOres$term_name %in% term)]
+    if(length(p_val)<1){
+      p_val<-NA
+    }
+    return(p_val)
+  }
+  forHeat<-suppressWarnings(unique(tidyr::gather(as.data.frame(do.call("cbind", termList)), key="Group",value="Term")))
+  tmp<-c()
+  for(i in forHeat$Term){
+    tmp<-rbind(tmp, unlist(lapply(GOresList, retP, term=i)))
+  }
+  colnames(tmp)<-names(GOresList)
+  forHeat<-cbind(forHeat, tmp)
+  
+  gaps<-c()
+  for(i in 1:(length(termList)-1)){
+    gaps<-c(gaps, sum(gaps[length(gaps)],length(termList[[i]])))
+  }
+
+  tmp <- -log10(forHeat[,-c(1:2)])
+  rownames(tmp)<-forHeat$Term
+  rowAnno<-data.frame(row.names=forHeat$Term, Group=forHeat$Group)
+  
+  pheatmap::pheatmap(tmp, scale="none", cluster_rows=F, cluster_cols=F, legend=T, annotation_row=rowAnno,
+                     gaps_row=gaps, color=hmcol, border_color="black",
+                     cellwidth = width, cellheight = height)
+  return(forHeat)
+}
