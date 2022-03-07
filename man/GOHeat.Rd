@@ -9,7 +9,10 @@ GOHeat(
   termList,
   hmcol = colorRampPalette(c("white","darkblue"))(100),
   width = NA,
-  height = NA
+  height = NA,
+  maxVal = NA,
+  minVal = NA,
+  ret = FALSE
 )
 }
 \arguments{
@@ -22,6 +25,12 @@ GOHeat(
 \item{width}{numeric indicating the cell width (Default=NA will automatically direct the cell width)}
 
 \item{height}{numeric indicating the cell height (Default=NA will automatically direct the cell height)}
+  
+\item{maxVal}{numeric indicating the maximum -log10 p-value for the heatmap. Default NA sets it automatically.}
+  
+\item{minVal}{numeric indicating the minimum -log10 p-value (1.3 should be absolute mimum - pvalue 0.05). Can only be set if maxVal is not NA. Default NA sets it automatically.}
+  
+\item{ret}{Boolean indicating if table used for the heatmap (p-values not in -log10) should be returned. Default=FALSE.}
 }
 \value{
 A grouped heatmap showing significance of GO terms across analyses as -log10(p-value) and returns a data frame of data input for heatmap.
