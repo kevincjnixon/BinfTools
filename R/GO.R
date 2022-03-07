@@ -303,8 +303,8 @@ GOHeat<-function(GOresList, termList, hmcol=colorRampPalette(c("white","darkblue
   tmp <- -log10(forHeat[,-c(1:2)])
   rownames(tmp)<-forHeat$Term
   rowAnno<-data.frame(row.names=forHeat$Term, Group=forHeat$Group)
-  rowAnno$Group<-suppressWarningsas.factor(rowAnno$Group))
-  rowAnno$Group<-suppressWarningsforcats::fct_relevel(rowAnno$Group, levels=names(termList)))
+  rowAnno$Group<-suppressWarnings(as.factor(rowAnno$Group))
+  rowAnno$Group<-suppressWarnings(forcats::fct_relevel(rowAnno$Group, levels=names(termList)))
   if(!is.na(maxVal)){
     if(!is.na(minVal)){
       maxVal<-seq(from=minVal, to=maxVal, length.out=100)
