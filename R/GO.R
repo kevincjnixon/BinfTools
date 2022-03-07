@@ -299,7 +299,7 @@ GOHeat<-function(GOresList, termList, hmcol=colorRampPalette(c("white","darkblue
       gaps<-c(gaps, sum(gaps[length(gaps)],length(termList[[i]])))
     }
   }
-  print(head(forHeat))
+  #print(head(forHeat))
   tmp <- -log10(forHeat[,-c(1:2)])
   rownames(tmp)<-forHeat$Term
   rowAnno<-data.frame(row.names=forHeat$Term, Group=forHeat$Group)
