@@ -269,10 +269,13 @@ combGO_plot<-function(GOresList, title="GO results", ts=c(10,500), sig=T, numTer
 #'@param hmcol colorRampPalette of length 100 that will direct the colour palette of the heatmap. Default is colorRampPalette(c("white","darkblue"))(100)
 #'@param width numeric indicating the cell width (Default=NA will automatically direct the cell width)
 #'@param height numeric indicating the cell height (Default=NA will automatically direct the cell height)
+#'@param maxVal numeric indicating the maximum -log10 p-value for the heatmap. Default NA sets it automatically.
+#'@param minVal numeric indicating the minimum -log10 p-value (1.3 should be absolute mimum - pvalue 0.05). Can only be set if maxVal is not NA. Default NA sets it automatically.
+#'@param ret Boolean indicating if table used for the heatmap (p-values not in -log10) should be returned. Default=FALSE.
 #'@return A grouped heatmap showing significance of GO terms across analyses as -log10(p-value)
 #'@export
 
-GOHeat<-function(GOresList, termList, hmcol=colorRampPalette(c("white","darkblue"))(100), width=NA, height=NA){
+GOHeat<-function(GOresList, termList, hmcol=colorRampPalette(c("white","darkblue"))(100), width=NA, height=NA, maxVal=NA, minVal=NA, ret=F){
   retP<-function(GOres, term){
     p_val<-GOres$p_value[which(GOres$term_name %in% term)]
     if(length(p_val)<1){
@@ -289,16 +292,30 @@ GOHeat<-function(GOresList, termList, hmcol=colorRampPalette(c("white","darkblue
   forHeat<-cbind(forHeat, tmp)
   
   gaps<-c()
-  for(i in 1:(length(termList)-1)){
-    gaps<-c(gaps, sum(gaps[length(gaps)],length(termList[[i]])))
+  if(length(termList)<2){
+    gaps<-NULL
+  } else {
+    for(i in 1:(length(termList)-1)){
+      gaps<-c(gaps, sum(gaps[length(gaps)],length(termList[[i]])))
+    }
   }
-
+  print(head(forHeat))
   tmp <- -log10(forHeat[,-c(1:2)])
   rownames(tmp)<-forHeat$Term
   rowAnno<-data.frame(row.names=forHeat$Term, Group=forHeat$Group)
-  
+  rowAnno$Group<-as.factor(rowAnno$Group)
+  rowAnno$Group<-forcats::fct_relevel(rowAnno$Group, levels=names(termList))
+  if(!is.na(maxVal)){
+    if(!is.na(minVal)){
+      maxVal<-seq(from=minVal, to=maxVal, length.out=100)
+    } else {
+      maxVal<-seq(from=min(as.matrix(tmp)[is.finite(as.matrix(tmp))]), to=maxVal, length.out=100)
+    }
+  }
   pheatmap::pheatmap(tmp, scale="none", cluster_rows=F, cluster_cols=F, legend=T, annotation_row=rowAnno,
                      gaps_row=gaps, color=hmcol, border_color="black",
-                     cellwidth = width, cellheight = height)
-  return(forHeat)
+                     cellwidth = width, cellheight = height, breaks=maxVal)
+  if(isTRUE(ret)){
+    return(forHeat)
+  }
 }
