@@ -16,7 +16,8 @@ zheat(
   rclus = F,
   hmcol = NULL,
   retClus = F,
-  annoCols = "Dark2"
+  annoCols = "Dark2",
+  fs = 10
 )
 }
 \arguments{
@@ -43,6 +44,8 @@ zheat(
 \item{retClus}{Boolean indicating if clustered row names should be returnd. Default=FALSE.}
 
 \item{annoCols}{Character vector indicating RColorBrewer palette name or colours for annotation colours if rclus is provided a data.frame.}
+                
+\item{fs}{Numeric indicating font size for row names. Default is 10.}
 }
 \value{
 Heatmap of z-score normalized gene expression with control condition samples appearing first.
