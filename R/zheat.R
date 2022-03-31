@@ -22,10 +22,11 @@ heatClus<-function(out, level=round(max(out$tree_row$height))){
 #' @param hmcol Color ramp palette of length 100 for custom heatmap colouring. Leave NULL for defaults.
 #' @param retClus Boolean indicating if clustered row names should be returnd. Default=FALSE.
 #' @param annoCols Character vector indicating RColorBrewer palette name or colours for annotation colours if rclus is provided a data.frame.
+#' @param fs Numeric indicating font size for row names. Default is 10.
 #' @return Heatmap of z-score normalized gene expression with control condition samples appearing first.
 #' @export
 
-zheat<-function(genes=NULL, counts, conditions, con="WT", title="DEGs", labgenes=NULL, zscore=T, avgExp=F, rclus=F, hmcol=NULL, retClus=F, annoCols="Dark2"){
+zheat<-function(genes=NULL, counts, conditions, con="WT", title="DEGs", labgenes=NULL, zscore=T, avgExp=F, rclus=F, hmcol=NULL, retClus=F, annoCols="Dark2", fs=10){
   if(is.null(hmcol)){
     hmcol<-colorRampPalette(c("blue","grey","red"))(100)
     if(isFALSE(zscore)){
@@ -120,14 +121,14 @@ zheat<-function(genes=NULL, counts, conditions, con="WT", title="DEGs", labgenes
   #Now make a heatmap
   out<-NULL
   if(is.logical(rclus)){
-    out<-pheatmap::pheatmap(zmat, color=hmcol, show_colnames=T, cluster_cols=F, cluster_rows=rclus, main=title, labels_row=labgenes,breaks=seq(from=lim[1], to=lim[2], length.out=100))
+    out<-pheatmap::pheatmap(zmat, color=hmcol, show_colnames=T, cluster_cols=F, cluster_rows=rclus, main=title, labels_row=labgenes,breaks=seq(from=lim[1], to=lim[2], length.out=100), fontsize_row=fs)
   } else {
     #rclus<-rclus[which(rownames(rclus) %in% rownames(zmat)),]
     rclus<-rclus[order(rclus[,1]),,drop=F]
 	  #print(head(zmat))
     zmat<-zmat[match(rownames(rclus), rownames(zmat)),]
 	  #print(head(zmat))
-    out<-pheatmap::pheatmap(zmat, color=hmcol, show_colnames=T, cluster_cols=F, cluster_rows=F, main=title, annotation_row=rclus, annotation_colors=annoCols, labels_row=labgenes, breaks=seq(from=lim[1], to=lim[2], length.out=100))
+    out<-pheatmap::pheatmap(zmat, color=hmcol, show_colnames=T, cluster_cols=F, cluster_rows=F, main=title, annotation_row=rclus, annotation_colors=annoCols, labels_row=labgenes, breaks=seq(from=lim[1], to=lim[2], length.out=100), fontsize_row=10)
   }
   if(isTRUE(retClus)){
     return(out)
