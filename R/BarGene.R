@@ -186,7 +186,7 @@ barGene<-function(genes, counts, conditions, title="Gene expression", norm=NULL,
   }
   if(!is.null(con)){
    #Make sure the stats are over the right genes
-   if(con=="show.all"){
+   if(con[1]=="show.all"){
      p_pwc<-pwc
    }
    for(i in 1:length(genes)){
