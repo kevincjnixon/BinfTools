@@ -89,6 +89,7 @@ data_sum<-function(data, eb){
 barGene<-function(genes, counts, conditions, title="Gene expression", norm=NULL, eb="sd", returnDat=F, col="Dark2", ord=NULL, con=NULL, stat.test="t.test", hide.ns = T){
   ylab="Mean"
   #norm is the condition to normalize expression to for relative expression
+  counts<-as.data.frame(counts)
   counts<-counts[which(rownames(counts) %in% genes),]
   #set up conditions
   condition<-as.factor(c(rep(conditions, each=nrow(counts))))
@@ -144,7 +145,23 @@ barGene<-function(genes, counts, conditions, title="Gene expression", norm=NULL,
     #pwc <- pwc %>% rstatix::add_significance("p.adj")
     #print(pwc)
     #Now make a pwc containing only the control condition
-    conRows<-c(grep(con, pwc$group1),grep(con, pwc$group2))
+    conRows<-c()
+    if(length(con)==1 & !is.list(con)){
+      conRows<-c(grep(con, pwc$group1),grep(con, pwc$group2))
+    }
+    if(length(con)>1 & !is.list(con)){
+      for(i in 1:length(con)){
+        conRows<-c(conRows, grep(con[i], pwc$group1), grep(con[i], pwc$group2))
+      }
+      conRows<-unique(conRows)
+    }
+    if(is.list(con)){
+      for(i in 1:length(con)){
+	tmp1<-c(grep(con[[i]][1], pwc$group1), grep(con[[i]][1], pwc$group2))
+	tmp2<-c(grep(con[[i]][2], pwc$group1), grep(con[[i]][2], pwc$group2))
+        conRows<-c(conRows, tmp1[which(tmp1 %in% tmp2)])
+      }
+    }
     p_pwc<-pwc[conRows,-which(colnames(pwc) %in% c("p.adj.signif"))]
     p_pwc$p.adj<-p.adjust(p_pwc$p, method="BH")
     p_pwc <- p_pwc %>% rstatix::add_significance("p.adj")
