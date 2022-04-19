@@ -306,3 +306,13 @@ GSEA_EM<-function(gsea, rnk, prefix=NULL, gmt=NULL){
     }
   }
 }
+
+subgsea<-function(x, p=0.05, n=100, byNES=T){
+  x<-subset(x, padj<p)
+  if(isTRUE(byNES)){
+    x<-x[order(abs(x$NES), decreasing=T),]
+  } else {
+    x<-x[order(x$padj),]
+  }
+  return(x[c(1:n),])
+}
