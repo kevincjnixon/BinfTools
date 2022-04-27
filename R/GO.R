@@ -271,11 +271,12 @@ combGO_plot<-function(GOresList, title="GO results", ts=c(10,500), sig=T, numTer
 #'@param height numeric indicating the cell height (Default=NA will automatically direct the cell height)
 #'@param maxVal numeric indicating the maximum -log10 p-value for the heatmap. Default NA sets it automatically.
 #'@param minVal numeric indicating the minimum -log10 p-value (1.3 should be absolute mimum - pvalue 0.05). Can only be set if maxVal is not NA. Default NA sets it automatically.
+#'@param NAcol character indicating the colour of NA values in heatmap. Default is "#DDDDDD" (grey)
 #'@param ret Boolean indicating if table used for the heatmap (p-values not in -log10) should be returned. Default=FALSE.
 #'@return A grouped heatmap showing significance of GO terms across analyses as -log10(p-value)
 #'@export
 
-GOHeat<-function(GOresList, termList, hmcol=colorRampPalette(c("white","darkblue"))(100), width=NA, height=NA, maxVal=NA, minVal=NA, ret=F){
+GOHeat<-function(GOresList, termList, hmcol=colorRampPalette(c("white","darkblue"))(100), width=NA, height=NA, maxVal=NA, minVal=NA, NAcol="#DDDDDD", ret=F){
   retP<-function(GOres, term){
     p_val<-GOres$p_value[which(GOres$term_name %in% term)]
     if(length(p_val)<1){
@@ -314,7 +315,7 @@ GOHeat<-function(GOresList, termList, hmcol=colorRampPalette(c("white","darkblue
   }
   pheatmap::pheatmap(tmp, scale="none", cluster_rows=F, cluster_cols=F, legend=T, annotation_row=rowAnno,
                      gaps_row=gaps, color=hmcol, border_color="black",
-                     cellwidth = width, cellheight = height, breaks=maxVal)
+                     cellwidth = width, cellheight = height, breaks=maxVal, na_col=NAcol)
   if(isTRUE(ret)){
     return(forHeat)
   }
