@@ -12,6 +12,7 @@ GOHeat(
   height = NA,
   maxVal = NA,
   minVal = NA,
+  NAcol = "#DDDDDD",
   ret = FALSE
 )
 }
@@ -29,6 +30,8 @@ GOHeat(
 \item{maxVal}{numeric indicating the maximum -log10 p-value for the heatmap. Default NA sets it automatically.}
   
 \item{minVal}{numeric indicating the minimum -log10 p-value (1.3 should be absolute mimum - pvalue 0.05). Can only be set if maxVal is not NA. Default NA sets it automatically.}
+  
+\item{NAcol}{character indicating the colour of NA values in heatmap. Default is "#DDDDDD" (grey)}
   
 \item{ret}{Boolean indicating if table used for the heatmap (p-values not in -log10) should be returned. Default=FALSE.}
 }
