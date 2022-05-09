@@ -322,7 +322,7 @@ GOHeat<-function(GOresList, termList, hmcol=colorRampPalette(c("white","darkblue
 }
 
 #Custom GO Function
-customGO<-function(genes, gmt, gsName="custom GeneSet", bg=NULL, sp="human", FDR=T, byRegion=F, enr="pos", significant=T){
+customGO<-function(genes, gmt, gsName="custom GeneSet", bg=NULL, sp="human", FDR=T, byRegion=F, enr="pos", significant=T, minp=1e-300){
   if(!is.list(gmt)){
     gmt<-BinfTools::read.gmt(gmt)
   }
@@ -400,7 +400,9 @@ customGO<-function(genes, gmt, gsName="custom GeneSet", bg=NULL, sp="human", FDR
   res$recall<-res$intersection_size/res$term_size
   res$enrichment<-(res$intersection_size/res$query_size)/(res$term_size/res$effective_domain_size)
   res<-res[order(res$enrichment, decreasing=T),]
-  
+  if(!is.null(minp)){
+    res$p_value[res$p_value<minp]<-minp
+  }
   if(isTRUE(significant)){
     if(nrow(subset(res, significant=="TRUE"))<1){
       message("No significant results. Returning NA.")
