@@ -320,3 +320,96 @@ GOHeat<-function(GOresList, termList, hmcol=colorRampPalette(c("white","darkblue
     return(forHeat)
   }
 }
+
+#Custom GO Function
+customGO<-function(genes, gmt, gsName="custom GeneSet", bg=NULL, sp="human", FDR=T, byRegion=F, enr="pos", significant=T){
+  if(!is.list(gmt)){
+    gmt<-BinfTools::read.gmt(gmt)
+  }
+  filtBG<-function(x, bg){
+    return(x[which(x %in% bg)])
+  }
+  if(!is.null(bg)){
+    message("Filtering gene sets to correspond with provided background")
+    gmt<-lapply(gmt, filtBG, bg)
+  } else {
+    if(is.numeric(sp)){
+      message("No custom background, using provided background size in 'sp' argument: ", sp)
+      bg<-sp
+    } else {
+      message("No custom background, using genome size for ",sp,"...")
+      if(sp=="human"){
+        bg<-c(1:18123) #Number used from g:profiler
+      } else {
+        if(sp=="mouse"){
+          bg<-c(1:18172) #Number from g:profiler
+        } else {
+          message("Using gmt as background...")
+          bg<-length(unique(unlist(gmt)))
+        }
+      }
+    }
+  }
+  findOL<-function(gs, x, retVal=F, unique){
+    if(isTRUE(unique)){
+      x<-unique(x)
+    }
+    if(isFALSE(retVal)){
+      return(length(x[which(x%in% gs)]))
+    } else{
+      return(x[which(x %in% gs)])
+    }
+  }
+  OL<-unlist(lapply(gmt, findOL, genes, unique=byRegion))
+  OL2<-lapply(gmt, findOL, genes, retVal=T, unique=byRegion)
+  res<-data.frame(query=rep("query_1", length(gmt)),
+                  significant=rep("FALSE", length(gmt)),
+                  p_value=rep(1, length(gmt)),
+                  term_size=lengths(gmt),
+                  query_size=rep(length(genes), length(gmt)),
+                  intersection_size=OL,
+                  precision=rep(0, length(gmt)),
+                  recall=rep(0, length(gmt)),
+                  #term_id=names(gmt),
+                  source=rep(gsName, length(gmt)),
+                  term_name=names(gmt),
+                  effective_domain_size=length(bg),
+                  intersection=unlist(lapply(OL2, toString)),
+                  enrichment=rep(0, length(gmt)))
+  vectorPhyper<-function(intersection_size, term_size, domain_size,query_size, adj=T, lt=F){
+    pvals<-c()
+    #pb<-txtProgressBar(0,1,style=3)
+    for(i in 1:length(intersection_size)){
+      pvals<-c(pvals, phyper(intersection_size[i], term_size[i], domain_size[i]-term_size[i],query_size[i], lower.tail = lt))
+      #setTxtProgressBar(pb, i)
+    }
+    if(isTRUE(adj)){
+      pvals<-p.adjust(pvals, "BH")
+    }
+    return(pvals)
+  }
+  if(enr=="pos"){
+    enr<-F
+  } else {
+    enr<-T
+  }
+  print(dim(res))
+  res$p_value<-vectorPhyper(res$intersection_size, res$term_size, res$effective_domain_size, res$query_size, adj=FDR, lt=enr)
+  res$significant<-ifelse(res$p_value<0.05, TRUE, FALSE)
+  res$precision<-res$intersection_size/res$query_size
+  res$recall<-res$intersection_size/res$term_size
+  res$enrichment<-(res$intersection_size/res$query_size)/(res$term_size/res$effective_domain_size)
+  res<-res[order(res$enrichment, decreasing=T),]
+  
+  if(isTRUE(significant)){
+    if(nrow(subset(res, significant=="TRUE"))<1){
+      message("No significant results. Returning NA.")
+      return(NA)
+    } else {
+      return(subset(res, significant=="TRUE"))
+    }
+  } else {
+    return(res)
+  }
+  
+}
