@@ -41,5 +41,6 @@ loadFC<-function(filename){
   anno<-x[,c(1:6)]
   counts<-x[,c(7:ncol(x))]
   rownames(counts)<-x$Geneid
+  colnames(anno)[1]<-"GeneId"
   return(list(Counts=counts, annotation=anno))
 }
