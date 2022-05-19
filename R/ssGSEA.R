@@ -26,7 +26,7 @@ gsva_plot<-function(counts, geneset, method="ssgsea", stat.test = "t-test", cond
   }
   progressBar<-txtProgressBar()
   #run the gsva
-	res<-as.data.frame(GSVA::gsva(counts,geneset, method=method))
+	res<-as.data.frame(GSVA::gsva(as.matrix(counts),geneset, method=method))
 	#now we need to convert the results to a format acceptible for ggplot
 	times<-dim(res)[1]
 	conditions<-as.factor(c(rep(condition, each=times)))
