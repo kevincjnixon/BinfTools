@@ -27,7 +27,7 @@ colPal<-function(col){
       col<-suppressWarnings(RColorBrewer::brewer.pal(Inf, col))
       return(col)},
       error=function(e){
-        message("Not RColorBrewer palette, trying colour name...")
+        #message("Not RColorBrewer palette, trying colour name...")
         if(length(grep("#", col))>0){
           return(col)
         } else {
