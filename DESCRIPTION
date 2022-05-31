@@ -18,6 +18,7 @@ Imports:
   gprofiler2,
   ggplot2,
   ggpubr,
+  ggforce,
   rstatix,
   pheatmap,
   tidyr,
