@@ -13,6 +13,7 @@
 #' @param compare List of character vectors (each of length 2) indicating the pairwise comparisons to be made between conditions. Leave NULL for all comparisons to be made
 #' @param col Character indicating the RColorBrewer palette name or list of colours (hex, name, rgb()) to be used. Default is "Dark2".
 #' @param style Character indicating the style of plot ("violin", "box", or "sina"). Defaults to "sina".
+#' @param sinaPoint Character indicating colour of sina plot points. Defaults to "black".
 #' @param showStat Boolean indicating if p-values should be plotted on figure
 #' @param retRes Boolean indicating if GSVA results should be returned. Default=FALSE. If both retRes and retGP are TRUE, only GSVA results will be returned.
 #' @param textsize Numeric indicating text size for plot. Leave NULL for default.
@@ -20,7 +21,7 @@
 #' @return Violin or box plot of normalized enrichment scores for genesets between conditions
 #' @export
 
-gsva_plot<-function(counts, geneset, method="ssgsea", stat.test = "t-test", condition, con=NULL, title="ssGSEA", compare=NULL, col="Dark2", style="sina", showStat=T, retRes=F, textsize=NULL, retGP=F){
+gsva_plot<-function(counts, geneset, method="ssgsea", stat.test = "t-test", condition, con=NULL, title="ssGSEA", compare=NULL, col="Dark2", style="sina", sinaPoint="black", showStat=T, retRes=F, textsize=NULL, retGP=F){
   if (!stat.test %in% c("t-test", "wilcoxon")){
     stop("Only t-test and wilcoxon tests are supported! Default is t-test.")
   }
@@ -60,7 +61,7 @@ gsva_plot<-function(counts, geneset, method="ssgsea", stat.test = "t-test", cond
 	} 
 	if(style=="sina"){
 	  p<- ggpubr::ggviolin(x, x="group", y="NES", fill="group") +
-	    ggforce::geom_sina(fill="white") +
+	    ggforce::geom_sina(ggplot2::aes(color=colPal(sinaPoint)), inherit.aes=F) +
 	    ggplot2::labs(title=title, y="Normalized Enrichment Score", x="Condition") + ggplot2::theme_minimal() +
 	    ggplot2::scale_fill_manual(values=colPal(col)) + ggplot2::theme(text=ggplot2::element_text(size=textsize))
 	}
