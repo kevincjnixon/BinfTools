@@ -15,6 +15,7 @@ gsva_plot(
   compare = NULL,
   col = "Dark2",
   style = "sina",
+  sinaPoint = "black",
   showStat = T,
   retRes = F,
   textsize = NULL,
@@ -41,6 +42,8 @@ gsva_plot(
 \item{col}{Character indicating the RColorBrewer palette name or list of colours (hex, name, rgb()) to be used. Default is "Dark2".}
 
 \item{style}{Character indicating the style of plot ("violin", "box", or "sina"). Defaults to "sina".}
+
+\item{sinaPoint}{Character indicating colour of sina plot points. Defaults to "black".}
 
 \item{showStat}{Boolean indicating if p-values should be plotted on figure}
 
