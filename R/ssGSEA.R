@@ -63,7 +63,7 @@ gsva_plot<-function(counts, geneset, method="ssgsea", stat.test = "t-test", cond
 	  p<- ggpubr::ggviolin(x, x="group", y="NES", fill="group") +
 	    ggforce::geom_sina(ggplot2::aes(colour="group")) + ggplot2::scale_colour_manual(values=colPal(sinaPoint)) +
 	    ggplot2::labs(title=title, y="Normalized Enrichment Score", x="Condition") + ggplot2::theme_minimal() +
-	    ggplot2::scale_fill_manual(values=colPal(col)) + ggplot2::theme(text=ggplot2::element_text(size=textsize))
+	    ggplot2::scale_fill_manual(values=colPal(col)) + ggplot2::theme(text=ggplot2::element_text(size=textsize)) + ggplot2::guides(colour="none")
 	}
 	if(style=="box") {
 	  p<- ggpubr::ggboxplot(x, x="group", y="NES", fill="group") +
