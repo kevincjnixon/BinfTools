@@ -18,7 +18,8 @@ count_plot(
   pc = 1,
   yax = NULL,
   showStat = T,
-  style = "violin",
+  style = "sina",
+  sinaPoint = "black",
   textsize = NULL,
   retStat = F,
   retGP = F
@@ -51,7 +52,9 @@ count_plot(
 
 \item{showStat}{Boolean indicating if statistics should be plotted.}
 
-\item{style}{Character indicating the style of plot ("violin" or "box"). Defaults to "violin".}
+\item{style}{Character indicating the style of plot ("violin", "box", or "sina"). Defaults to "sina".}
+
+\item{sinaPoint}{Character indicating colour of the sina plot points. Default is "black}
 
 \item{textsize}{Numeric indicating text size for the plot. Leave NULL for default.}
 
