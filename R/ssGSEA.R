@@ -60,6 +60,9 @@ gsva_plot<-function(counts, geneset, method="ssgsea", stat.test = "t-test", cond
 	  ggplot2::scale_fill_manual(values=colPal(col)) + ggplot2::theme(text=ggplot2::element_text(size=textsize))
 	} 
 	if(style=="sina"){
+	  if(length(sinaPoint)<length(levels(factor(x$group)))){
+	    sinaPoint<-rep(sinaPoint[1], length(levels(factor(x$group))))
+	  }
 	  p<- ggpubr::ggviolin(x, x="group", y="NES", fill="group") +
 	    ggforce::geom_sina(ggplot2::aes(colour=factor(group)), alpha=0.5) + ggplot2::scale_colour_manual(values=colPal(sinaPoint)) +
 	    ggplot2::labs(title=title, y="Normalized Enrichment Score", x="Condition") + ggplot2::theme_minimal() +
