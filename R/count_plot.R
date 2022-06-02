@@ -153,7 +153,7 @@ count_plot<-function(counts, scaling="zscore", genes, condition, con=NULL, title
       sinaPoint<-rep(colPal(sinaPoint)[1], length(levels(factor(x$group))))
     }
     p<- ggpubr::ggviolin(x, x="group", y="Expression", fill="group") +
-	ggforce::geom_sina(ggplot2::aes(colour=factor(group))) + ggplot2::scale_colour_manual(values=colPal(sinaPoint)) +
+	ggforce::geom_sina(ggplot2::aes(colour=factor(group)), alpha=0.5) + ggplot2::scale_colour_manual(values=colPal(sinaPoint)) +
 	ggplot2::labs(title=title, y=ylab, x="Condition") + ggplot2::theme_minimal() +
 	ggplot2::scale_fill_manual(values=colPal(col)) + ggplot2::theme(text=ggplot2::element_text(size=textsize)) + ggplot2::guides(colour="none")
   }
