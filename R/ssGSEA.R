@@ -60,8 +60,8 @@ gsva_plot<-function(counts, geneset, method="ssgsea", stat.test = "t-test", cond
 	  ggplot2::scale_fill_manual(values=colPal(col)) + ggplot2::theme(text=ggplot2::element_text(size=textsize))
 	} 
 	if(style=="sina"){
-	  p<- ggpubr::ggviolin(x, x="group", y="NES", fill="group", colour="group") +
-	    ggforce::geom_sina(alpha=0.5) + ggplot2::scale_colour_manual(values=colPal(sinaPoint)) +
+	  p<- ggpubr::ggviolin(x, x="group", y="NES", fill="group") +
+	    ggforce::geom_sina(ggplot2::aes(colour=as.factor(x$group), alpha=0.5) + ggplot2::scale_colour_manual(values=colPal(sinaPoint)) +
 	    ggplot2::labs(title=title, y="Normalized Enrichment Score", x="Condition") + ggplot2::theme_minimal() +
 	    ggplot2::scale_fill_manual(values=colPal(col)) + ggplot2::theme(text=ggplot2::element_text(size=textsize)) + ggplot2::guides(colour="none")
 	}
