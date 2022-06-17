@@ -16,7 +16,7 @@ avgExp<-function(counts, cond, method=c("mean","median","geoMean")){
   }
   if(method[1]=="median"){
     for(i in 1:length(levs)){
-      x<-cbind(x, Biobase::rowMedians(counts[,which(cond %in% levs[i])]))
+      x<-cbind(x, Biobase::rowMedian(counts[,which(cond %in% levs[i])]))
     }
   }
   if(method[1]=="geoMean"){
