@@ -72,10 +72,16 @@ getOL<-function(x, retVals=F){
       tmp<-list()
       #Loop through Overlaps
       for(i in 1:length(OL)){
-        #Now set up a second tmp list of only the following entries of OL - this only works because the further overlaps (i.e. n135) are downstream of the earlier overlaps (i.e. n13)
-        tmp2<-OL[(i+1):length(OL)]
-        tmp[[i]]<-OL[[i]][which(!OL[[i]] %in% unlist(tmp2))]
-        names(tmp)[i]<-names(OL)[i]
+        if(i<length(OL)){
+          #Now set up a second tmp list of only the following entries of OL - this only works because the further overlaps (i.e. n135) are downstream of the earlier overlaps (i.e. n13)
+          tmp2<-OL[(i+1):length(OL)]
+          tmp[[i]]<-OL[[i]][which(!OL[[i]] %in% unlist(tmp2))]
+          names(tmp)[i]<-names(OL)[i]
+        }
+        if(i==length(OL)){
+          tmp[[i]]<-OL[[i]]
+          names(tmp)[i]<-names(OL)[i]
+        }
       }
       OL<-tmp
     }    
