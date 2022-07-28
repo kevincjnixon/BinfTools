@@ -7,20 +7,29 @@
 #' This will be integrated into the volcanoPlot(), MA_Plot(), and zheat() functions
 #' in the future.
 #'
-#' @param object a data.frame object (results or normalized counts) with the rownames as the gene IDs to convert
-#' @param obType Character vector (one of 'res' or 'counts') indicating whether *object* is a results object, or normalized counts object, respectively.
+#' @param object a data.frame object (results or normalized counts) with the rownames as the gene IDs to convert or a character vector of gene IDs to convert
+#' @param obType Character vector (one of 'res', 'counts', or 'vector') indicating whether *object* is a results object, normalized counts object, or character vector of gene IDs, respectively.
 #' @param species Character vector indicating the species (e.g. "hsapiens" (*default*), "mmusculus").
 #' @param target Character vector indicating which format of the gene IDs to return (e.g. "HGNC", ENSG", "REFSEQ_MRNA","ENTREZGENE", see https://biit.cs.ut.ee/gprofiler/convert for all options).
 #' @param addCol Boolean indicating if an additional column named "SYMBOL" should be added, leaving the rownames as the original format. If FALSE (*default*), rownames of *object* will be replaced with gene symbols - duplicate gene symbols will be handled by keeping the symbol with the highest gene expression values.
 #' @return A data.frame object in the format indicated by *obType* with gene symbols as the rownames (if *addCol*=F) or gene symbols added as their own column named "SYMBOL".
 #' @export
 
-getSym<-function(object, obType=c("res","counts"), species="hsapiens", target="HGNC", addCol=F){
+getSym<-function(object, obType=c("res","counts","vector"), species="hsapiens", target="HGNC", addCol=F){
   x<-as.data.frame(object)
-  genes<-rownames(object)
+  if(obType=="vector"){
+    genes<-object
+  } else {
+    genes<-rownames(object)
+  }
   if(target=="ENSGV"){
     genes<-sapply(strsplit(genes, split=".", fixed=T), '[[',1)
     target<-"ENSG"
+  }
+  if(obType=="vector"){
+    y<-gprofiler2::gconvert(genes, organism=species, target=target, mthreshold=1, filter_na=F)
+    sym<-y$target
+    return(sym)
   }
   if(obType=="res"){
     y<-gprofiler2::gconvert(genes, organism=species, target=target, mthreshold=1, filter_na=F)
