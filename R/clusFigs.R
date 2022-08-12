@@ -15,7 +15,11 @@ clusHeatmap<-function(mat, gaps, title, annotdf, hmcol, labgenes){
                      legend=T, labels_row = labgenes, annotation_row=annotdf, gaps_col=seq(1:ncol(mat-1)),
                      show_colnames = T, gaps_row=gaps, main=title, breaks=seq(from=-lim, to=lim, length.out=100))
 }
-clusBar<-function(mat, title, col, cluslev=NULL){
+clusBar<-function(mat, title, col, avgExp, cluslev=NULL){
+  ylab<-"Average log2 Fold-Change (+/- sd)"
+  if(isFALSE(avgExp)){
+    ylab<-"Average Expression (+/- sd)"
+  }
   clus<-mat$cluster
   if(class(clus)!="factor"){
     clus<-factor(mat$cluster)
@@ -49,7 +53,7 @@ clusBar<-function(mat, title, col, cluslev=NULL){
     ggplot2::geom_bar(stat="identity", position= ggplot2::position_dodge(), color="black") +
     ggplot2::geom_errorbar(ggplot2::aes(ymax=AvgFC+SE, ymin=AvgFC-SE), position=dodge,
                            width=0.2) +
-    ggplot2::labs(title=title, y="Average log2 Fold-Change (+/- sd)", x="Cluster") +
+    ggplot2::labs(title=title, y=ylab, x="Cluster") +
     ggplot2::guides(fill=ggplot2::guide_legend(title="Comparison")) +
     ggplot2::theme_minimal() + ggplot2::scale_fill_manual(values=colPal(col))
   print(p)
@@ -67,28 +71,34 @@ clusBar<-function(mat, title, col, cluslev=NULL){
 #' @param labgenes Character vector corresponding to rownames in resList of genes to label in heatmap
 #' @param col Character indicating the RColorBrewer palette name or list of colours (hex, name, rgb()) to be used for the bar plot. Default is "Dark2"
 #' @param hmcol Colour Ramp Palette of length 100 indicating the colour palette of the heatmap. Leave NULL for default.
+#' @param avgExp Boolean. If set to TRUE, resList should actually be an average expression matrix instead of list of DESeq2 results objects. (See AvgExp())
 #' @return A data frame of log2FoldChanges for each comparison as columns (rows are genes) and a column named "cluster" indicating the cluster each gene belongs to. Two figures: a Heatmap of log2FoldChange of each gene ordered into clusters and a bar plot of the average log2FoldChange in each cluster (+/- SD) by comparison.
 #' @export
-clusFigs<-function(resList, numClus, title="Clustered Results", labgenes="", col="Dark2", hmcol=NULL){
-  #Make sure there is more than one entry in the list
-  if(length(resList)<2){
-    stop("resList must have at least 2 entries...")
+clusFigs<-function(resList, numClus, title="Clustered Results", labgenes="", col="Dark2", hmcol=NULL, avgExp=F){
+  mat<-NULL
+  if(isTRUE(avgExp)){
+    mat<-resList
+  } else {
+    #Make sure there is more than one entry in the list
+    if(length(resList)<2){
+      stop("resList must have at least 2 entries...")
+    }
+    #Get the names of the comparisons
+    compNames<-names(resList)
+    #Create a matrix for clustering based on the log2FoldChanges of each comparison
+    mat<-data.frame(genes=rownames(resList[[1]]), comp1=resList[[1]]$log2FoldChange)
+    for(i in 2:length(resList)){
+      tmp<-data.frame(genes=rownames(resList[[i]]), tmp=resList[[i]]$log2FoldChange)
+      mat<-merge(mat, tmp, by.x="genes", by.y="genes")
+    }
+    #Set genes to rownames
+    rownames(mat)<-mat$genes
+    #remove 'genes' column
+    mat<-mat[,-(which(colnames(mat) %in% "genes"))]
+    colnames(mat)<-compNames
+    #Remove any NAs
+    mat<-as.matrix(mat[complete.cases(mat),])
   }
-  #Get the names of the comparisons
-  compNames<-names(resList)
-  #Create a matrix for clustering based on the log2FoldChanges of each comparison
-  mat<-data.frame(genes=rownames(resList[[1]]), comp1=resList[[1]]$log2FoldChange)
-  for(i in 2:length(resList)){
-    tmp<-data.frame(genes=rownames(resList[[i]]), tmp=resList[[i]]$log2FoldChange)
-    mat<-merge(mat, tmp, by.x="genes", by.y="genes")
-  }
-  #Set genes to rownames
-  rownames(mat)<-mat$genes
-  #remove 'genes' column
-  mat<-mat[,-(which(colnames(mat) %in% "genes"))]
-  colnames(mat)<-compNames
-  #Remove any NAs
-  mat<-as.matrix(mat[complete.cases(mat),])
   #Now we can cluster!
   print(paste("Clustering", length(resList),"results with",numClus,"clusters ..."))
   #Set seed
@@ -108,7 +118,7 @@ clusFigs<-function(resList, numClus, title="Clustered Results", labgenes="", col
   #Pass it through to the heatmap function:
   clusHeatmap(mat[,-(which(colnames(mat) %in% "cluster"))], gaps, title, annotdf, hmcol, labgenes)
   #Pass it through to the barplot function:
-  tmp<-clusBar(mat, title, col=col)
+  tmp<-clusBar(mat, title, col=col, avgExp)
   #return the cluster matrix
   return(mat)
 }
