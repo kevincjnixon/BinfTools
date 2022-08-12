@@ -17,7 +17,7 @@ clusHeatmap<-function(mat, gaps, title, annotdf, hmcol, labgenes){
 }
 clusBar<-function(mat, title, col, avgExp, cluslev=NULL){
   ylab<-"Average log2 Fold-Change (+/- sd)"
-  if(isFALSE(avgExp)){
+  if(isTRUE(avgExp)){
     ylab<-"Average Expression (+/- sd)"
   }
   clus<-mat$cluster
