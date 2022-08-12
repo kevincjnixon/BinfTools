@@ -10,7 +10,8 @@ clusFigs(
   title = "Clustered Results",
   labgenes = "",
   col = "Dark2",
-  hmcol = NULL
+  hmcol = NULL,
+  avgExp = FALSE
 )
 }
 \arguments{
@@ -25,6 +26,8 @@ clusFigs(
 \item{col}{Character indicating the RColorBrewer palette name or list of colours (hex, name, rgb()) to be used for the bar plot. Default is "Dark2"}
 
 \item{hmcol}{Colour Ramp Palette of length 100 indicating the colour palette of the heatmap. Leave NULL for default.}
+
+\item{avgExp}{Boolean. If set to TRUE, resList should actually be an average expression matrix instead of list of DESeq2 results objects. (See AvgExp())}
 }
 \value{
 A data frame of log2FoldChanges for each comparison as columns (rows are genes) and a column named "cluster" indicating the cluster each gene belongs to. Two figures: a Heatmap of log2FoldChange of each gene ordered into clusters and a bar plot of the average log2FoldChange in each cluster (+/- SD) by comparison.
