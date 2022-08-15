@@ -83,10 +83,11 @@ data_sum<-function(data, eb){
 #'@param con character indicating control condition if pairswise t-tests are to be performed. Leave NULL to not include stats. Set to 'show.all' to show all pairwise comparisons within each gene.
 #'@param stat.test character indicating either "t.test" or "wilcox" for stats when 'con' is defined. Default is "t.test"
 #'@param hide.ns logical value. If TRUE, hide ns symbol when displaying significance levels.
+#'@param retGP logical indicating if ggplot object should be returned. Default is FALSE.
 #'@return Bar plot of gene expression and list of length 2 containing 'rawData' and 'Summary' of gene expression data if 'returnDat' is TRUE.
 #'@export
 
-barGene<-function(genes, counts, conditions, title="Gene expression", norm=NULL, eb="sd", returnDat=F, col="Dark2", ord=NULL, con=NULL, stat.test="t.test", hide.ns = T){
+barGene<-function(genes, counts, conditions, title="Gene expression", norm=NULL, eb="sd", returnDat=F, col="Dark2", ord=NULL, con=NULL, stat.test="t.test", hide.ns = T, retGP=F){
   ylab="Mean"
   #norm is the condition to normalize expression to for relative expression
   counts<-as.data.frame(counts)
@@ -227,6 +228,9 @@ barGene<-function(genes, counts, conditions, title="Gene expression", norm=NULL,
                                #x="gene", y="y")
   }
   print(p) #Print the plot (was saved to 'p')
+  if(isTRUE(retGP)){
+    return(p)
+  }
   if(isTRUE(returnDat)){
     if(!is.null(con)){
 	  return(list(rawData=y, Summary=x, Stats=pwc, Plotted_Stats=p_pwc)) #Return a list with the raw and summarized data - if you want to invesigate it later
