@@ -16,7 +16,8 @@ barGene(
   ord = NULL,
   con = NULL,
   stat.test = "t.test",
-  hide.ns = T
+  hide.ns = T,
+  retGP = F
 )
 }
 \arguments{
@@ -43,6 +44,8 @@ barGene(
 \item{stat.test}{character indicating either "t.test" or "wilcox" for stats when 'con' is defined. Default is "t.test"}
 
 \item{hide.ns}{logical value. If TRUE, hide ns symbol when displaying significance levels.}
+
+\item{retGP}{logical indicating if ggplot object should be returned. Default is FALSE.}
 }
 \value{
 Bar plot of gene expression and list of length 2 containing 'rawData' and 'Summary' of gene expression data if 'returnDat' is TRUE.
