@@ -77,19 +77,16 @@ GSEA = function(rnk, gmt, pval=1, ts=c(10,600), nperm=10000, parseBader=T, plot.
 
   upcols =  colorRampPalette(colors = c("red4", "red1", "lightpink"))( sum(filtRes$Enrichment == "Up-regulated"))
   downcols =  colorRampPalette(colors = c( "lightblue", "blue1", "blue4"))( sum(filtRes$Enrichment == "Down-regulated"))
-  colos = c(upcols, downcols)
-  names(colos) = 1:length(colos)
+  colors = c(upcols, downcols)
   filtRes$Index = as.factor(1:nrow(filtRes))
   if(isTRUE(parseBader)){
     filtRes$pathway<-sapply(strsplit(filtRes$pathway, "%", T),'[[',1)
   }
-  g = ggplot2::ggplot(filtRes, ggplot2::aes(reorder(pathway, NES), NES)) +
-    ggplot2::geom_col( ggplot2::aes(fill = Index )) +
-    ggplot2::scale_fill_manual(values = colos ) +
-    ggplot2::coord_flip() +
-    ggplot2::labs(x="Pathway", y="Normalized Enrichment Score",
-         title=plot.title) +
-    ggplot2::theme_minimal() + ggplot2::theme(legend.position="none")#, title=element_text(size=1))
+  g <- ggplot(filtRes, aes(x=pathway, y=NES, fill = Index)) + geom_col() + coord_flip() +
+    scale_fill_manual(values = colors) +  scale_x_discrete(limits = rev(filtRes$pathway)) +
+    ggplot2::labs(x = "Pathway", y = "Normalized Enrichment Score",
+                  title = plot.title) + ggplot2::theme_minimal() +
+    ggplot2::theme(legend.position = "none")
 
   print(g)
   #output = list("Results" = fgRes, "Plot" = g)
@@ -223,7 +220,7 @@ gsea_gmt<-function(terms, gmt, leadingEdge=F){
     gmt<-fgsea::gmtPathways(gmt)
    }
   }
-  
+
   res<-list()
   if(isFALSE(leadingEdge)){
     res<-gmt[which(names(gmt) %in% terms)]
