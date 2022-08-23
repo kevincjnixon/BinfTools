@@ -19,7 +19,7 @@ GOHeat(
 \arguments{
 \item{GOresList}{list of GO_GEM results (set returnRes=T) of length >= 2.}
 
-\item{termList}{named list of character vectors where the names represent the group names for GO terms and vectors contain GO term names corresponding to the 'term_name' column in the GO_GEM results data frames.}
+\item{termList}{named list of character vectors where the names represent the group names for GO terms and vectors contain GO term names corresponding to the 'term_name' column in the GO_GEM results data frames. If duplicate terms are found in the list, all but the first instance will be removed. Please be sure to not have any digits in the names of termList to avoid error if duplicates are found.}
 
 \item{hmcol}{colorRampPalette of length 100 that will direct the colour palette of the heatmap. Default is colorRampPalette(c("white","darkblue"))(100)}
 
