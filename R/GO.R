@@ -277,6 +277,19 @@ combGO_plot<-function(GOresList, title="GO results", ts=c(10,500), sig=T, numTer
 #'@export
 
 GOHeat<-function(GOresList, termList, hmcol=colorRampPalette(c("white","darkblue"))(100), width=NA, height=NA, maxVal=NA, minVal=NA, NAcol="#DDDDDD", ret=F){
+  if(any(duplicated(unlist(termList)))){
+    message("Duplicate term names found in termList. Removing all but the first instance of the term...")
+    #creates a named vector where the names give the location of the duplicated instance of the term
+    x<-data.frame(dups=names(unlist(termList)[which(duplicated(unlist(termList)))]),
+                  term=unlist(termList)[which(duplicated(unlist(termList)))])
+    #separate the column 'dups' into the names and indices for the duplicated instances
+    loc<-tidyr::separate(x, col=dups, into=c("name","index"), sep="(?<=[A-Za-z])(?=[0-9])")
+    #Now we remove them
+    for(i in unique(loc$name)){
+      tmp<-subset(loc[which(loc$name %in% i),])
+      termList[[which(names(termList) %in% i)]]<-termList[[which(names(termList) %in% i)]][-as.numeric(tmp$index)]
+    }
+  }  
   retP<-function(GOres, term){
     p_val<-GOres$p_value[which(GOres$term_name %in% term)]
     if(length(p_val)<1){
