@@ -196,7 +196,7 @@ enPlot<-function(gseaRes, rnk, gmt, title=NULL){
     grid::pushViewport(grid::viewport(layout=grid::grid.layout(2,1, heights=grid::unit(c(0.75,0.25),"npc"))))
     p<-tryCatch({plotEnrichment(myGO[[grep(id, names(myGO))[1]]], rnk, NES=gseaRes$NES[i], title=main)}, error=function(e){
      return(NA)}) 
-    if(!is.na(p)){
+    if(!is.na(p[1])){
       #print(plotEnrichment(myGO[[grep(id, names(myGO))[1]]], rnk, NES=gseaRes$NES[i], title=main), vp=grid::viewport(layout.pos.row = 1))
       print(p, vp=grid::viewport(layout.pos.row = 1))
       rnk2<-as.data.frame(rnk, row.names=names(rnk))
