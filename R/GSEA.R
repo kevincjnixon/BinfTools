@@ -82,7 +82,7 @@ GSEA = function(rnk, gmt, pval=1, ts=c(10,600), nperm=10000, parseBader=T, plot.
   if(isTRUE(parseBader)){
     filtRes$pathway<-sapply(strsplit(filtRes$pathway, "%", T),'[[',1)
   }
-  g <- ggplot(filtRes, aes(x=pathway, y=NES, fill = Index)) + geom_col() + coord_flip() +
+  g <- ggplot2::ggplot(filtRes, aes(x=pathway, y=NES, fill = Index)) + geom_col() + coord_flip() +
     scale_fill_manual(values = colors) +  scale_x_discrete(limits = rev(filtRes$pathway)) +
     ggplot2::labs(x = "Pathway", y = "Normalized Enrichment Score",
                   title = plot.title) + ggplot2::theme_minimal() +
