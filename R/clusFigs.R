@@ -59,6 +59,48 @@ clusBar<-function(mat, title, col, avgExp, cluslev=NULL){
   print(p)
   return(x)
 }
+
+plotClusBox<-function(x, yax="Log2FoldChange", col="Dark2", title=""){
+  require(dplyr, quietly=T)
+  res<-NULL
+  compare<-NULL
+  pwc<-NULL
+  isList=F
+  if(is.list(x)){
+    isList=T
+    res<-lapply(x, tidyr::gather, key="group", value="Expression")
+    res<-dplyr::bind_rows(res, .id="cluster")
+    res$group1<-paste(res$group, res$cluster, sep=".")
+  } else {
+    res<-tidyr::gather(x, key="group", value="Expression")
+  }
+  res <- as.data.frame(res)
+  if(isTRUE(isList)){
+    pwc<- res %>% dplyr::group_by(cluster) %>%
+      rstatix::wilcox_test(Expression ~ group) %>%
+      rstatix::adjust_pvalue(method="BH") %>%
+      rstatix::add_significance("p.adj")
+    pwc <- pwc %>% rstatix::add_xy_position(x = "cluster")
+  } else {
+    pwc <- res %>% rstatix::pairwise_wilcox_test(Expression ~ group, p.adjust.method = "BH")
+    pwc <- pwc %>% rstatix::add_xy_position(x = "group")
+  }
+  p<-NULL
+  if(isTRUE(isList)){
+    p <- ggpubr::ggboxplot(res, x = "cluster", y = "Expression", 
+                           fill = "group") + ggplot2::labs(title = title, y = yax, 
+                                                           x = "Cluster") + ggplot2::theme_minimal() + ggplot2::scale_fill_manual(values = BinfTools::colPal(col))
+  } else {
+    p <- ggpubr::ggboxplot(res, x = "group", y = "Expression", 
+                           fill = "group") + ggplot2::labs(title = title, y = yax, 
+                                                           x = "Condition") + ggplot2::theme_minimal() + ggplot2::scale_fill_manual(values = BinfTools::colPal(col))
+  }
+  p <- p + ggpubr::stat_pvalue_manual(pwc, label = "p.adj", 
+                                      tip.length = 0, step.increase = 0.1)
+  print(p)
+}
+
+
 #' k-means clustered figures
 #'
 #' This function is for use with more than one results object. Combine the results
@@ -131,6 +173,13 @@ clusFigs<-function(resList, numClus, title="Clustered Results", labgenes="", col
   annotdf<-data.frame(row.names=rownames(mat), cluster=mat$cluster)
   #Pass it through to the heatmap function:
   clusHeatmap(mat[,-(which(colnames(mat) %in% "cluster"))], gaps, title, annotdf, hmcol, labgenes)
+  #Plot the boxplot
+  clusList<-split(mat[,-which(colnames(mat) %in% "cluster"))], mat$cluster)
+  yax="log2FoldChange"
+  if(isTRUE(avgExp)){
+    yax<-"Average Normalized Expression"
+  }
+  plotClusBox(clusList, yax, col, title)
   #Pass it through to the barplot function:
   tmp<-clusBar(mat, title, col=col, avgExp)
   #return the cluster matrix
