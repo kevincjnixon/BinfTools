@@ -159,15 +159,7 @@ clusRelev<-function(clusRes, cluslev, rename=T, title="Releveled Clusters", col=
     clusRes$cluster<-newClus
     #mat <- mat%>% dplyr::mutate(cluster=forcats::fct_relevel(as.character(cluster), as.character(1:numClus)))
     clusRes<-clusRes[order(clusRes$cluster),]
-    
-    #newClus<-clusRes$cluster
-    #for(i in 1:numClus){
-      ##message("Cluster ",as.numeric(cluslev[i])," is now cluster ",i,".")
-      #newClus[clusRes$cluster==as.numeric(cluslev[i])]<-i
-    #}
-    #clusRes$cluster<-newClus
-    #clusRes<-clusRes[order(clusRes$cluster),]
-    #cluslev<-c(1:numClus)
+    cluslev<-1:numClus
   }
   #clusRes$cluster<-as.numeric(clusRes$cluster)
   clusRes<-clusRes[order(clusRes$cluster),]
@@ -182,7 +174,7 @@ clusRelev<-function(clusRes, cluslev, rename=T, title="Releveled Clusters", col=
   clusHeatmap(clusRes[,-(which(colnames(clusRes) %in% "cluster"))], gaps, title, annotdf, hmcol, labgenes)
   #Pass it through to the barplot function:
   #print(as.numeric(cluslev))
-  tmp<-clusBar(clusRes, title, col=col, avgExp)#, cluslev=as.numeric(cluslev))
+  tmp<-clusBar(clusRes, title, col=col, avgExp, cluslev=as.numeric(cluslev))
   #return the cluster clusResrix
   return(clusRes)
 }
