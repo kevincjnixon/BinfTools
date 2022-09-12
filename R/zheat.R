@@ -27,7 +27,8 @@ heatClusRes<-function(resList, heatClus){
     mat <- mat[, -(which(colnames(mat) %in% "genes"))]
     colnames(mat) <- compNames
   }
-  mat <- mat[complete.cases(mat), ]
+  print(head(mat))
+  print(head(heatClus))
   heatClus<-heatClus[which(rownames(heatClus) %in% mat),, drop=F]
   print(head(heatClus))
   mat<-mat[which(rownames(mat) %in% rownames(heatClus)),]
@@ -35,6 +36,7 @@ heatClusRes<-function(resList, heatClus){
   heatClus<-heatClus[match(rownames(mat), rownames(heatClus)),,drop=F]
   print(all.equal(rownames(mat),rownames(heatClus)))
   mat$cluster<-heatClus$Cluster
+  mat <- mat[complete.cases(mat), ]
   return(mat)
 }
 #' Z-score normalized heatmap of gene expression
