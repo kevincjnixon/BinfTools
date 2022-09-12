@@ -29,8 +29,11 @@ heatClusRes<-function(resList, heatClus){
   }
   mat <- mat[complete.cases(mat), ]
   heatClus<-heatClus[which(rownames(heatClus) %in% mat),, drop=F]
+  print(head(heatClus))
   mat<-mat[which(rownames(mat) %in% rownames(heatClus)),]
+  print(head(mat))
   heatClus<-heatClus[match(rownames(mat), rownames(heatClus)),,drop=F]
+  print(all.equal(rownames(mat),rownames(heatClus)))
   mat$cluster<-heatClus$Cluster
   return(mat)
 }
