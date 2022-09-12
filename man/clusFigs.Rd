@@ -34,7 +34,7 @@ clusFigs(
   
 \item{con}{Character indicating the control condition (equal to one of names(resList), or the colnames of the average expression matrix) to order the clusters from greatest to smallest average. Default is NULL for no ordering. Can also be releveled after using BinfTools:::clusRelev().}
 
-\item{showStat}{Boolean. If set to TRUE, significance symbols will be shown for significant contrasts in boxplot.
+\item{showStat}{Boolean. If set to TRUE, significance symbols will be shown for significant contrasts in boxplot.}
 
 \item{retStat}{Boolean. If set to TRUE, stats for contrasts (p-values and FDR) will be returned for each cluster along with results in a list object.}
 }
