@@ -229,7 +229,7 @@ clusRelev<-function(clusRes, cluslev, rename=T, title="Releveled Clusters", col=
   annotdf<-data.frame(row.names=rownames(clusRes), cluster=clusRes$cluster)
   #Pass it through to the heatmap function:
   clusHeatmap(clusRes[,-(which(colnames(clusRes) %in% "cluster"))], gaps, title, annotdf, hmcol, labgenes)
-  clusList<-split(mat[,-which(colnames(mat) %in% "cluster")], mat$cluster)
+  clusList<-split(clusRes[,-which(colnames(clusRes) %in% "cluster")], clusRes$cluster)
   yax="log2FoldChange"
   if(isTRUE(avgExp)){
     yax<-"Average Normalized Expression"
