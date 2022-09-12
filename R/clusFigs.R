@@ -60,7 +60,7 @@ clusBar<-function(mat, title, col, avgExp, cluslev=NULL){
   return(x)
 }
 
-plotClusBox<-function(x, yax="Log2FoldChange", col="Dark2", title=""){
+plotClusBox<-function(x, yax="Log2FoldChange", col="Dark2", title="", showStat=T){
   require(dplyr, quietly=T)
   res<-NULL
   compare<-NULL
@@ -95,9 +95,12 @@ plotClusBox<-function(x, yax="Log2FoldChange", col="Dark2", title=""){
                            fill = "group") + ggplot2::labs(title = title, y = yax, 
                                                            x = "Condition") + ggplot2::theme_minimal() + ggplot2::scale_fill_manual(values = BinfTools::colPal(col))
   }
-  p <- p + ggpubr::stat_pvalue_manual(pwc, label = "p.adj", 
-                                      tip.length = 0, step.increase = 0.1)
+  if(isTRUE(showStat)){
+    p <- p + ggpubr::stat_pvalue_manual(pwc, label = "p.adj.signif", 
+                                        tip.length = 0, step.increase = 0.1, hide.ns=T)
+  }
   print(p)
+  return(pwc)
 }
 
 
@@ -115,9 +118,11 @@ plotClusBox<-function(x, yax="Log2FoldChange", col="Dark2", title=""){
 #' @param hmcol Colour Ramp Palette of length 100 indicating the colour palette of the heatmap. Leave NULL for default.
 #' @param avgExp Boolean. If set to TRUE, resList should actually be an average expression matrix instead of list of DESeq2 results objects. (See AvgExp())
 #' @param con Character indicating the control condition (equal to one of names(resList), or the colnames of the average expression matrix) to order the clusters from greatest to smallest average. Default is NULL for no ordering. Can also be releveled after using BinfTools:::clusRelev().
+#' @param showStat Boolean. If set to TRUE, significance symbols will be shown for significant contrasts in boxplot.
+#' @param retStat Boolean. If set to TRUE, stats for contrasts (p-values and FDR) will be returned for each cluster along with results in a list object.
 #' @return A data frame of log2FoldChanges for each comparison as columns (rows are genes) and a column named "cluster" indicating the cluster each gene belongs to. Two figures: a Heatmap of log2FoldChange of each gene ordered into clusters and a bar plot of the average log2FoldChange in each cluster (+/- SD) by comparison.
 #' @export
-clusFigs<-function(resList, numClus, title="Clustered Results", labgenes="", col="Dark2", hmcol=NULL, avgExp=F, con=NULL){
+clusFigs<-function(resList, numClus, title="Clustered Results", labgenes="", col="Dark2", hmcol=NULL, avgExp=F, con=NULL, showStat=T, retStat=F){
   mat<-NULL
   if(isTRUE(avgExp)){
     mat<-resList
@@ -179,9 +184,12 @@ clusFigs<-function(resList, numClus, title="Clustered Results", labgenes="", col
   if(isTRUE(avgExp)){
     yax<-"Average Normalized Expression"
   }
-  plotClusBox(clusList, yax, col, title)
+  stats<-plotClusBox(clusList, yax, col, title, showStat)
   #Pass it through to the barplot function:
   tmp<-clusBar(mat, title, col=col, avgExp)
+  if(isTRUE(retStat)){
+    return(list(clusRes=mat, stat=stats))
+  }
   #return the cluster matrix
   return(mat)
 }
