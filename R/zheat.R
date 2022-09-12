@@ -29,7 +29,7 @@ heatClusRes<-function(resList, heatClus){
   }
   print(head(mat))
   print(head(heatClus))
-  heatClus<-heatClus[which(rownames(heatClus) %in% mat),, drop=F]
+  heatClus<-heatClus[which(rownames(heatClus) %in% rownames(mat)),, drop=F]
   print(head(heatClus))
   mat<-mat[which(rownames(mat) %in% rownames(heatClus)),]
   print(head(mat))
