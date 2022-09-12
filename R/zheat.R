@@ -27,14 +27,14 @@ heatClusRes<-function(resList, heatClus){
     mat <- mat[, -(which(colnames(mat) %in% "genes"))]
     colnames(mat) <- compNames
   }
-  print(head(mat))
-  print(head(heatClus))
+  #print(head(mat))
+  #print(head(heatClus))
   heatClus<-heatClus[which(rownames(heatClus) %in% rownames(mat)),, drop=F]
-  print(head(heatClus))
+  #print(head(heatClus))
   mat<-mat[which(rownames(mat) %in% rownames(heatClus)),]
-  print(head(mat))
+  #print(head(mat))
   heatClus<-heatClus[match(rownames(mat), rownames(heatClus)),,drop=F]
-  print(all.equal(rownames(mat),rownames(heatClus)))
+  #print(all.equal(rownames(mat),rownames(heatClus)))
   mat$cluster<-heatClus$Cluster
   mat <- mat[complete.cases(mat), ]
   return(mat)
