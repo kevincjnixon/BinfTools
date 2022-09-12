@@ -165,8 +165,8 @@ clusRelev<-function(clusRes, cluslev, rename=T, title="Releveled Clusters", col=
   clusRes<-clusRes[order(clusRes$cluster),]
   #Calculate the gaps for the heatmap
   gaps=c()
-  for(i in 1:(numClus-1)){
-    gaps<-c(gaps, sum(gaps[length(gaps)],length(which(clusRes$cluster == i))))
+  for(i in 1:(length(cluslev)-1)){
+    gaps<-c(gaps, sum(gaps[length(gaps)],length(which(clusRes$cluster == cluslev[i]))))
   }
   #Create the annotation data frame
   annotdf<-data.frame(row.names=rownames(clusRes), cluster=clusRes$cluster)
