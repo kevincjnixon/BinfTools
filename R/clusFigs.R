@@ -137,7 +137,7 @@ clusFigs<-function(resList, numClus, title="Clustered Results", labgenes="", col
   return(mat)
 }
 
-clusRelev<-function(clusRes, cluslev, rename=T, title="Releveled Clusters", col="Dark2", hmcol=NULL, labgenes=""){
+clusRelev<-function(clusRes, cluslev, rename=T, title="Releveled Clusters", col="Dark2", hmcol=NULL, labgenes="", avgExp=F){
   numClus<-max(clusRes$cluster)
   clusRes$cluster<-factor(clusRes$cluster)
   if(length(cluslev) == length(levels(factor(clusRes$cluster)))){
@@ -182,7 +182,7 @@ clusRelev<-function(clusRes, cluslev, rename=T, title="Releveled Clusters", col=
   clusHeatmap(clusRes[,-(which(colnames(clusRes) %in% "cluster"))], gaps, title, annotdf, hmcol, labgenes)
   #Pass it through to the barplot function:
   #print(as.numeric(cluslev))
-  tmp<-clusBar(clusRes, title, col=col, cluslev=as.numeric(cluslev), avgExp=F)
+  tmp<-clusBar(clusRes, title, col=col, avgExp)#, cluslev=as.numeric(cluslev))
   #return the cluster clusResrix
   return(clusRes)
 }
