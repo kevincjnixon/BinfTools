@@ -152,8 +152,8 @@ clusRelev<-function(clusRes, cluslev, rename=T, title="Releveled Clusters", col=
   if(isTRUE(rename)){
     newClus<-clusRes$cluster
     for(i in 1:numClus){
-      message("changing cluster ",clusLev[i]," to ",i,"...")
-      newClus[which(clusRes$cluster==clusLev[i])]<-i
+      message("changing cluster ",cluslev[i]," to ",i,"...")
+      newClus[which(clusRes$cluster==cluslev[i])]<-i
     }
     newClus<-forcats::fct_relevel(as.character(newClus), as.character(1:numClus))
     clusRes$cluster<-newClus
