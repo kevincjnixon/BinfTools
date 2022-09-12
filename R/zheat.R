@@ -5,6 +5,35 @@ heatClus<-function(out, level=round(max(out$tree_row$height))){
   return(data.frame(row.names=names(x),
                     Cluster=as.factor(x)))
 }
+
+heatClusRes(resList, heatClus){
+  mat<-NULL
+  if(is.data.frame(resList)){
+    message("input is average expression count matrix.")
+    mat<-resList
+  } else {
+    message("input is list of DESeq2 results objects.")
+    if (length(resList) < 2) {
+      stop("resList must have at least 2 entries...")
+    }
+    compNames <- names(resList)
+    mat <- data.frame(genes = rownames(resList[[1]]), comp1 = resList[[1]]$log2FoldChange)
+    for (i in 2:length(resList)) {
+      tmp <- data.frame(genes = rownames(resList[[i]]), 
+        tmp = resList[[i]]$log2FoldChange)
+      mat <- merge(mat, tmp, by.x = "genes", by.y = "genes")
+    }
+    rownames(mat) <- mat$genes
+    mat <- mat[, -(which(colnames(mat) %in% "genes"))]
+    colnames(mat) <- compNames
+  }
+  mat <- mat[complete.cases(mat), ]
+  heatClus<-heatClus[which(rownames(heatClus) %in% mat),, drop=F]
+  mat<-mat[which(rownames(mat) %in% rownames(heatClus)),]
+  heatClus<-heatClus[match(rownames(mat), rownames(heatClus)),,drop=F]
+  mat$cluster<-heatClus$Cluster
+  return(mat)
+}
 #' Z-score normalized heatmap of gene expression
 #'
 #' A function to generate a z-score normalized heatmap of gene expression from
