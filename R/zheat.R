@@ -6,7 +6,7 @@ heatClus<-function(out, level=round(max(out$tree_row$height))){
                     Cluster=as.factor(x)))
 }
 
-heatClusRes(resList, heatClus){
+heatClusRes<-function(resList, heatClus){
   mat<-NULL
   if(is.data.frame(resList)){
     message("input is average expression count matrix.")
