@@ -194,7 +194,7 @@ clusFigs<-function(resList, numClus, title="Clustered Results", labgenes="", col
   return(mat)
 }
 
-clusRelev<-function(clusRes, cluslev, rename=T, title="Releveled Clusters", col="Dark2", hmcol=NULL, labgenes="", avgExp=F){
+clusRelev<-function(clusRes, cluslev, rename=T, title="Releveled Clusters", col="Dark2", hmcol=NULL, labgenes="", avgExp=F, showStat=T, retStat=F){
   numClus<-max(clusRes$cluster)
   clusRes$cluster<-factor(clusRes$cluster)
   if(length(cluslev) == length(levels(factor(clusRes$cluster)))){
@@ -229,9 +229,18 @@ clusRelev<-function(clusRes, cluslev, rename=T, title="Releveled Clusters", col=
   annotdf<-data.frame(row.names=rownames(clusRes), cluster=clusRes$cluster)
   #Pass it through to the heatmap function:
   clusHeatmap(clusRes[,-(which(colnames(clusRes) %in% "cluster"))], gaps, title, annotdf, hmcol, labgenes)
+  clusList<-split(mat[,-which(colnames(mat) %in% "cluster")], mat$cluster)
+  yax="log2FoldChange"
+  if(isTRUE(avgExp)){
+    yax<-"Average Normalized Expression"
+  }
+  stats<-plotClusBox(clusList, yax, col, title, showStat)
   #Pass it through to the barplot function:
   #print(as.numeric(cluslev))
   tmp<-clusBar(clusRes, title, col=col, avgExp, cluslev=as.numeric(cluslev))
+  if(isTRUE(retStat)){
+    return(list(clusRes=clusRes, stat=stats))
+  }
   #return the cluster clusResrix
   return(clusRes)
 }
