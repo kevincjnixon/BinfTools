@@ -174,7 +174,7 @@ clusFigs<-function(resList, numClus, title="Clustered Results", labgenes="", col
   #Pass it through to the heatmap function:
   clusHeatmap(mat[,-(which(colnames(mat) %in% "cluster"))], gaps, title, annotdf, hmcol, labgenes)
   #Plot the boxplot
-  clusList<-split(mat[,-which(colnames(mat) %in% "cluster"))], mat$cluster)
+  clusList<-split(mat[,-which(colnames(mat) %in% "cluster")], mat$cluster)
   yax="log2FoldChange"
   if(isTRUE(avgExp)){
     yax<-"Average Normalized Expression"
