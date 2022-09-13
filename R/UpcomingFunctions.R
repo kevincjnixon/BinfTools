@@ -82,3 +82,42 @@ pseudoMA<-function(counts, treat, con, FoldChange=1, title="", retDA=F, retRes=F
     return(x)
   }
 }
+
+#3D volcano plot - for combining two different contrasts - pvalues are combined using Fisher's combined probability test
+vol3d<-function(x, y, xlab="res1", ylab="res2", pval=0.05, pcol="pvalue", usep=NULL){
+  x<-x[order(rownames(x)),]
+  y<-y[order(rownames(y)),]
+  x<-x[which(rownames(x) %in% rownames(y)),]
+  y<-y[which(rownames(y) %in% rownames(x)),]
+  zlab<-pcol
+  if(!all.equal(rownames(x), rownames(y))){
+    stop("Check again!")
+  }
+  pcol<-which(colnames(x) %in% pcol)
+  pvals<- -log10(x[,pcol])
+  if(is.null(usep)){
+    pvals<-c()
+    for(i in 1:nrow(x)){
+      pvals<-c(pvals, survcomp::combine.test(c(x[,pcol][i], y[,pcol][i])))
+    }
+    pvals<- -log10(pvals)
+  } else {
+    if(usep[1]==2){
+      pvals<- -log10(y$pvalue)
+    }
+  }
+  for3d<-data.frame(x=x$log2FoldChange, y=y$log2FoldChange, z=pvals, row.names=rownames(x))
+  for3d$col<-ifelse(for3d$x > 0 & for3d$y >0 & for3d$z > -log10(pval), rgb(1,0,0,0.5), rgb(0,0,0,0.5))
+  for3d$DE<-ifelse(for3d$x > 0 & for3d$y >0 & for3d$z > -log10(pval), "Up Both", "No Change")
+  for3d$col[which(for3d$x <0 & for3d$y <0 & for3d$z > -log10(pval))] <- rgb(0,0,1,0.5)
+  for3d$DE[which(for3d$x <0 & for3d$y <0 & for3d$z > -log10(pval))] <- "Down Both"
+  for3d$col[which(for3d$x <0 & for3d$y >0 & for3d$z > -log10(pval))] <- rgb(0,1,0,0.5)
+  for3d$DE[which(for3d$x <0 & for3d$y >0 & for3d$z > -log10(pval))] <- paste0("Down ", xlab,", Up ", ylab)
+  for3d$col[which(for3d$x >0 & for3d$y <0 & for3d$z > -log10(pval))] <- rgb(0.5,0,1,0.5)
+  for3d$DE[which(for3d$x >0 & for3d$y <0 & for3d$z > -log10(pval))] <- paste0("Up ",xlab,", Down ",ylab)
+  scatterplot3d::scatterplot3d(for3d[,c(1:3)], pch=16, xlab=paste("log2FoldChange -", xlab), ylab=paste("log2FoldChange -", ylab), zlab=paste0("-log10(",zlab,")"), color=for3d$col, 
+                               grid=T, box=F)
+  legend("topright", legend=c("Up Both", "Down Both", paste0("Up ",xlab,", Down ", ylab), paste0("Down ",xlab,", Up ",ylab), "No Change"),
+         col=c(rgb(1,0,0,0.5), rgb(0,0,1,0.5), rgb(0.5,0,1,0.5), rgb(0,1,0,0.5), rgb(0,0,0,0.5)), pch=16)
+  return(for3d)
+}
