@@ -1,4 +1,8 @@
-
+#'Calculate the geometric mean of a vector of numeric values
+#'
+#' @param a numeric vector
+#' @return geometric mean
+#' @export
 geoMean<-function(a){prod(a)^(1/length(a))}
 
 #'Normalize gene expression to specific genes
