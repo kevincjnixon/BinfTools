@@ -334,7 +334,23 @@ GOHeat<-function(GOresList, termList, hmcol=colorRampPalette(c("white","darkblue
   }
 }
 
-#Custom GO Function
+#'Custom GO Function
+#'
+#'Perform a hypergeometric enrichment test for a custom gene set
+#'
+#' @param genes character vector of genes to be queried
+#' @param gmt Named list of gene set(s) to be analyzed for enrichment
+#' @param gsName Character specifying geneSet source - to be incorportated into output and help indicate source of gene sets
+#' @param bg character vector of genes indicating the background of genes. If left NULL, argument 'sp' will indicate species and assume all genes are in background.
+#' @param sp character of either "human" or "mouse" indicating the species. This will provide the number of background genes if bg=NULL.
+#' @param FDR Boolean indicating if p-values should be FDR corrected (Benjamini-Hochberg). Default is TRUE.
+#' @param byRegion Boolean. If query genes has duplicate gene symbols, set to TRUE to remove duplicates (relevant only if query genes are from annotated peaks from genomic data). Default=F.
+#' @param enr character of either "pos" or "neg" indicating if significance should be calculated for positive or negative hypergeometric enrichment, respectively. default="pos".
+#' @param significant Boolean indicating if only significant (p<0.05) results should be returned. defaulte=T.
+#' @param minp numeric indicating the minimum p-value possible reported (to avoid zeros)
+#' @return Data.frame of same structure of results table from GO_GEM() when returnRes=T.
+#' @export
+
 customGO<-function(genes, gmt, gsName="custom GeneSet", bg=NULL, sp="human", FDR=T, byRegion=F, enr="pos", significant=T, minp=1e-300){
   if(!is.list(gmt)){
     gmt<-BinfTools::read.gmt(gmt)
