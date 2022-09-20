@@ -70,7 +70,7 @@ plotClusBox<-function(x, yax="Log2FoldChange", col="Dark2", title="", showStat=T
     isList=T
     ord<-colnames(x[[1]])
     res<-lapply(x, tidyr::gather, key="group", value="Expression")
-    res$group<-forcats::fct_relevel(res$group, ord)
+    res$group<-forcats::fct_relevel(as.factor(res$group), ord)
     res<-dplyr::bind_rows(res, .id="cluster")
     res$group1<-paste(res$group, res$cluster, sep=".")
   } else {
