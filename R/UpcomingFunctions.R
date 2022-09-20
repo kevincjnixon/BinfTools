@@ -134,6 +134,7 @@ gmtHeat<-function(counts, cond, gmt, con=NULL, labgenes=NULL, avgExp=T, retGroup
   if(isTRUE(avgExp)){
     message("Averaging expression values accross replicates")
     counts<-avgExp(counts, cond)
+    cond<-colnames(avgExp)
   }
   #Make the heatmap data frames
   forHeat<-list()
