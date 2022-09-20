@@ -123,14 +123,16 @@ vol3d<-function(x, y, xlab="res1", ylab="res2", pval=0.05, pcol="pvalue", usep=N
 }
 
 #Make a heatmap of gene expression grouped by gene sets
-gmtHeat<-function(counts, cond, gmt, con=NULL, labgenes=NULL, avgExp=T, retGroups=F){
+gmtHeat<-function(counts, cond, gmt, con=NULL, labgenes=NULL, avgExp=T, zscore=T, retGroups=F){
   #Filter gmt to have only genes found in rownames(counts)
   gmt<-lapply(gmt, function(x){return(x[which(x %in% rownames(counts))])})
   #Make an annotation data frame:
   annodf<-suppressWarnings(unique(tidyr::gather(as.data.frame(do.call("cbind", gmt)), key="Term", value="Genes")))
   rownames(annodf)<-make.names(annodf$Genes, unique=T)
-  message("Z-scoring counts")
-  counts<-t(scale(t(counts)))
+  if(isTRUE(zscore)){
+    message("Z-scoring counts")
+    counts<-t(scale(t(counts)))
+  }
   #Custom Order columns
   if(!is.null(con)){
     if (length(con) == length(levels(factor(cond)))) {
