@@ -121,3 +121,73 @@ vol3d<-function(x, y, xlab="res1", ylab="res2", pval=0.05, pcol="pvalue", usep=N
          col=c(rgb(1,0,0,0.5), rgb(0,0,1,0.5), rgb(0.5,0,1,0.5), rgb(0,1,0,0.5), rgb(0,0,0,0.5)), pch=16)
   return(for3d)
 }
+
+#Make a heatmap of gene expression grouped by gene sets
+gmtHeat<-function(counts, cond, gmt, con=NULL, labgenes=NULL, avgExp=T){
+  #Filter gmt to have only genes found in rownames(counts)
+  gmt<-lapply(gmt, function(x){return(x[which(x %in% rownames(counts))])})
+  #Make an annotation data frame:
+  annodf<-suppressWarnings(unique(tidyr::gather(as.data.frame(do.call("cbind", gmt)), key="Term", value="Genes")))
+  print(head(annodf))
+  rownames(annodf)<-make.names(annodf$Genes, unique=T)
+  #Make the heatmap data frames
+  forHeat<-list()
+  for(i in 1:length(gmt)){
+    forHeat[[i]]<-counts[which(rownames(counts) %in% gmt[[i]]),]
+    forHeat[[i]]<-forHeat[[i]][match(gmt[[i]], rownames(forHeat[[i]])),]
+    names(forHeat)[i]<-names(gmt)[i]
+  }
+  forHeat<-suppressWarnings(as.data.frame(do.call("rbind", forHeat)))
+  rownames(forHeat)<-rownames(annodf)
+  #Z-score
+  forHeat<-t(scale(t(forHeat)))
+  #Custom Order columns
+  if(!is.null(con)){
+    if (length(con) == length(levels(factor(cond)))) {
+      cond <- forcats::fct_relevel(cond, con)
+    }
+    else {
+      ind <- which(levels(cond) == con)
+      if (ind != 1) {
+        x <- 1:length(levels(cond))
+        x <- x[-ind]
+        x <- c(ind, x)
+        y <- levels(cond)[x]
+        cond <- forcats::fct_relevel(cond, y)
+      }
+    }
+    tmp.forHeat <- forHeat[, which(cond == levels(cond)[1])]
+    tmp.cond <- as.character(cond[which(cond == 
+                                                      levels(cond)[1])])
+    for (i in 2:length(levels(cond))) {
+      tmp.forHeat <- cbind(tmp.forHeat, forHeat[, which(cond == 
+                                                 levels(cond)[i])])
+      tmp.cond <- c(tmp.cond, as.character(cond[which(cond == 
+                                                                          levels(cond)[i])]))
+    }
+    forHeat <- tmp.forHeat
+    cond <- tmp.cond
+  }
+  if(isTRUE(avgExp)){
+    forHeat<-avgExp(forHeat, cond)
+  }
+  gaps <- c()
+  if (length(gmt) < 2) {
+    gaps <- NULL
+  } else {
+    for (i in 1:(length(gmt) - 1)) {
+      gaps <- c(gaps, sum(gaps[length(gaps)], length(gmt[[i]])))
+    }
+  }
+  if (!is.null(labgenes)) {
+    tmp <- rep(" ", nrow(forHeat))
+    for (i in 1:length(labgenes)) {
+      tmp[which(rownames(forHeat) %in% labgenes[i], arr.ind = T)] <- labgenes[i]
+    }
+    labgenes <- tmp
+  } else {
+    labgenes<-annodf$Genes
+  }
+  pheatmap::pheatmap(forHeat, annotation_row=annodf[,-2,drop=F], gaps_row=gaps, cluster_rows = F,
+                     labels_row=labgenes, cluster_cols=F)
+}
