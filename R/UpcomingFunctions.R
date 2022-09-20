@@ -123,13 +123,18 @@ vol3d<-function(x, y, xlab="res1", ylab="res2", pval=0.05, pcol="pvalue", usep=N
 }
 
 #Make a heatmap of gene expression grouped by gene sets
-gmtHeat<-function(counts, cond, gmt, con=NULL, labgenes=NULL, avgExp=T){
+gmtHeat<-function(counts, cond, gmt, con=NULL, labgenes=NULL, avgExp=T, retGroups=F){
   #Filter gmt to have only genes found in rownames(counts)
   gmt<-lapply(gmt, function(x){return(x[which(x %in% rownames(counts))])})
   #Make an annotation data frame:
   annodf<-suppressWarnings(unique(tidyr::gather(as.data.frame(do.call("cbind", gmt)), key="Term", value="Genes")))
-  print(head(annodf))
   rownames(annodf)<-make.names(annodf$Genes, unique=T)
+  message("Z-scoring counts")
+  counts<-t(scale(t(counts)))
+  if(isTRUE(avgExp)){
+    message("Averaging expression values accross replicates")
+    forHeat<-avgExp(counts, cond)
+  }
   #Make the heatmap data frames
   forHeat<-list()
   for(i in 1:length(gmt)){
@@ -137,10 +142,12 @@ gmtHeat<-function(counts, cond, gmt, con=NULL, labgenes=NULL, avgExp=T){
     forHeat[[i]]<-forHeat[[i]][match(gmt[[i]], rownames(forHeat[[i]])),]
     names(forHeat)[i]<-names(gmt)[i]
   }
+  if(isTRUE(retGroups)){
+    message("Returning list of groups")
+    return(forHeat)
+  }
   forHeat<-suppressWarnings(as.data.frame(do.call("rbind", forHeat)))
   rownames(forHeat)<-rownames(annodf)
-  #Z-score
-  forHeat<-t(scale(t(forHeat)))
   #Custom Order columns
   if(!is.null(con)){
     if (length(con) == length(levels(factor(cond)))) {
@@ -168,9 +175,7 @@ gmtHeat<-function(counts, cond, gmt, con=NULL, labgenes=NULL, avgExp=T){
     forHeat <- tmp.forHeat
     cond <- tmp.cond
   }
-  if(isTRUE(avgExp)){
-    forHeat<-avgExp(forHeat, cond)
-  }
+  
   gaps <- c()
   if (length(gmt) < 2) {
     gaps <- NULL
