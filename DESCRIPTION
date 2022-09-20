@@ -38,7 +38,8 @@ Imports:
   wordcloud,
   scales,
   gt,
-  webshot
+  webshot,
+  scatterplot3d
 Suggests: 
     rmarkdown,
     knitr
