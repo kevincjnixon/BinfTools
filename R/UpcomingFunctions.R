@@ -131,6 +131,33 @@ gmtHeat<-function(counts, cond, gmt, con=NULL, labgenes=NULL, avgExp=T, retGroup
   rownames(annodf)<-make.names(annodf$Genes, unique=T)
   message("Z-scoring counts")
   counts<-t(scale(t(counts)))
+  #Custom Order columns
+  if(!is.null(con)){
+    if (length(con) == length(levels(factor(cond)))) {
+      cond <- forcats::fct_relevel(cond, con)
+    }
+    else {
+      ind <- which(levels(cond) == con)
+      if (ind != 1) {
+        x <- 1:length(levels(cond))
+        x <- x[-ind]
+        x <- c(ind, x)
+        y <- levels(cond)[x]
+        cond <- forcats::fct_relevel(cond, y)
+      }
+    }
+    tmp.counts <- counts[, which(cond == levels(cond)[1])]
+    tmp.cond <- as.character(cond[which(cond == 
+                                                      levels(cond)[1])])
+    for (i in 2:length(levels(cond))) {
+      tmp.counts <- cbind(tmp.counts, counts[, which(cond == 
+                                                 levels(cond)[i])])
+      tmp.cond <- c(tmp.cond, as.character(cond[which(cond == 
+                                                                          levels(cond)[i])]))
+    }
+    counts <- tmp.counts
+    cond <- tmp.cond
+  }
   if(isTRUE(avgExp)){
     message("Averaging expression values accross replicates")
     counts<-avgExp(counts, cond)
@@ -148,35 +175,7 @@ gmtHeat<-function(counts, cond, gmt, con=NULL, labgenes=NULL, avgExp=T, retGroup
     return(forHeat)
   }
   forHeat<-suppressWarnings(as.data.frame(do.call("rbind", forHeat)))
-  rownames(forHeat)<-rownames(annodf)
-  #Custom Order columns
-  if(!is.null(con)){
-    if (length(con) == length(levels(factor(cond)))) {
-      cond <- forcats::fct_relevel(cond, con)
-    }
-    else {
-      ind <- which(levels(cond) == con)
-      if (ind != 1) {
-        x <- 1:length(levels(cond))
-        x <- x[-ind]
-        x <- c(ind, x)
-        y <- levels(cond)[x]
-        cond <- forcats::fct_relevel(cond, y)
-      }
-    }
-    tmp.forHeat <- forHeat[, which(cond == levels(cond)[1])]
-    tmp.cond <- as.character(cond[which(cond == 
-                                                      levels(cond)[1])])
-    for (i in 2:length(levels(cond))) {
-      tmp.forHeat <- cbind(tmp.forHeat, forHeat[, which(cond == 
-                                                 levels(cond)[i])])
-      tmp.cond <- c(tmp.cond, as.character(cond[which(cond == 
-                                                                          levels(cond)[i])]))
-    }
-    forHeat <- tmp.forHeat
-    cond <- tmp.cond
-  }
-  
+  rownames(forHeat)<-rownames(annodf) 
   gaps <- c()
   if (length(gmt) < 2) {
     gaps <- NULL
