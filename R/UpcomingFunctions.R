@@ -189,7 +189,7 @@ gmtHeat<-function(counts, cond, gmt, con=NULL, labgenes=NULL, avgExp=T, zscore=T
   if (!is.null(labgenes)) {
     tmp <- rep(" ", nrow(forHeat))
     for (i in 1:length(labgenes)) {
-      tmp[which(rownames(forHeat) %in% labgenes[i], arr.ind = T)] <- labgenes[i]
+      tmp[which(annodf$Genes %in% labgenes[i], arr.ind = T)] <- labgenes[i]
     }
     labgenes <- tmp
   } else {
