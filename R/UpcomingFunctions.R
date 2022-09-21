@@ -198,3 +198,27 @@ gmtHeat<-function(counts, cond, gmt, con=NULL, labgenes=NULL, avgExp=T, zscore=T
   pheatmap::pheatmap(forHeat, annotation_row=annodf[,-2,drop=F], gaps_row=gaps, cluster_rows = F,
                      labels_row=labgenes, cluster_cols=F)
 }
+
+#Filter a list of GO results to either remove tables with no significant results (replace=F), or replace them with a dummy table (replace=T). 
+#Replacing with a dummy table is good when you want to show all GO analysis names in a GOHeat analysis.
+filtGO<-function(x, replace=F){
+  to_rm<-c()
+  for(i in 1:length(x)){
+    if(is.null(nrow(x[[i]]))){
+      to_rm<-c(to_rm,i)
+    }
+  }
+  if(length(to_rm)>0){
+    if(isFALSE(replace)){
+      message("Removing ",length(to_rm)," GO tables with no results.")
+      x<-x[-to_rm]
+    } else {
+      message("Replacing ", length(to_rm)," GO tables with no results with a dummy table.")
+      tmp<-data.frame(p_value=c(1,1), term_name=rep("No Enriched Terms",2))
+      for(i in 1:length(to_rm)){
+        x[[to_rm[i]]]<-tmp
+      }
+    }
+  }
+  return(x)
+}
