@@ -28,7 +28,7 @@ na.rm<-function(x){
 
 #Plot a correlation between two columns from two different or the same data frame or two named vectors
 #Great for comparing gene expression changes or values, or two gene rankings for GSEA
-plotCor<-function(x,y, xCol=F, yCol=F, xlab="", ylab="", title=""){
+plotCor<-function(x,y, xCol=F, yCol=F, xlab="", ylab="", title="", scale=F){
   if(isFALSE(xCol)){
     if(isFALSE(yCol)){
       x<-x[which(names(x) %in% names(y))]
@@ -56,8 +56,13 @@ plotCor<-function(x,y, xCol=F, yCol=F, xlab="", ylab="", title=""){
   }
   x<-x[order(names(x))]
   y<-y[order(names(y))]
-  print(length(x))
-  print(length(y))
+  #print(length(x))
+  #print(length(y))
+  if(isTRUE(scale)){
+    messgae("z-score...")
+    x<-scale(x)
+    y<-scale(y)
+  }
   fit<-lm(y~x)
   plot(x,y, main=title, pch=16, xlab=xlab, ylab=ylab)
   abline(fit, lty=2, col="red")
