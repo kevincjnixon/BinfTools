@@ -10,6 +10,7 @@
 #' @param source A vector of data sources to use. Currently: GO (GO:BP, GO:MF, GO:CC), KEGG, REAC, TF, MIRNA, CORUM, HP, HPA, WP.
 #' @param corr A character vector describing the correction method to use. One of 'gSCS', 'fdr', or 'bonferroni'. Default is 'fdr'
 #' @param iea Boolean values indicating if electronic annotations should be excluded. Default FALSE.
+#' @param ord Boolean indicating if ranked GO analysis should be performed. Default=FALSE.
 #' @param prefix A character vector describing the path and prefix of the output files (should not include any file extensions)
 #' @param ts Vector of length 2 indicating the minimum and maximum term size - the minimum/maximum number of genes per term when generating the plot of most enriched/significant terms. Default is c(10,500).
 #' @param pdf Boolean indicating if bar plots should be exported to pdf. Default is TRUE.
@@ -23,15 +24,15 @@
 #' @export
 #'
 
-GO_GEM<-function(geneList,species="hsapiens",bg=NULL,source=NULL, corr="fdr", iea=FALSE, prefix="GO_analysis", ts=c(10,500),
+GO_GEM<-function(geneList,species="hsapiens",bg=NULL,source=NULL, corr="fdr", iea=FALSE, ord=F, prefix="GO_analysis", ts=c(10,500),
                  pdf=T, fig=T, figCols=c("blue","orange"), returnGost=F, writeRes=T, writeGem=F, writeGene=F, returnRes=F){
-  GOfun<-function(genes, spec=species, cbg=bg, dsource=source, corrm=corr, exiea=iea, prefix=pre, termsz=ts, prpdf=pdf, prfig=fig, cols=figCols, giveGost=returnGost,
+  GOfun<-function(genes, spec=species, cbg=bg, dsource=source, corrm=corr, exiea=iea, rnk=ord, prefix=pre, termsz=ts, prpdf=pdf, prfig=fig, cols=figCols, giveGost=returnGost,
                   gemWrite=writeGem, resWrite=writeRes, genWrite=writeGene, giveRes=returnRes){
     #ts is term size (for plotting, terms must have ts genes to make cutoff, default is 10)
     if(isTRUE(genWrite)){
       write.table(genes, paste0(prefix,".genes.txt"), quote=F, row.names=F, col.names=F, sep="\t")
     }
-    x<-gprofiler2::gost(genes, organism=spec, custom_bg=cbg, sources=dsource, evcodes=TRUE, multi_query=FALSE, correction_method=corrm, exclude_iea=exiea)
+    x<-gprofiler2::gost(genes, organism=spec, ordered_query=rnk, custom_bg=cbg, sources=dsource, evcodes=TRUE, multi_query=FALSE, correction_method=corrm, exclude_iea=exiea)
     y<-x$result[,-14]
     y$enrichment <- (y$intersection_size/y$query_size)/(y$term_size/y$effective_domain_size)
     gem<-x$result[,c("term_id","term_name","p_value","intersection")]
