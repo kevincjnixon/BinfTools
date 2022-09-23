@@ -192,8 +192,8 @@ MA_Plot<-function(res, title, p=NULL, pval=NULL, FC=1, lab=NULL, col=NULL, fclim
       ord<-rownames(res)[order(abs(res$log2FoldChange), decreasing=T)]
     }
     toRet<-list(Down=c(DEdown,rownames(subset(zeroes, log2FoldChange < -FC))), Up=c(DEup, rownames(subset(zeroes, log2FoldChange > FC))))
-    toRet$Down<-toRet$Down[match(ord, toRet$Down)]
-    toRet$Up<-toRet$Up[match(ord, toRet$Up)]
+    toRet$Down<-BinfTools:::na.rm(toRet$Down[match(ord, toRet$Down)])
+    toRet$Up<-BinfTools:::na.rm(toRet$Up[match(ord, toRet$Up)])
     return(toRet)
   }
 }
