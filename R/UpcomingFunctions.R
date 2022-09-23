@@ -59,7 +59,7 @@ plotCor<-function(x,y, xCol=F, yCol=F, xlab="", ylab="", title="", scale=F){
   #print(length(x))
   #print(length(y))
   if(isTRUE(scale)){
-    messgae("z-score...")
+    message("z-score...")
     x<-scale(x)
     y<-scale(y)
   }
