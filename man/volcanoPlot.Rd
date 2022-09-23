@@ -44,7 +44,7 @@ volcanoPlot(
            
 \item{ordBy}{Character indicating how DEGs should be ordered: "l2FC" order by descending absolute log2FoldChange, "sig" order by descending significance. Default is "sig".}
 
-\item{expScale}{A boolean indicating if points should be scaled using average expression (baseMean) - higher expressed = larger point. Default=FALSE.
+\item{expScale}{A boolean indicating if points should be scaled using average expression (baseMean) - higher expressed = larger point. Default=FALSE.}
 
 \item{upcol}{A character vector indicating the colour (colour name or hexadecimal) of 'upregulated' genes. leave NULL for default red.}
 
