@@ -12,6 +12,7 @@
 #'@param fclim A number indicating the maximum log2FoldChange value desired on the volcano plot (x-axis limits). Points outside this limit will appear as diamonds on the limits.
 #'@param showNum A boolean indicating whether gene numbers should be displayed on the plot. Default is TRUE.
 #'@param returnDEG A boolean indicating whether DEGs (using given thresholds) should be returned as a list (down, up)
+#'@param ordBy Character indicating how DEGs should be ordered: "l2FC" order by descending absolute log2FoldChange, "sig" order by descending significance. Default is "sig".
 #'@param expScale A boolean indicating if points should be scaled using average expression (baseMean) - higher expressed = larger point. Default=FALSE.
 #'#'@param upcol A character vector indicating the colour (colour name or hexadecimal) of 'upregulated' genes. leave NULL for default red.
 #'@param dncol A character vector indicating the colour (colour name or hexadecimal) of 'downregulated' genes. leave NULL for default blue.
@@ -19,7 +20,7 @@
 #' @export
 #'
 
-volcanoPlot<-function(res, title, p=NULL, pval=NULL, FC=1, lab=NULL, col=NULL, fclim=NULL, showNum=TRUE, returnDEG=F, expScale=F, upcol=NULL, dncol=NULL){
+volcanoPlot<-function(res, title, p=NULL, pval=NULL, FC=1, lab=NULL, col=NULL, fclim=NULL, showNum=TRUE, returnDEG=F, ordBy="sig", expScale=F, upcol=NULL, dncol=NULL){
   #Function to create a volcano plot from a results table (res)
   #p and pval are mutually exclusive and describe the adjusted pvalue or unadjusted pvalue thresholds of DEGs, respectively
   #FC is the absolute log2 fold-change threshold for a DEG
@@ -185,6 +186,13 @@ volcanoPlot<-function(res, title, p=NULL, pval=NULL, FC=1, lab=NULL, col=NULL, f
     return(list(Down=numdown,Up=numup,No_Change=numnc))
   }
   if(isTRUE(returnDEG)){
-    return(list(Down=c(DEdown,rownames(subset(zeroes, log2FoldChange < -FC))), Up=c(DEup, rownames(subset(zeroes, log2FoldChange > FC)))))
+    ord<-rownames(res)[order(abs(res$stat), decreasing=T)]
+    if(ordBy=="l2FC"){
+      ord<-rownames(res)[order(abs(res$log2FoldChange), decreasing=T)]
+    }
+    toRet<-list(Down=c(DEdown,rownames(subset(zeroes, log2FoldChange < -FC))), Up=c(DEup, rownames(subset(zeroes, log2FoldChange > FC))))
+    toRet$Down<-BinfTools:::na.rm(toRet$Down[match(ord, toRet$Down)])
+    toRet$Up<-BinfTools:::na.rm(toRet$Up[match(ord, toRet$Up)])
+    return(toRet)
   }
 }
