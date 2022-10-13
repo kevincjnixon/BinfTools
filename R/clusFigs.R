@@ -60,6 +60,16 @@ clusBar<-function(mat, title, col, avgExp, cluslev=NULL){
   return(x)
 }
 
+#' Make a boxplot grouped by gene sets or clusters
+#'
+#' @param x Data frame or named list of data frames of average gene expression or log2FoldChanges of a subset of genes, where each column is a condition or contrast (in the order you want displayed), and rows are genes.
+#' @param yax Character indicating the y-axis label of the boxplot. Default="Log2FoldChange".
+#' @param col Character indicating the RColorBrewer palette name or list of colours (hex, name, rgb()) to be used for the bar plot. Default is "Dark2"
+#' @param title Character indicating the title of the plot
+#' @param showStat Boolean indicating if significance of pairwise contrasts within each group should be shown. Default=T
+#' @return Boxplot or grouped boxplot and tibble contatining statistics from pairwise t-tests.
+#' @export
+
 plotClusBox<-function(x, yax="Log2FoldChange", col="Dark2", title="", showStat=T){
   require(dplyr, quietly=T)
   res<-NULL
