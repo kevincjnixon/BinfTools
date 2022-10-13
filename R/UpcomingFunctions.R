@@ -1,4 +1,11 @@
 #Take a numeric vector (i.e. a vector of gene expression) and assign it into named quantiles of a desired length - great for making a 'condition' vector based off of gene expression
+#' Generate and assign quantiles
+#' Function great for making a 'condition' vector based on gene expression values
+#' @param x numeric vector to be used to generate quantiles
+#' @param groups character vector of names to be assigned to quantiles in order of ascending values. Number of quantiles generated is based off of length(groups). 
+#' @return character vector of length(x) with names of groups assigned to each value of x
+#' @export
+
 quart_group<-function(x, groups=c("1st","2nd","3rd","4th")){
   q<-quantile(x, probs=seq(0,1, (1/length(groups))))
   g<-c(rep(groups[length(groups)], length(x)))
@@ -14,6 +21,14 @@ quart_group<-function(x, groups=c("1st","2nd","3rd","4th")){
 
 #Grep a certain key from a GO results table's "term_name" column, and return provided columns
 #Great for making a termList for GOHeat (return "term_name" only) or getting intersection genes
+#' Grep a key word from a GO results table and return specific columns
+#'
+#' @param GOtable Data frame returned from GO_GEM or clusGO with returnRes=T
+#' @param key Character to be matched in the column 'term_name'. Note that the key is not case sensitive and will return parital matches. Be sure to review the results.
+#' @param cols Character vector of any of colnames(GOtable) indicating which columns should be returned. Default is c("term_name","intersection").
+#' @return Data frame of subset GOtable where key is found in term_name and columns match cols. If no matches are found, NA is returned.
+#' @export
+
 GOgrep<-function(GOtable, key, cols=c("term_name","intersection")){
   x<-GOtable[grep(key, GOtable$term_name, ignore.case=T),which(colnames(GOtable) %in% cols), drop=F]
   if(nrow(x)<1){
@@ -22,12 +37,31 @@ GOgrep<-function(GOtable, key, cols=c("term_name","intersection")){
   return(x)
 }
 
+#' Remove NAs
+#' 
+#' @param x vector of any type
+#' @return x with NAs removed
+#' @export
 na.rm<-function(x){
   return(x[!is.na(x)])
 }
 
 #Plot a correlation between two columns from two different or the same data frame or two named vectors
 #Great for comparing gene expression changes or values, or two gene rankings for GSEA
+#' Correlation Plotting
+#' Plot a correlation bewteen any two columns from any data frame(s) or named vectors
+#'
+#' @param x Data frame with rownames or named vector containing data to be plotted on the x-axis
+#' @param y Data frame with rownames or named vector containing data to be plotted on the y-axis
+#' @param xCol Character indicating column name in x of data to be plotted on the x-axis. Leave FALSE if x is a named vector.
+#' @param yCol Character indicating column name in y of data to be plotted on the y-axis. Leave FALSE if y is a named vector.
+#' @param xlab Character indicating x-axis label
+#' @param ylab Character indicating y-axis label
+#' @param title Character indicating title of plot
+#' @param scale Should the data be z-score scaled? Default is FALSE.
+#' @return Scatter plot of data with line of best fit and R-value of correlation. Note that x and y data are paired based on the rownames of the data frame or names of the named vector. Non-paired values will not be plotted.
+#' @export
+
 plotCor<-function(x,y, xCol=F, yCol=F, xlab="", ylab="", title="", scale=F){
   if(isFALSE(xCol)){
     if(isFALSE(yCol)){
@@ -70,6 +104,18 @@ plotCor<-function(x,y, xCol=F, yCol=F, xlab="", ylab="", title="", scale=F){
 }
 
 #If you have n=1 for one sample, you can still make a 'pseudo MA plot'
+#' Make a 'pseudo' MA plot
+#' Make a MA plot even when you have only n=1. Note that this can be used if one or both condition groups have more than one or more replicates.
+#' @param counts data frame of normalized counts to be used.
+#' @param treat character vector of column name(s) in counts to be used as the treatment condition.
+#' @param con character vector of column name(s) in counts to be used as the control/reference condition.
+#' @param FoldChange absolute log2FoldChange threshold (treat/con) to subset the 'differently activated' genes - Note no statistics are performed with this, and so these genes cannot be named as 'differential'
+#' @param title Character indicating the title of the plot
+#' @param retDA Boolean indicating if differently activated genes should be returned as a list (Down, Up). Default is FALSE.
+#' @param retRes Boolean indicating if 'pseudo' results object should be returned. Default is FALSE, and will not return if retDA=TRUE. Note that any p-values indicated in this table are dummy values.
+#' @return MA plot with differently activated genes highlighted, named list of differently activated genes if retDA=T, and 'pseudo' results object if retRes=T (and retDA=F).
+#' @export
+
 pseudoMA<-function(counts, treat, con, FoldChange=1, title="", retDA=F, retRes=F){
   x<-data.frame(row.names=rownames(counts),
                 baseMean=rowMeans(counts[,which(colnames(counts) %in% c(treat, con)), drop=F]),
@@ -89,6 +135,18 @@ pseudoMA<-function(counts, treat, con, FoldChange=1, title="", retDA=F, retRes=F
 }
 
 #3D volcano plot - for combining two different contrasts - pvalues are combined using Fisher's combined probability test
+#' Make a 3D volcano plot
+#' combine 2 results objects into one volcano plot - note this is experimental and not usually done
+#' @param x DESeq2 results object to be plotted for the x-axis
+#' @param y DESeq2 results object to be plotted for the y-axis
+#' @param xlab Contrast name for x. Default='res1'.
+#' @param ylab Contrast name for y. Default='res2'.
+#' @param pval significance threshold for differential genes. Default is 0.05
+#' @param pcol Character of either 'pvalue' or 'padj' indicating which column to use to plot significance. Default is "pvalue".
+#' @param usep numeric of either 1 or 2 indicating which p-values to plot (x or y, respectively). If left NULL (default). P-values from both x and y are combined using Fisher's combined probability test, and the resulting p-values are plotted.
+#' @return 3D volcano plot with every combination of up/down-regulated genes labeled and a data frame of the combined data used to generate the plot.
+#' @export
+
 vol3d<-function(x, y, xlab="res1", ylab="res2", pval=0.05, pcol="pvalue", usep=NULL){
   x<-x[order(rownames(x)),]
   y<-y[order(rownames(y)),]
@@ -127,7 +185,19 @@ vol3d<-function(x, y, xlab="res1", ylab="res2", pval=0.05, pcol="pvalue", usep=N
   return(for3d)
 }
 
-#Make a heatmap of gene expression grouped by gene sets
+#' Make a heatmap of gene expression grouped by gene sets
+#'
+#' @param counts data frame of normalized gene expression values
+#' @param cond character vector indicating which condition each column of counts belongs to
+#' @param gmt named list of gene sets to be used in the heatmap. Genes must be found in rownames(counts).
+#' @param con character indicating the control condition from cond. Or the order in which conditions in cond should appear on the heatmap.
+#' @param labgenes character indicating which genes (if any) should be labeled on the heatmap. Default NULL will label all genes. Set to "" to label no genes.
+#' @param avgExp Boolean indicating if gene expression should be averaged within each condition (TRUE) or if each individual replicate should be plotted (FALSE; default).
+#' @param zscore Boolean indicating if gene expression should be z-score scaled (TRUE; default) or not (FALSE).
+#' @param retGroups Booleand indicating if named list of data frames of gene expression subset to each gene set should be returned (z-score normalized if zscore=T). Default is FALSE. if TRUE, heatmap won't be plotted.
+#' @return Annotated heatmap of gene expression of all gene sets provided or named list of data frames of gene expression subset to each gene set.
+#' @export
+
 gmtHeat<-function(counts, cond, gmt, con=NULL, labgenes=NULL, avgExp=T, zscore=T, retGroups=F){
   #Filter gmt to have only genes found in rownames(counts)
   gmt<-lapply(gmt, function(x){return(x[which(x %in% rownames(counts))])})
@@ -206,6 +276,13 @@ gmtHeat<-function(counts, cond, gmt, con=NULL, labgenes=NULL, avgExp=T, zscore=T
 
 #Filter a list of GO results to either remove tables with no significant results (replace=F), or replace them with a dummy table (replace=T). 
 #Replacing with a dummy table is good when you want to show all GO analysis names in a GOHeat analysis.
+#' Filter a list of GO results to remove/replace tables with no enriched terms
+#'
+#' @param x list of GO results tables returned when returnRes=T in GO_GEM() or clusGO()
+#' @param replace Boolean indicating if slots with no enriched GO terms should be replaced with a 'dummy table' - this is good if you want to run a GOHeat analysis. Default is FALSE.
+#' @return list of GO results tables with tables containing no enriched terms being removed or replaced.
+#' @export
+
 filtGO<-function(x, replace=F){
   to_rm<-c()
   for(i in 1:length(x)){
