@@ -1,3 +1,7 @@
+#' Show colour palettes from RColorBrewer
+#' @return Image of colour palettes from RColorBrewer with names
+#' @export
+
 showPals<-function(){
   par(mar=c(3,4,2,2))
   RColorBrewer::display.brewer.all()
