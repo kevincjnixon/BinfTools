@@ -196,6 +196,21 @@ clusFigs<-function(resList, numClus, title="Clustered Results", labgenes="", col
   return(mat)
 }
 
+#' Reorder clusters generated from clusFigs() and replot.
+#'
+#' @param clusRes Results dataframe from clusRes()
+#' @param cluslev Numeric vector indicating the new order of clusters for clusRes
+#' @param rename Boolean indicating if clusteres should be renamed based on their new order. Default=T
+#' @param title Character indicating the title for the plots. Default= "Releveled Clsuters"
+#' @param col Character indicating the RColorBrewer palette name or list of colours (hex, name, rgb()) to be used for the bar plot. Default is "Dark2"
+#' @param hmcol Colour Ramp Palette of length 100 indicating the colour palette of the heatmap. Leave NULL for default.
+#' @param labgenes Character vector corresponding to rownames in clusRes of genes to label in heatmap. Set to NULL to label all genes. Default is "" which labeles no genes.
+#' @param avgExp Boolean. Set to TRUE if clusRes was generated with 'avgExp=T' in clusFigs().
+#' @param showStat Boolean. If set to TRUE, significance symbols will be shown for significant contrasts in boxplot.
+#' @param retStat Boolean. If set to TRUE, stats for contrasts (p-values and FDR) will be returned for each cluster along with results in a list object.
+#' @return A data frame of log2FoldChanges for each comparison as columns (rows are genes) and a column named "cluster" indicating the cluster each gene belongs to. Two figures: a Heatmap of log2FoldChange of each gene ordered into clusters and a bar plot of the average log2FoldChange in each cluster (+/- SD) by comparison.
+#' @export
+
 clusRelev<-function(clusRes, cluslev, rename=T, title="Releveled Clusters", col="Dark2", hmcol=NULL, labgenes="", avgExp=F, showStat=T, retStat=F){
   numClus<-max(clusRes$cluster)
   clusRes$cluster<-factor(clusRes$cluster)
@@ -247,7 +262,15 @@ clusRelev<-function(clusRes, cluslev, rename=T, title="Releveled Clusters", col=
   return(clusRes)
 }
 
-#Subset results objects using various parameters
+#' Subset results objects using various parameters
+#'
+#' @param results data frame
+#' @param genes character vector of genes in rownames(res) to subset. Default=NULL.
+#' @param p adjusted p-value threshold. Genes must have padj<p to be returned. Default=NULL.
+#' @param pval raw p-value threshold. Genes must have pvalue<pval to be returned. Default=NULL.
+#' @param FC absolute log2FoldChange threshold. Genes must have |log2FoldChange|>FC to be returned. Default=NULL.
+#' @return Data frame subset to genes matching any and all of the provided parametes.
+#' @export
 
 subRes<-function(res, genes=NULL, p=NULL, pval=NULL, FC=NULL){
   if(!is.null(genes)){
