@@ -194,11 +194,15 @@ vol3d<-function(x, y, xlab="res1", ylab="res2", pval=0.05, pcol="pvalue", usep=N
 #' @param labgenes character indicating which genes (if any) should be labeled on the heatmap. Default NULL will label all genes. Set to "" to label no genes.
 #' @param avgExp Boolean indicating if gene expression should be averaged within each condition (TRUE) or if each individual replicate should be plotted (FALSE; default).
 #' @param zscore Boolean indicating if gene expression should be z-score scaled (TRUE; default) or not (FALSE).
+#' @param hmcol colorRampPalette object of length 100 indicating colour scheme of heatmap. Leave NULL for default colours.
 #' @param retGroups Booleand indicating if named list of data frames of gene expression subset to each gene set should be returned (z-score normalized if zscore=T). Default is FALSE. if TRUE, heatmap won't be plotted.
 #' @return Annotated heatmap of gene expression of all gene sets provided or named list of data frames of gene expression subset to each gene set.
 #' @export
 
-gmtHeat<-function(counts, cond, gmt, con=NULL, labgenes=NULL, avgExp=T, zscore=T, retGroups=F){
+gmtHeat<-function(counts, cond, gmt, con=NULL, labgenes=NULL, avgExp=T, zscore=T, hmcol=NULL, retGroups=F){
+  if(is.null(hmcol)){
+    hmcol<-colorRampPalette(rev(brewer.pal(n = 7, name ="RdYlBu")))(100)
+  }
   #Filter gmt to have only genes found in rownames(counts)
   gmt<-lapply(gmt, function(x){return(x[which(x %in% rownames(counts))])})
   #Make an annotation data frame:
