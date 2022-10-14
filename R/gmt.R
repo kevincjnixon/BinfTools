@@ -98,13 +98,13 @@ gmtHeat<-function(counts, cond, gmt, con=NULL, labgenes=NULL, avgExp=T, zscore=T
       cond <- forcats::fct_relevel(cond, con)
     }
     else {
-      ind <- which(levels(cond) == con)
+      ind <- which(levels(as.factor(cond)) == con)
       if (ind != 1) {
-        x <- 1:length(levels(cond))
+        x <- 1:length(levels(as.factor(cond)))
         x <- x[-ind]
         x <- c(ind, x)
-        y <- levels(cond)[x]
-        cond <- forcats::fct_relevel(cond, y)
+        y <- levels(as.factor(cond))[x]
+        cond <- forcats::fct_relevel(as.factor(cond), y)
       }
     }
     tmp.counts <- counts[, which(cond == levels(cond)[1])]
