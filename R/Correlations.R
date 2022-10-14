@@ -63,7 +63,7 @@ corHeat<-function(counts, method="spearman", title="Spearman Correlation", hmcol
       names(annoCols)[i]<-colnames(annodf)[i]
     }
   }
-  
+
   lim<-NULL
   if(min(M)<0){
     lim<-seq(from=-1, to=1, length.out=100)
@@ -152,4 +152,61 @@ corPlots<-function(avgmat, title="Correlation", method="spearman", transform="no
 expCor<-function(counts, cond, title, method="spearman", transform="none", printInd=F){
   avgmat<-avgExp(counts, cond)
   corPlots(avgmat, title, method, transform, printInd)
+}
+
+#Plot a correlation between two columns from two different or the same data frame or two named vectors
+#Great for comparing gene expression changes or values, or two gene rankings for GSEA
+#' Correlation Plotting
+#' Plot a correlation bewteen any two columns from any data frame(s) or named vectors
+#'
+#' @param x Data frame with rownames or named vector containing data to be plotted on the x-axis
+#' @param y Data frame with rownames or named vector containing data to be plotted on the y-axis
+#' @param xCol Character indicating column name in x of data to be plotted on the x-axis. Leave FALSE if x is a named vector.
+#' @param yCol Character indicating column name in y of data to be plotted on the y-axis. Leave FALSE if y is a named vector.
+#' @param xlab Character indicating x-axis label
+#' @param ylab Character indicating y-axis label
+#' @param title Character indicating title of plot
+#' @param scale Should the data be z-score scaled? Default is FALSE.
+#' @return Scatter plot of data with line of best fit and R-value of correlation. Note that x and y data are paired based on the rownames of the data frame or names of the named vector. Non-paired values will not be plotted.
+#' @export
+
+plotCor<-function(x,y, xCol=F, yCol=F, xlab="", ylab="", title="", scale=F){
+  if(isFALSE(xCol)){
+    if(isFALSE(yCol)){
+      x<-x[which(names(x) %in% names(y))]
+      y<-y[which(names(y) %in% names(x))]
+    } else {
+      x<-x[which(names(x) %in% rownames(y))]
+      tmpNames<-rownames(y)[which(rownames(y) %in% names(x))]
+      y<-y[which(rownames(y) %in% names(x)),which(colnames(y) %in% yCol)]
+      names(y)<-tmpNames
+    }
+  } else {
+    if(isFALSE(yCol)){
+      tmpNames<-rownames(x)[which(rownames(x) %in% names(y))]
+      x<-x[which(rownames(x) %in% names(y)),which(colnames(x) %in% xCol)]
+      names(x)<-tmpNames
+      y<-y[which(names(y) %in% names(x))]
+    } else {
+      tmpNames<-rownames(x)[which(rownames(x) %in% rownames(y))]
+      x<-x[which(rownames(x) %in% rownames(y)), which(colnames(x) %in% xCol)]
+      names(x)<-tmpNames
+      tmpNames<-rownames(y)[which(rownames(y) %in% names(x))]
+      y<-y[which(rownames(y) %in% names(x)), which(colnames(y) %in% yCol)]
+      names(y)<-tmpNames
+    }
+  }
+  x<-x[order(names(x))]
+  y<-y[order(names(y))]
+  #print(length(x))
+  #print(length(y))
+  if(isTRUE(scale)){
+    message("z-score...")
+    x<-scale(x)
+    y<-scale(y)
+  }
+  fit<-lm(y~x)
+  plot(x,y, main=title, pch=16, xlab=xlab, ylab=ylab)
+  abline(fit, lty=2, col="red")
+  legend("topleft", legend=paste0("R=",round(sqrt(summary(fit)$adj.r.squared),digits=4)))
 }

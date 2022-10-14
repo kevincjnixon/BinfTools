@@ -1,3 +1,9 @@
+#' Generate clusters from hierarchical heatmap clustering
+#'
+#' @param out output from zheat() when retClus=T
+#' @param level Level to cut the hierarchy tree to genreate clusters. Default is the rounded max tree height.
+#' @return Data frame with rownames as genes and a column named "Cluster" indicating the clusters generated. And a figure showing the cut hierarchy tree.
+#' @export
 heatClus<-function(out, level=round(max(out$tree_row$height))){
   plot(out$tree_row)
   abline(h=level, col="red", lty=2, lwd=2)
@@ -5,6 +11,14 @@ heatClus<-function(out, level=round(max(out$tree_row$height))){
   return(data.frame(row.names=names(x),
                     Cluster=as.factor(x)))
 }
+
+#' Add clusters to results or count matrix
+#'
+#' Make a data frame of DESeq2 results or gene expression counts that shows the cluster each gene belongs to
+#' @param resList A list or single data frame of DESeq2 results or gene expression counts
+#' @param heatClus The data frame with rownames=genes and a column named Cluster. The output of heatClus
+#' @return The original object(s) with a column named 'cluster' - for use with clusRelev()
+#' @export
 
 heatClusRes<-function(resList, heatClus){
   mat<-NULL
@@ -19,7 +33,7 @@ heatClusRes<-function(resList, heatClus){
     compNames <- names(resList)
     mat <- data.frame(genes = rownames(resList[[1]]), comp1 = resList[[1]]$log2FoldChange)
     for (i in 2:length(resList)) {
-      tmp <- data.frame(genes = rownames(resList[[i]]), 
+      tmp <- data.frame(genes = rownames(resList[[i]]),
         tmp = resList[[i]]$log2FoldChange)
       mat <- merge(mat, tmp, by.x = "genes", by.y = "genes")
     }
@@ -41,6 +55,8 @@ heatClusRes<-function(resList, heatClus){
   mat<-mat[order(mat$cluster),]
   return(mat)
 }
+
+
 #' Z-score normalized heatmap of gene expression
 #'
 #' A function to generate a z-score normalized heatmap of gene expression from

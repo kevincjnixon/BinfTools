@@ -46,8 +46,10 @@ clusBar<-function(mat, title, col, avgExp, cluslev=NULL){
   x<- avgFC %>% tidyr::gather(key="Comparison", value="AvgFC") %>% dplyr::mutate(cluster=clusters) %>%
     dplyr::mutate(SE=y$SE) %>% dplyr::group_by(cluster)
   x <- x %>% dplyr::mutate(cluster=forcats::fct_relevel(cluster, as.character(cluslev)))
+  x <- x %>% dplyr::mutate(Comparison=forcats::fct_relevel(Comparison, as.character(colnames(mat))))
   x<-as.data.frame(x)
   #print(levels(x$cluster))
+  #print(levels(x$Comparison))
   dodge<-ggplot2::position_dodge(width=0.9)
   p<-ggplot2::ggplot(x, ggplot2::aes(x=cluster, y=AvgFC, fill=factor(Comparison)))+
     ggplot2::geom_bar(stat="identity", position= ggplot2::position_dodge(), color="black") +
@@ -99,16 +101,16 @@ plotClusBox<-function(x, yax="Log2FoldChange", col="Dark2", title="", showStat=T
   }
   p<-NULL
   if(isTRUE(isList)){
-    p <- ggpubr::ggboxplot(res, x = "cluster", y = "Expression", 
-                           fill = "group") + ggplot2::labs(title = title, y = yax, 
+    p <- ggpubr::ggboxplot(res, x = "cluster", y = "Expression",
+                           fill = "group") + ggplot2::labs(title = title, y = yax,
                                                            x = "Cluster") + ggplot2::theme_minimal() + ggplot2::scale_fill_manual(values = BinfTools::colPal(col))
   } else {
-    p <- ggpubr::ggboxplot(res, x = "group", y = "Expression", 
-                           fill = "group") + ggplot2::labs(title = title, y = yax, 
+    p <- ggpubr::ggboxplot(res, x = "group", y = "Expression",
+                           fill = "group") + ggplot2::labs(title = title, y = yax,
                                                            x = "Condition") + ggplot2::theme_minimal() + ggplot2::scale_fill_manual(values = BinfTools::colPal(col))
   }
   if(isTRUE(showStat)){
-    p <- p + ggpubr::stat_pvalue_manual(pwc, label = "p.adj.signif", 
+    p <- p + ggpubr::stat_pvalue_manual(pwc, label = "p.adj.signif",
                                         tip.length = 0, step.increase = 0.1, hide.ns=T)
   }
   print(p)
@@ -222,7 +224,7 @@ clusFigs<-function(resList, numClus, title="Clustered Results", labgenes="", col
 #' @export
 
 clusRelev<-function(clusRes, cluslev, rename=T, title="Releveled Clusters", col="Dark2", hmcol=NULL, labgenes="", avgExp=F, showStat=T, retStat=F){
-  numClus<-max(clusRes$cluster)
+  numClus<-length(levels(factor(clusRes$cluster)))
   clusRes$cluster<-factor(clusRes$cluster)
   if(length(cluslev) == length(levels(factor(clusRes$cluster)))){
     clusRes <- clusRes %>% dplyr::mutate(cluster= forcats::fct_relevel(cluster, as.character(cluslev)))

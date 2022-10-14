@@ -290,7 +290,7 @@ GOHeat<-function(GOresList, termList, hmcol=colorRampPalette(c("white","darkblue
       tmp<-subset(loc[which(loc$name %in% i),])
       termList[[which(names(termList) %in% i)]]<-termList[[which(names(termList) %in% i)]][-as.numeric(tmp$index)]
     }
-  }  
+  }
   retP<-function(GOres, term){
     p_val<-GOres$p_value[which(GOres$term_name %in% term)]
     if(length(p_val)<1){
@@ -305,7 +305,7 @@ GOHeat<-function(GOresList, termList, hmcol=colorRampPalette(c("white","darkblue
   }
   colnames(tmp)<-names(GOresList)
   forHeat<-cbind(forHeat, tmp)
-  
+
   gaps<-c()
   if(length(termList)<2){
     gaps<-NULL
@@ -443,5 +443,83 @@ customGO<-function(genes, gmt, gsName="custom GeneSet", bg=NULL, sp="human", FDR
   } else {
     return(res)
   }
-  
+
+}
+
+#Grep a certain key from a GO results table's "term_name" column, and return provided columns
+#Great for making a termList for GOHeat (return "term_name" only) or getting intersection genes
+#' Grep a key word from a GO results table and return specific columns
+#'
+#' @param GOtable Data frame returned from GO_GEM or clusGO with returnRes=T
+#' @param key Character to be matched in the column 'term_name'. Note that the key is not case sensitive and will return parital matches. Be sure to review the results.
+#' @param cols Character vector of any of colnames(GOtable) indicating which columns should be returned. Default is c("term_name","intersection").
+#' @return Data frame of subset GOtable where key is found in term_name and columns match cols. If no matches are found, NA is returned.
+#' @export
+
+GOgrep<-function(GOtable, key, cols=c("term_name","intersection")){
+  x<-GOtable[grep(key, GOtable$term_name, ignore.case=T),which(colnames(GOtable) %in% cols), drop=F]
+  if(nrow(x)<1){
+    x<-NA
+  }
+  return(x)
+}
+
+#' Remove NAs
+#'
+#' @param x vector of any type
+#' @return x with NAs removed
+#' @export
+na.rm<-function(x){
+  return(x[!is.na(x)])
+}
+
+#Filter a list of GO results to either remove tables with no significant results (replace=F), or replace them with a dummy table (replace=T).
+#Replacing with a dummy table is good when you want to show all GO analysis names in a GOHeat analysis.
+#' Filter a list of GO results to remove/replace tables with no enriched terms
+#'
+#' @param x list of GO results tables returned when returnRes=T in GO_GEM() or clusGO()
+#' @param replace Boolean indicating if slots with no enriched GO terms should be replaced with a 'dummy table' - this is good if you want to run a GOHeat analysis. Default is FALSE.
+#' @return list of GO results tables with tables containing no enriched terms being removed or replaced.
+#' @export
+
+filtGO<-function(x, replace=F){
+  to_rm<-c()
+  for(i in 1:length(x)){
+    if(is.null(nrow(x[[i]]))){
+      to_rm<-c(to_rm,i)
+    }
+  }
+  if(length(to_rm)>0){
+    if(isFALSE(replace)){
+      message("Removing ",length(to_rm)," GO tables with no results.")
+      x<-x[-to_rm]
+    } else {
+      message("Replacing ", length(to_rm)," GO tables with no results with a dummy table.")
+      tmp<-data.frame(p_value=c(1,1), term_name=rep("No Enriched Terms",2))
+      for(i in 1:length(to_rm)){
+        x[[to_rm[i]]]<-tmp
+      }
+    }
+  }
+  return(x)
+}
+
+#' Easily make a termlist for GOHeat()
+#'
+#' @param GOres List of GO results tables from GO_GEM() with returnRes=T.
+#' @param keylist named list of character vectors of keys to match in the term_name column of the GO results
+#' @return named list of term names enriched in at least one of the GO tables in GOres for use with GOHeat(). Be sure to double check the termlist before making the heatmap as unwanted terms could be returned.
+#' @export
+makeTermList<-function(GOres, keylist){
+  termlist<-list()
+  for(i in 1:length(keylist)){
+    tmp<-c()
+    for(k in 1:length(keylist[[i]])){
+      tmp<-c(tmp, unlist(lapply(GOres, GOgrep, key=keylist[[i]][k], cols="term_name")))
+    }
+    termlist[[i]]<-tmp
+    termlist[[i]]<-na.rm(unique(termlist[[i]]))
+    names(termlist)[i]<-names(keylist)[i]
+  }
+  return(termlist)
 }

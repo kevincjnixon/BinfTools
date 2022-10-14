@@ -196,3 +196,54 @@ volcanoPlot<-function(res, title, p=NULL, pval=NULL, FC=1, lab=NULL, col=NULL, f
     return(toRet)
   }
 }
+
+#3D volcano plot - for combining two different contrasts - pvalues are combined using Fisher's combined probability test
+#' Make a 3D volcano plot
+#' combine 2 results objects into one volcano plot - note this is experimental and not usually done
+#' @param x DESeq2 results object to be plotted for the x-axis
+#' @param y DESeq2 results object to be plotted for the y-axis
+#' @param xlab Contrast name for x. Default='res1'.
+#' @param ylab Contrast name for y. Default='res2'.
+#' @param pval significance threshold for differential genes. Default is 0.05
+#' @param pcol Character of either 'pvalue' or 'padj' indicating which column to use to plot significance. Default is "pvalue".
+#' @param usep numeric of either 1 or 2 indicating which p-values to plot (x or y, respectively). If left NULL (default). P-values from both x and y are combined using Fisher's combined probability test, and the resulting p-values are plotted.
+#' @return 3D volcano plot with every combination of up/down-regulated genes labeled and a data frame of the combined data used to generate the plot.
+#' @export
+
+vol3d<-function(x, y, xlab="res1", ylab="res2", pval=0.05, pcol="pvalue", usep=NULL){
+  x<-x[order(rownames(x)),]
+  y<-y[order(rownames(y)),]
+  x<-x[which(rownames(x) %in% rownames(y)),]
+  y<-y[which(rownames(y) %in% rownames(x)),]
+  zlab<-pcol
+  if(!all.equal(rownames(x), rownames(y))){
+    stop("Check again!")
+  }
+  pcol<-which(colnames(x) %in% pcol)
+  pvals<- -log10(x[,pcol])
+  if(is.null(usep)){
+    pvals<-c()
+    for(i in 1:nrow(x)){
+      pvals<-c(pvals, survcomp::combine.test(c(x[,pcol][i], y[,pcol][i])))
+    }
+    pvals<- -log10(pvals)
+  } else {
+    if(usep[1]==2){
+      pvals<- -log10(y$pvalue)
+    }
+  }
+  for3d<-data.frame(x=x$log2FoldChange, y=y$log2FoldChange, z=pvals, row.names=rownames(x))
+  for3d$col<-ifelse(for3d$x > 0 & for3d$y >0 & for3d$z > -log10(pval), rgb(1,0,0,0.5), rgb(0,0,0,0.5))
+  for3d$DE<-ifelse(for3d$x > 0 & for3d$y >0 & for3d$z > -log10(pval), "Up Both", "No Change")
+  for3d$col[which(for3d$x <0 & for3d$y <0 & for3d$z > -log10(pval))] <- rgb(0,0,1,0.5)
+  for3d$DE[which(for3d$x <0 & for3d$y <0 & for3d$z > -log10(pval))] <- "Down Both"
+  for3d$col[which(for3d$x <0 & for3d$y >0 & for3d$z > -log10(pval))] <- rgb(0,1,0,0.5)
+  for3d$DE[which(for3d$x <0 & for3d$y >0 & for3d$z > -log10(pval))] <- paste0("Down ", xlab,", Up ", ylab)
+  for3d$col[which(for3d$x >0 & for3d$y <0 & for3d$z > -log10(pval))] <- rgb(0.5,0,1,0.5)
+  for3d$DE[which(for3d$x >0 & for3d$y <0 & for3d$z > -log10(pval))] <- paste0("Up ",xlab,", Down ",ylab)
+  scatterplot3d::scatterplot3d(for3d[,c(1:3)], pch=16, xlab=paste("log2FoldChange -", xlab), ylab=paste("log2FoldChange -", ylab), zlab=paste0("-log10(",zlab,")"), color=for3d$col,
+                               grid=T, box=F)
+  legend("topright", legend=c("Up Both", "Down Both", paste0("Up ",xlab,", Down ", ylab), paste0("Down ",xlab,", Up ",ylab), "No Change"),
+         col=c(rgb(1,0,0,0.5), rgb(0,0,1,0.5), rgb(0.5,0,1,0.5), rgb(0,1,0,0.5), rgb(0,0,0,0.5)), pch=16)
+  return(for3d)
+}

@@ -197,3 +197,34 @@ MA_Plot<-function(res, title, p=NULL, pval=NULL, FC=1, lab=NULL, col=NULL, fclim
     return(toRet)
   }
 }
+
+#If you have n=1 for one sample, you can still make a 'pseudo MA plot'
+#' Make a 'pseudo' MA plot
+#' Make a MA plot even when you have only n=1. Note that this can be used if one or both condition groups have more than one or more replicates.
+#' @param counts data frame of normalized counts to be used.
+#' @param treat character vector of column name(s) in counts to be used as the treatment condition.
+#' @param con character vector of column name(s) in counts to be used as the control/reference condition.
+#' @param FoldChange absolute log2FoldChange threshold (treat/con) to subset the 'differently activated' genes - Note no statistics are performed with this, and so these genes cannot be named as 'differential'
+#' @param title Character indicating the title of the plot
+#' @param retDA Boolean indicating if differently activated genes should be returned as a list (Down, Up). Default is FALSE.
+#' @param retRes Boolean indicating if 'pseudo' results object should be returned. Default is FALSE, and will not return if retDA=TRUE. Note that any p-values indicated in this table are dummy values.
+#' @return MA plot with differently activated genes highlighted, named list of differently activated genes if retDA=T, and 'pseudo' results object if retRes=T (and retDA=F).
+#' @export
+
+pseudoMA<-function(counts, treat, con, FoldChange=1, title="", retDA=F, retRes=F){
+  x<-data.frame(row.names=rownames(counts),
+                baseMean=rowMeans(counts[,which(colnames(counts) %in% c(treat, con)), drop=F]),
+                log2FoldChange=log2((1+rowMeans(counts[,which(colnames(counts) %in% treat),drop=F]))/(1+rowMeans(counts[,which(colnames(counts) %in% con),drop=F]))),
+                pvalue=rep(0.5,nrow(counts)),
+                padj=rep(0.5, nrow(counts)))
+  #Filter genes with baseMean==0
+  x<-subset(x, baseMean>0)
+  print(range(x$baseMean))
+  DA<-BinfTools::MA_Plot(x, title, 1, NULL, FC=FoldChange, returnDEG=T)
+  if(isTRUE(retDA)){
+    return(DA)
+  }
+  if(isTRUE(retRes)){
+    return(x)
+  }
+}

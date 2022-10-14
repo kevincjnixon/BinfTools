@@ -64,3 +64,96 @@ read.gmt<-function(gmt){
   names(y)<-sapply(x, head, 1)
   return(y)
 }
+
+#' Make a heatmap of gene expression grouped by gene sets
+#'
+#' @param counts data frame of normalized gene expression values
+#' @param cond character vector indicating which condition each column of counts belongs to
+#' @param gmt named list of gene sets to be used in the heatmap. Genes must be found in rownames(counts).
+#' @param con character indicating the control condition from cond. Or the order in which conditions in cond should appear on the heatmap.
+#' @param labgenes character indicating which genes (if any) should be labeled on the heatmap. Default NULL will label all genes. Set to "" to label no genes.
+#' @param avgExp Boolean indicating if gene expression should be averaged within each condition (TRUE) or if each individual replicate should be plotted (FALSE; default).
+#' @param zscore Boolean indicating if gene expression should be z-score scaled (TRUE; default) or not (FALSE).
+#' @param hmcol colorRampPalette object of length 100 indicating colour scheme of heatmap. Leave NULL for default colours.
+#' @param retGroups Booleand indicating if named list of data frames of gene expression subset to each gene set should be returned (z-score normalized if zscore=T). Default is FALSE. if TRUE, heatmap won't be plotted.
+#' @return Annotated heatmap of gene expression of all gene sets provided or named list of data frames of gene expression subset to each gene set.
+#' @export
+
+gmtHeat<-function(counts, cond, gmt, con=NULL, labgenes=NULL, avgExp=T, zscore=T, hmcol=NULL, retGroups=F){
+  if(is.null(hmcol)){
+    hmcol<-colorRampPalette(rev(RColorBrewer::brewer.pal(n = 7, name ="RdYlBu")))(100)
+  }
+  #Filter gmt to have only genes found in rownames(counts)
+  gmt<-lapply(gmt, function(x){return(x[which(x %in% rownames(counts))])})
+  #Make an annotation data frame:
+  annodf<-suppressWarnings(unique(tidyr::gather(as.data.frame(do.call("cbind", gmt)), key="Term", value="Genes")))
+  rownames(annodf)<-make.names(annodf$Genes, unique=T)
+  if(isTRUE(zscore)){
+    message("Z-scoring counts")
+    counts<-t(scale(t(counts)))
+  }
+  #Custom Order columns
+  if(!is.null(con)){
+    if (length(con) == length(levels(factor(cond)))) {
+      cond <- forcats::fct_relevel(cond, con)
+    }
+    else {
+      ind <- which(levels(cond) == con)
+      if (ind != 1) {
+        x <- 1:length(levels(cond))
+        x <- x[-ind]
+        x <- c(ind, x)
+        y <- levels(cond)[x]
+        cond <- forcats::fct_relevel(cond, y)
+      }
+    }
+    tmp.counts <- counts[, which(cond == levels(cond)[1])]
+    tmp.cond <- as.character(cond[which(cond ==
+                                          levels(cond)[1])])
+    for (i in 2:length(levels(cond))) {
+      tmp.counts <- cbind(tmp.counts, counts[, which(cond ==
+                                                       levels(cond)[i])])
+      tmp.cond <- c(tmp.cond, as.character(cond[which(cond ==
+                                                        levels(cond)[i])]))
+    }
+    counts <- tmp.counts
+    cond <- tmp.cond
+  }
+  if(isTRUE(avgExp)){
+    message("Averaging expression values accross replicates")
+    counts<-avgExp(counts, cond)
+    cond<-colnames(avgExp)
+  }
+  #Make the heatmap data frames
+  forHeat<-list()
+  for(i in 1:length(gmt)){
+    forHeat[[i]]<-counts[which(rownames(counts) %in% gmt[[i]]),]
+    forHeat[[i]]<-forHeat[[i]][match(gmt[[i]], rownames(forHeat[[i]])),]
+    names(forHeat)[i]<-names(gmt)[i]
+  }
+  if(isTRUE(retGroups)){
+    message("Returning list of groups")
+    return(forHeat)
+  }
+  forHeat<-suppressWarnings(as.data.frame(do.call("rbind", forHeat)))
+  rownames(forHeat)<-rownames(annodf)
+  gaps <- c()
+  if (length(gmt) < 2) {
+    gaps <- NULL
+  } else {
+    for (i in 1:(length(gmt) - 1)) {
+      gaps <- c(gaps, sum(gaps[length(gaps)], length(gmt[[i]])))
+    }
+  }
+  if (!is.null(labgenes)) {
+    tmp <- rep(" ", nrow(forHeat))
+    for (i in 1:length(labgenes)) {
+      tmp[which(annodf$Genes %in% labgenes[i], arr.ind = T)] <- labgenes[i]
+    }
+    labgenes <- tmp
+  } else {
+    labgenes<-annodf$Genes
+  }
+  pheatmap::pheatmap(forHeat, annotation_row=annodf[,-2,drop=F], gaps_row=gaps, cluster_rows = F,
+                     labels_row=labgenes, cluster_cols=F)
+}
