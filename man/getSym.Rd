@@ -13,14 +13,13 @@ getSym(
 )
 }
 \arguments{
-
 \item{object}{a data.frame object (results or normalized counts) with the rownames as the gene IDs to convert or a character vector of gene IDs to convert}
 
-\item{obType}{Character vector (one of 'res', 'counts', or 'vector') indicating whether *object* is a results object, normalized counts object, or character vector of gene IDs, respectively.}
+\item{obType}{Character vector (one of 'res', 'counts', or 'vector') indicating whether \emph{object} is a results object, normalized counts object, or character vector of gene IDs, respectively.}
 
 \item{species}{Character vector indicating the species (e.g. "hsapiens" (\emph{default}), "mmusculus").}
 
-\item{target}{Character vector indicating which format of the gene IDs to return (e.g. "HGNC", "ENSG", "REFSEQ_MRNA","ENTREZGENE", see https://biit.cs.ut.ee/gprofiler/convert for all options).}
+\item{target}{Character vector indicating which format of the gene IDs to return (e.g. "HGNC", ENSG", "REFSEQ_MRNA","ENTREZGENE", see https://biit.cs.ut.ee/gprofiler/convert for all options).}
 
 \item{addCol}{Boolean indicating if an additional column named "SYMBOL" should be added, leaving the rownames as the original format. If FALSE (\emph{default}), rownames of \emph{object} will be replaced with gene symbols - duplicate gene symbols will be handled by keeping the symbol with the highest gene expression values.}
 }

@@ -7,34 +7,37 @@
 GOHeat(
   GOresList,
   termList,
-  hmcol = colorRampPalette(c("white","darkblue"))(100),
+  hmcol = colorRampPalette(c("white", "darkblue"))(100),
   width = NA,
   height = NA,
   maxVal = NA,
   minVal = NA,
   NAcol = "#DDDDDD",
-  ret = FALSE
+  ret = F
 )
 }
 \arguments{
 \item{GOresList}{list of GO_GEM results (set returnRes=T) of length >= 2.}
 
-\item{termList}{named list of character vectors where the names represent the group names for GO terms and vectors contain GO term names corresponding to the 'term_name' column in the GO_GEM results data frames. If duplicate terms are found in the list, all but the first instance will be removed. Please be sure to not have any digits in the names of termList to avoid error if duplicates are found.}
+\item{termList}{named list of character vectors where the names represent the group names for GO terms and vectors contain GO term names corresponding to the 'term_name' column in the GO_GEM results data frams.}
 
 \item{hmcol}{colorRampPalette of length 100 that will direct the colour palette of the heatmap. Default is colorRampPalette(c("white","darkblue"))(100)}
 
 \item{width}{numeric indicating the cell width (Default=NA will automatically direct the cell width)}
 
 \item{height}{numeric indicating the cell height (Default=NA will automatically direct the cell height)}
-  
+
 \item{maxVal}{numeric indicating the maximum -log10 p-value for the heatmap. Default NA sets it automatically.}
-  
+
 \item{minVal}{numeric indicating the minimum -log10 p-value (1.3 should be absolute mimum - pvalue 0.05). Can only be set if maxVal is not NA. Default NA sets it automatically.}
-  
+
 \item{NAcol}{character indicating the colour of NA values in heatmap. Default is "#DDDDDD" (grey)}
-  
+
 \item{ret}{Boolean indicating if table used for the heatmap (p-values not in -log10) should be returned. Default=FALSE.}
 }
 \value{
-A grouped heatmap showing significance of GO terms across analyses as -log10(p-value) and returns a data frame of data input for heatmap.
+A grouped heatmap showing significance of GO terms across analyses as -log10(p-value)
+}
+\description{
+Make a heatmap showing significance of groups of GO terms from multiple sets of results
 }

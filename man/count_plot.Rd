@@ -54,7 +54,7 @@ count_plot(
 
 \item{style}{Character indicating the style of plot ("violin", "box", or "sina"). Defaults to "sina".}
 
-\item{sinaPoint}{Character indicating colour of the sina plot points. Default is "black}
+\item{sinaPoint}{Character indicating colour of the sina plot points. Default is "black"}
 
 \item{textsize}{Numeric indicating text size for the plot. Leave NULL for default.}
 

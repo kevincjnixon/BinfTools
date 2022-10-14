@@ -11,7 +11,7 @@ clusFigs(
   labgenes = "",
   col = "Dark2",
   hmcol = NULL,
-  avgExp = FALSE,
+  avgExp = F,
   con = NULL,
   showStat = T,
   retStat = F
@@ -31,7 +31,7 @@ clusFigs(
 \item{hmcol}{Colour Ramp Palette of length 100 indicating the colour palette of the heatmap. Leave NULL for default.}
 
 \item{avgExp}{Boolean. If set to TRUE, resList should actually be an average expression matrix instead of list of DESeq2 results objects. (See AvgExp())}
-  
+
 \item{con}{Character indicating the control condition (equal to one of names(resList), or the colnames of the average expression matrix) to order the clusters from greatest to smallest average. Default is NULL for no ordering. Can also be releveled after using BinfTools:::clusRelev().}
 
 \item{showStat}{Boolean. If set to TRUE, significance symbols will be shown for significant contrasts in boxplot.}

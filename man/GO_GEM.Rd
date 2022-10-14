@@ -11,7 +11,7 @@ GO_GEM(
   source = NULL,
   corr = "fdr",
   iea = FALSE,
-  ord = FALSE,
+  ord = F,
   prefix = "GO_analysis",
   ts = c(10, 500),
   pdf = T,
@@ -36,7 +36,7 @@ GO_GEM(
 \item{corr}{A character vector describing the correction method to use. One of 'gSCS', 'fdr', or 'bonferroni'. Default is 'fdr'}
 
 \item{iea}{Boolean values indicating if electronic annotations should be excluded. Default FALSE.}
-  
+
 \item{ord}{Boolean indicating if ranked GO analysis should be performed. Default=FALSE.}
 
 \item{prefix}{A character vector describing the path and prefix of the output files (should not include any file extensions)}

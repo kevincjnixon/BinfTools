@@ -41,7 +41,7 @@ MA_Plot(
 \item{showNum}{A boolean indicating whether gene numbers should be displayed on the plot. Default is TRUE.}
 
 \item{returnDEG}{A boolean indicating whether DEGs (using given thresholds) should be returned as a list (down, up)}
-            
+
 \item{ordBy}{Character indicating how DEGs should be ordered: "l2FC" order by descending absolute log2FoldChange, "sig" order by descending significance. Default is "sig".}
 
 \item{sigScale}{A boolean indicating if the point size should be scaled by significance (more significant = larger point). Default=FALSE.}

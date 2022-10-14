@@ -41,12 +41,11 @@ volcanoPlot(
 \item{showNum}{A boolean indicating whether gene numbers should be displayed on the plot. Default is TRUE.}
 
 \item{returnDEG}{A boolean indicating whether DEGs (using given thresholds) should be returned as a list (down, up)}
-           
+
 \item{ordBy}{Character indicating how DEGs should be ordered: "l2FC" order by descending absolute log2FoldChange, "sig" order by descending significance. Default is "sig".}
 
-\item{expScale}{A boolean indicating if points should be scaled using average expression (baseMean) - higher expressed = larger point. Default=FALSE.}
-
-\item{upcol}{A character vector indicating the colour (colour name or hexadecimal) of 'upregulated' genes. leave NULL for default red.}
+\item{expScale}{A boolean indicating if points should be scaled using average expression (baseMean) - higher expressed = larger point. Default=FALSE.
+#'@param upcol A character vector indicating the colour (colour name or hexadecimal) of 'upregulated' genes. leave NULL for default red.}
 
 \item{dncol}{A character vector indicating the colour (colour name or hexadecimal) of 'downregulated' genes. leave NULL for default blue.}
 }
