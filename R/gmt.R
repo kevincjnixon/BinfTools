@@ -75,25 +75,28 @@ read.gmt<-function(gmt){
 #' @param avgExp Boolean indicating if gene expression should be averaged within each condition (TRUE) or if each individual replicate should be plotted (FALSE; default).
 #' @param zscore Boolean indicating if gene expression should be z-score scaled (TRUE; default) or not (FALSE).
 #' @param hmcol colorRampPalette object of length 100 indicating colour scheme of heatmap. Leave NULL for default colours.
-#' @param retGroups Booleand indicating if named list of data frames of gene expression subset to each gene set should be returned (z-score normalized if zscore=T). Default is FALSE. if TRUE, heatmap won't be plotted.
+#' @param intClus Boolean indicating if hierarchical clustering should be performed within each gene set. Note trees will not be shown. Default = TRUE. If FALSE, heatmap will be presented in the order in which genes appear in the gene sets.
+#' @param printEach Boolean indicating if heatmaps for each individual gene set should be printed. Only works when intClus=T. Trees will be shown. Default = FALSE.
+#' @param retGroups Boolean indicating if named list of data frames of gene expression subset to each gene set should be returned (z-score normalized if zscore=T). Default is FALSE. if TRUE, heatmap won't be plotted.
 #' @return Annotated heatmap of gene expression of all gene sets provided or named list of data frames of gene expression subset to each gene set.
 #' @export
 
-gmtHeat<-function(counts, cond, gmt, con=NULL, labgenes=NULL, avgExp=T, zscore=T, hmcol=NULL, retGroups=F){
-  if(is.null(hmcol)){
-    hmcol<-colorRampPalette(rev(RColorBrewer::brewer.pal(n = 7, name ="RdYlBu")))(100)
+gmtHeat<-function(counts, cond, gmt, con=NULL, labgenes=NULL, avgExp=T, zscore=T, hmcol=NULL, intClus=T, printEach=F, retGroups=F){
+  if (is.null(hmcol)) {
+    hmcol <- colorRampPalette(rev(RColorBrewer::brewer.pal(n = 7,
+                                                           name = "RdYlBu")))(100)
   }
-  #Filter gmt to have only genes found in rownames(counts)
-  gmt<-lapply(gmt, function(x){return(x[which(x %in% rownames(counts))])})
-  #Make an annotation data frame:
-  annodf<-suppressWarnings(unique(tidyr::gather(as.data.frame(do.call("cbind", gmt)), key="Term", value="Genes")))
-  rownames(annodf)<-make.names(annodf$Genes, unique=T)
-  if(isTRUE(zscore)){
+  gmt <- lapply(gmt, function(x) {
+    return(x[which(x %in% rownames(counts))])
+  })
+  annodf <- suppressWarnings(unique(tidyr::gather(as.data.frame(do.call("cbind",
+                                                                        gmt)), key = "Term", value = "Genes")))
+  rownames(annodf) <- make.names(annodf$Genes, unique = T)
+  if (isTRUE(zscore)) {
     message("Z-scoring counts")
-    counts<-t(scale(t(counts)))
+    counts <- t(scale(t(counts)))
   }
-  #Custom Order columns
-  if(!is.null(con)){
+  if (!is.null(con)) {
     if (length(con) == length(levels(factor(cond)))) {
       cond <- forcats::fct_relevel(cond, con)
     }
@@ -104,12 +107,12 @@ gmtHeat<-function(counts, cond, gmt, con=NULL, labgenes=NULL, avgExp=T, zscore=T
         x <- x[-ind]
         x <- c(ind, x)
         y <- levels(as.factor(cond))[x]
-        cond <- forcats::fct_relevel(as.factor(cond), y)
+        cond <- forcats::fct_relevel(as.factor(cond),
+                                     y)
       }
     }
     tmp.counts <- counts[, which(cond == levels(cond)[1])]
-    tmp.cond <- as.character(cond[which(cond ==
-                                          levels(cond)[1])])
+    tmp.cond <- as.character(cond[which(cond == levels(cond)[1])])
     for (i in 2:length(levels(cond))) {
       tmp.counts <- cbind(tmp.counts, counts[, which(cond ==
                                                        levels(cond)[i])])
@@ -119,28 +122,51 @@ gmtHeat<-function(counts, cond, gmt, con=NULL, labgenes=NULL, avgExp=T, zscore=T
     counts <- tmp.counts
     cond <- tmp.cond
   }
-  if(isTRUE(avgExp)){
+  if (isTRUE(avgExp)) {
     message("Averaging expression values accross replicates")
-    counts<-avgExp(counts, cond)
-    cond<-colnames(avgExp)
+    counts <- avgExp(counts, cond)
+    cond <- colnames(avgExp)
   }
-  #Make the heatmap data frames
-  forHeat<-list()
-  for(i in 1:length(gmt)){
-    forHeat[[i]]<-counts[which(rownames(counts) %in% gmt[[i]]),]
-    forHeat[[i]]<-forHeat[[i]][match(gmt[[i]], rownames(forHeat[[i]])),]
-    names(forHeat)[i]<-names(gmt)[i]
+  forHeat <- list()
+  for (i in 1:length(gmt)) {
+    forHeat[[i]] <- counts[which(rownames(counts) %in% gmt[[i]]),]
+    if(isTRUE(intClus)){ #I think because the 'printEach' is set inside this 'if' statement, we don't see the heatmaps being plotted
+      genelab<-rownames(forHeat[[i]])
+      if (!is.null(labgenes)) {
+        tmp <- rep(" ", nrow(forHeat[[i]]))
+        for (k in 1:length(labgenes)) {
+          tmp[which(rownames(forHeat[[i]]) %in% labgenes[k], arr.ind = T)] <- labgenes[k]
+        }
+        genelab <- tmp
+      }
+      tmp<-pheatmap::pheatmap(forHeat[[i]], cluster_row=T, silent=!printEach, main=names(gmt)[i], labels_row = genelab)
+      ord<-rownames(forHeat[[i]])[tmp$tree_row$order]
+      #print(ord)
+      gmt[[i]]<-ord
+      forHeat[[i]]<-forHeat[[i]][match(ord, rownames(forHeat[[i]])),]
+    } else {
+      forHeat[[i]] <- forHeat[[i]][match(gmt[[i]], rownames(forHeat[[i]])),]
+    }
+    names(forHeat)[i] <- names(gmt)[i]
   }
-  if(isTRUE(retGroups)){
+  if (isTRUE(retGroups)) {
     message("Returning list of groups")
     return(forHeat)
   }
-  forHeat<-suppressWarnings(as.data.frame(do.call("rbind", forHeat)))
-  rownames(forHeat)<-rownames(annodf)
+  #print(gmt)
+  forHeat <- suppressWarnings(as.data.frame(do.call("rbind",
+                                                    forHeat)))
+
+  annodf <- suppressWarnings(unique(tidyr::gather(as.data.frame(do.call("cbind",
+                                                                        gmt)), key = "Term", value = "Genes")))
+  rownames(annodf) <- make.names(annodf$Genes, unique = T)
+
+  rownames(forHeat) <- rownames(annodf)
   gaps <- c()
   if (length(gmt) < 2) {
     gaps <- NULL
-  } else {
+  }
+  else {
     for (i in 1:(length(gmt) - 1)) {
       gaps <- c(gaps, sum(gaps[length(gaps)], length(gmt[[i]])))
     }
@@ -151,9 +177,11 @@ gmtHeat<-function(counts, cond, gmt, con=NULL, labgenes=NULL, avgExp=T, zscore=T
       tmp[which(annodf$Genes %in% labgenes[i], arr.ind = T)] <- labgenes[i]
     }
     labgenes <- tmp
-  } else {
-    labgenes<-annodf$Genes
   }
-  pheatmap::pheatmap(forHeat, annotation_row=annodf[,-2,drop=F], gaps_row=gaps, cluster_rows = F,
-                     labels_row=labgenes, cluster_cols=F)
+  else {
+    labgenes <- annodf$Genes
+  }
+  pheatmap::pheatmap(forHeat, annotation_row = annodf[, -2,
+                                                      drop = F], gaps_row = gaps, cluster_rows = F, labels_row = labgenes,
+                     cluster_cols = F)
 }
