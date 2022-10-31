@@ -13,6 +13,8 @@ gmtHeat(
   avgExp = T,
   zscore = T,
   hmcol = NULL,
+  intClus = T,
+  printEach = F,
   retGroups = F
 )
 }
@@ -33,7 +35,11 @@ gmtHeat(
 
 \item{hmcol}{colorRampPalette object of length 100 indicating colour scheme of heatmap. Leave NULL for default colours.}
 
-\item{retGroups}{Booleand indicating if named list of data frames of gene expression subset to each gene set should be returned (z-score normalized if zscore=T). Default is FALSE. if TRUE, heatmap won't be plotted.}
+\item{intClus}{Boolean indicating if hierarchical clustering should be performed within each gene set. Note trees will not be shown. Default = TRUE. If FALSE, heatmap will be presented in the order in which genes appear in the gene sets.}
+
+\item{printEach}{Boolean indicating if heatmaps for each individual gene set should be printed. Only works when intClus=T. Trees will be shown. Default = FALSE.}
+
+\item{retGroups}{Boolean indicating if named list of data frames of gene expression subset to each gene set should be returned (z-score normalized if zscore=T). Default is FALSE. if TRUE, heatmap won't be plotted.}
 }
 \value{
 Annotated heatmap of gene expression of all gene sets provided or named list of data frames of gene expression subset to each gene set.
