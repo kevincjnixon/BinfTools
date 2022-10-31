@@ -115,7 +115,7 @@ expCor(counts=symCounts, #Counts object
 plotCor(x=res, #X-axis data
         y=res_mature, #y-axis data
         xCol="log2FoldChange", #x-axis data column
-        yCol="log2FoldChange", #y-axis data column
+       yCol="log2FoldChange", #y-axis data column
         xlab="log2FoldChange Juvenile",
         ylab="log2FoldChange Mature",
         title="Compare Juvenile to Mature Expression changes",
@@ -359,6 +359,8 @@ gmtHeat(counts=symCounts,
         avgExp=T, #plot the average expression for each condition
         zscore=T,
         hmcol=NULL,
+        intClus=T,
+        printEach=F,
         retGroups=F) #Return list of data frames of expression?
 ```
 We've looked at hierarchical clustering from zheat() but there is also k-means clustering. This is useful if you have multiple contrasts and want to compare gene expression changes or if you want to compare expression from different conditions.
