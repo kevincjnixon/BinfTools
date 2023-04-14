@@ -72,48 +72,63 @@ clusBar<-function(mat, title, col, avgExp, cluslev=NULL){
 #' @return Boxplot or grouped boxplot and tibble contatining statistics from pairwise t-tests.
 #' @export
 
-plotClusBox<-function(x, yax="Log2FoldChange", col="Dark2", title="", showStat=T){
-  require(dplyr, quietly=T)
-  res<-NULL
-  compare<-NULL
-  pwc<-NULL
-  isList=F
-  if(is.list(x)){
-    isList=T
-    ord<-colnames(x[[1]])
-    res<-lapply(x, tidyr::gather, key="group", value="Expression")
-    res<-dplyr::bind_rows(res, .id="cluster")
-    res$group<-forcats::fct_relevel(as.factor(res$group), ord)
-    res$group1<-paste(res$group, res$cluster, sep=".")
-  } else {
-    res<-tidyr::gather(x, key="group", value="Expression")
+plotClusBox<-function (x, yax = "Log2FoldChange", col = "Dark2", title = "", 
+         showStat = TRUE) 
+{
+  require(dplyr, quietly = TRUE)
+  res <- NULL
+  compare <- NULL
+  pwc <- NULL
+  isList = FALSE
+  if (is.list(x)) {
+    isList = TRUE
+    ord <- colnames(x[[1]])
+    res <- lapply(x, tidyr::gather, key = "group", value = "Expression")
+    res <- dplyr::bind_rows(res, .id = "cluster")
+    res$group <- forcats::fct_relevel(as.factor(res$group), 
+                                      ord)
+    res$group1 <- paste(res$group, res$cluster, sep = ".")
+  }
+  else {
+    res <- tidyr::gather(x, key = "group", value = "Expression")
   }
   res <- as.data.frame(res)
-  if(isTRUE(isList)){
-    pwc<- res %>% dplyr::group_by(cluster) %>%
-      rstatix::wilcox_test(Expression ~ group) %>%
-      rstatix::adjust_pvalue(method="BH") %>%
+  if (isTRUE(isList)) {
+    pwc <- res %>% dplyr::group_by(cluster) %>% rstatix::wilcox_test(Expression ~ 
+                                                                       group) %>% rstatix::adjust_pvalue(method = "BH") %>% 
       rstatix::add_significance("p.adj")
+    pwc<- pwc[match(names(x), pwc$cluster),]
     pwc <- pwc %>% rstatix::add_xy_position(x = "cluster")
-  } else {
-    pwc <- res %>% rstatix::pairwise_wilcox_test(Expression ~ group, p.adjust.method = "BH")
-    pwc <- pwc %>% rstatix::add_xy_position(x = "group")
+    pwc$x<-pwc$x[order(pwc$x)]
+    pwc$xmin<-pwc$xmin[order(pwc$xmin)]
+    pwc$xmax<-pwc$xmax[order(pwc$xmax)]
   }
-  p<-NULL
-  if(isTRUE(isList)){
-    p <- ggpubr::ggboxplot(res, x = "cluster", y = "Expression",
-                           fill = "group") + ggplot2::labs(title = title, y = yax,
+  else {
+    pwc <- res %>% rstatix::pairwise_wilcox_test(Expression ~ 
+                                                   group, p.adjust.method = "BH")
+    pwc <-pwc[match(colnames(x), pwc$group),]
+    pwc <- pwc %>% rstatix::add_xy_position(x = "group")
+    pwc$x<-pwc$x[order(pwc$x)]
+    pwc$xmin<-pwc$xmin[order(pwc$xmin)]
+    pwc$xmax<-pwc$xmax[order(pwc$xmax)]
+  }
+  p <- NULL
+  if (isTRUE(isList)) {
+    p <- ggpubr::ggboxplot(res, x = "cluster", y = "Expression", 
+                           fill = "group") + ggplot2::labs(title = title, y = yax, 
                                                            x = "Cluster") + ggplot2::theme_minimal() + ggplot2::scale_fill_manual(values = BinfTools::colPal(col))
-  } else {
-    p <- ggpubr::ggboxplot(res, x = "group", y = "Expression",
-                           fill = "group") + ggplot2::labs(title = title, y = yax,
+  }
+  else {
+    p <- ggpubr::ggboxplot(res, x = "group", y = "Expression", 
+                           fill = "group") + ggplot2::labs(title = title, y = yax, 
                                                            x = "Condition") + ggplot2::theme_minimal() + ggplot2::scale_fill_manual(values = BinfTools::colPal(col))
   }
-  if(isTRUE(showStat)){
-    p <- p + ggpubr::stat_pvalue_manual(pwc, label = "p.adj.signif",
-                                        tip.length = 0, step.increase = 0.1, hide.ns=T)
+  if (isTRUE(showStat)) {
+    p <- p + ggpubr::stat_pvalue_manual(pwc, label = "p.adj.signif", 
+                                        tip.length = 0, step.increase = 0.1, hide.ns = TRUE)
   }
   print(p)
+  message("Please double-check stats to ensure they are properly aligned with the correct contrasts")
   return(pwc)
 }
 
