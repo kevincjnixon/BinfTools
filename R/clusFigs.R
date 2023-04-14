@@ -93,20 +93,26 @@ plotClusBox<-function (x, yax = "Log2FoldChange", col = "Dark2", title = "",
     res <- tidyr::gather(x, key = "group", value = "Expression")
   }
   res <- as.data.frame(res)
+  #return(res)
   if (isTRUE(isList)) {
     pwc <- res %>% dplyr::group_by(cluster) %>% rstatix::wilcox_test(Expression ~ 
                                                                        group) %>% rstatix::adjust_pvalue(method = "BH") %>% 
       rstatix::add_significance("p.adj")
-    pwc<- pwc[match(names(x), pwc$cluster),]
+    #split pwc by cluster, then reorder and paste back into tible
+    pwc<-split(pwc, f=pwc$cluster)
+    pwc<-do.call("rbind",pwc[match(names(x), names(pwc))])
     pwc <- pwc %>% rstatix::add_xy_position(x = "cluster")
     pwc$x<-pwc$x[order(pwc$x)]
     pwc$xmin<-pwc$xmin[order(pwc$xmin)]
     pwc$xmax<-pwc$xmax[order(pwc$xmax)]
+    
   }
   else {
     pwc <- res %>% rstatix::pairwise_wilcox_test(Expression ~ 
                                                    group, p.adjust.method = "BH")
-    pwc <-pwc[match(colnames(x), pwc$group),]
+    #split pwc by cluster, then reorder and paste back into tible
+    pwc<-split(pwc, f=pwc$group)
+    pwc<-do.call("rbind",pwc[match(colnames(x), names(pwc))])
     pwc <- pwc %>% rstatix::add_xy_position(x = "group")
     pwc$x<-pwc$x[order(pwc$x)]
     pwc$xmin<-pwc$xmin[order(pwc$xmin)]
@@ -128,7 +134,6 @@ plotClusBox<-function (x, yax = "Log2FoldChange", col = "Dark2", title = "",
                                         tip.length = 0, step.increase = 0.1, hide.ns = TRUE)
   }
   print(p)
-  message("Please double-check stats to ensure they are properly aligned with the correct contrasts")
   return(pwc)
 }
 
