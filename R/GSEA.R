@@ -42,6 +42,12 @@ GSEA = function(rnk, gmt, pval=1, ts=c(10,600), nperm=10000, parseBader=T, plot.
                         nperm=nperm) %>%
     as.data.frame() %>%
     dplyr::filter(padj <= !!pval)
+
+  if (nrow(fgRes) == 0){
+    warning("No enriched pathway. Returning NULL.")
+    return(NULL)
+  }
+
   #print(dim(fgRes))
 
   if(isTRUE(useGAGE)){
@@ -195,7 +201,7 @@ enPlot<-function(gseaRes, rnk, gmt, title=NULL){
     grid::grid.newpage()
     grid::pushViewport(grid::viewport(layout=grid::grid.layout(2,1, heights=grid::unit(c(0.75,0.25),"npc"))))
     p<-tryCatch({plotEnrichment(myGO[[grep(id, names(myGO))[1]]], rnk, NES=gseaRes$NES[i], title=main)}, error=function(e){
-     return(NA)}) 
+     return(NA)})
     if(!is.na(p[1])){
       #print(plotEnrichment(myGO[[grep(id, names(myGO))[1]]], rnk, NES=gseaRes$NES[i], title=main), vp=grid::viewport(layout.pos.row = 1))
       print(p, vp=grid::viewport(layout.pos.row = 1))
