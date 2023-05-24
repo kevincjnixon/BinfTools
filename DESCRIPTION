@@ -1,19 +1,19 @@
 Package: BinfTools
 Title: Useful functions for standard analyses
-Version: 1.0
+Version: 1.0.0
 Date: October 13, 2022
 Authors@R: 
     person(given = "Kevin CJ",
            family = "Nixon",
            role = c("aut", "cre"),
            email = "Kevin.Nixon@uhnresearch.ca")
-Description: A few useful commands for running analyses and making figures for RNA-seq analysis. Preferrably using DESeq2.
+Description: A few u☺seful commands for running analyses and making figures for RNA-seq analysis. Preferrably using DESeq2.
 License: `use_mit_license()`, `use_gpl3_license()` or friends to
     pick a license
 Encoding: UTF-8
 LazyData: true
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.2.2
+RoxygenNote: 7.2.3
 Imports:
   gprofiler2,
   ggplot2,
@@ -28,7 +28,6 @@ Imports:
   forcats,
   plotly,
   shiny,
-  gpGeneSets,
   gplots,
   VennDiagram,
   fgsea,
@@ -45,6 +44,6 @@ Suggests:
     knitr
 VignetteBuilder: knitr
 Depends: 
-    R (>= 2.10),
+    R (>= 4.2.0),
     rmarkdown,
     knitr
