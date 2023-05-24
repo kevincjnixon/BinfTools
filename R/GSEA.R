@@ -9,13 +9,13 @@
 #' @param nperm integer indicating number of permutations to run. Default is 10000
 #' @param parseBader Boolean indicating if gene set names should be parsed for the output figure following Bader Lab nomenclature (i.e. '%' as delimiter)
 #' @param plot.title Title for the plot
-#' @param useGAGE Boolean indicating if GAGE results should be used to filter fgsea results. Default=T
+#' @param useGAGE Boolean indicating if GAGE results should be used to filter fgsea results. Default=TRUE
 #' @return A data frame of GSEA results and a figure showing normalized enrichment scores (NES) for top positive and negative enriched gene sets.
 #' @export
 
-GSEA = function(rnk, gmt, pval=1, ts=c(10,600), nperm=10000, parseBader=T, plot.title = "Gene Set Enrichment Analysis", useGAGE=T) {
+GSEA = function(rnk, gmt, pval=1, ts=c(10,600), nperm=10000, parseBader=TRUE, plot.title = "Gene Set Enrichment Analysis", useGAGE=TRUE) {
   set.seed(54321)
-  require(dplyr, quietly=T)
+  require(dplyr, quietly=TRUE)
 
   if ( any( duplicated(names(rnk)) )  ) {
     warning("Duplicates in gene names")
@@ -43,12 +43,10 @@ GSEA = function(rnk, gmt, pval=1, ts=c(10,600), nperm=10000, parseBader=T, plot.
     as.data.frame() %>%
     dplyr::filter(padj <= !!pval)
 
-  if (nrow(fgRes) == 0){
+  if(nrow(fgRes) ==0){
     warning("No enriched pathway. Returning NULL.")
     return(NULL)
   }
-
-  #print(dim(fgRes))
 
   if(isTRUE(useGAGE)){
   ## Filter FGSEA by using gage results. Must be significant and in same direction to keep
@@ -64,7 +62,6 @@ GSEA = function(rnk, gmt, pval=1, ts=c(10,600), nperm=10000, parseBader=T, plot.
     dplyr::filter(!is.na(p.geomean) & q.val < pval ) %>%
     dplyr::select("Pathway")
 
-  #print(dim(rbind(ups,downs)))
   ## Define up / down pathways which are significant in both tests
   keepups = fgRes[fgRes$NES > 0 & !is.na(match(fgRes$pathway, ups$Pathway)), ]
   keepdowns = fgRes[fgRes$NES < 0 & !is.na(match(fgRes$pathway, downs$Pathway)), ]
@@ -86,7 +83,7 @@ GSEA = function(rnk, gmt, pval=1, ts=c(10,600), nperm=10000, parseBader=T, plot.
   colors = c(upcols, downcols)
   filtRes$Index = as.factor(1:nrow(filtRes))
   if(isTRUE(parseBader)){
-    filtRes$pathway<-sapply(strsplit(filtRes$pathway, "%", T),'[[',1)
+    filtRes$pathway<-sapply(strsplit(filtRes$pathway, "%", TRUE),'[[',1)
   }
   g <- ggplot2::ggplot(filtRes, ggplot2::aes(x=pathway, y=NES, fill = Index)) + ggplot2::geom_col() + ggplot2::coord_flip() +
     ggplot2::scale_fill_manual(values = colors) +  ggplot2::scale_x_discrete(limits = rev(filtRes$pathway)) +
@@ -95,12 +92,11 @@ GSEA = function(rnk, gmt, pval=1, ts=c(10,600), nperm=10000, parseBader=T, plot.
     ggplot2::theme(legend.position = "none")
 
   print(g)
-  #output = list("Results" = fgRes, "Plot" = g)
   output<-fgRes
   return(output)
 }
 
-plotEnrichment<-function (pathway, stats, gseaParam = 1, ticksSize = 0.2, NES=NULL, title)
+.plotEnrichment<-function (pathway, stats, gseaParam = 1, ticksSize = 0.2, NES=NULL, title)
 {
   rnk <- rank(-stats)
   ord <- order(rnk)
@@ -120,14 +116,11 @@ plotEnrichment<-function (pathway, stats, gseaParam = 1, ticksSize = 0.2, NES=NU
   diff <- (max(tops) - min(bottoms))/8
   x = y = NULL
   ES<-max(tops)
-  #hm<- -diff/1.25
-  #axis<-0
   if(NES<0){
     ES<-min(bottoms)
   }
-    hm<-min(bottoms)-(diff*1.25)
-    axis<-min(bottoms)-diff/2.25
-  #}
+  hm<-min(bottoms)-(diff*1.25)
+  axis<-min(bottoms)-diff/2.25
   hmcol<-colorRampPalette(c("red","grey","blue"))(length(rnk))
   sz<-12
   if(nchar(title)>60){
@@ -136,10 +129,8 @@ plotEnrichment<-function (pathway, stats, gseaParam = 1, ticksSize = 0.2, NES=NU
   if(nchar(title)>80){
     sz<-8
   }
-  #print(paste(title, ":",nchar(title)))
   g <- ggplot2::ggplot(toPlot, ggplot2::aes(x = x, y = y, colour=x)) + ggplot2::geom_point(color = "green", size = 0.1) +
     ggplot2::geom_segment(mapping=ggplot2::aes(x=0, xend=length(rnk), y=ES, yend=ES), colour = "red", linetype = "dashed", size=1) +
-    #geom_hline(yintercept = min(bottoms), colour = "red", linetype = "dashed", size=1) +
     ggplot2::geom_segment(colour = "black", size=1, mapping=ggplot2::aes(x=0, xend=length(rnk), y=axis, yend=axis)) +
     ggplot2::geom_segment(data = data.frame(x=0:length(rnk)), mapping = ggplot2::aes(x=x, y=hm-diff/5, xend=x, yend=hm+diff/5), size=ticksSize) +
     ggplot2::geom_line(color = "green", size=2) + ggplot2::theme_classic() +
@@ -163,7 +154,7 @@ plotEnrichment<-function (pathway, stats, gseaParam = 1, ticksSize = 0.2, NES=NU
 #' @export
 
 enPlot<-function(gseaRes, rnk, gmt, title=NULL){
-  if(!is.null(title) && length(title)!=nrow(gseaRes)){
+  if(!is.null(title) && length(title) != nrow(gseaRes)){
     stop("title must have length of nrow(gseaRes)")
   }
   myGO<-gmt
@@ -174,21 +165,19 @@ enPlot<-function(gseaRes, rnk, gmt, title=NULL){
     myGO<-fgsea::gmtPathways(gmt)
    }
   }
-  #parse through names in gseaRes table, pull the unique identifiers from the names and use it with myGO:
+  ##parse through names in gseaRes table, pull the unique identifiers from the names and use it with myGO:
   for(i in 1:nrow(gseaRes)){
     id<-c()
     main<-c()
     if(length(grep(":", gseaRes$pathway[i]))>0){
-      #message("Standard names detected...")
-      id<-paste0(":",sapply(strsplit(gseaRes$pathway[i],":",T),'[[',2),"$")
+      id<-paste0(":",sapply(strsplit(gseaRes$pathway[i],":",TRUE),'[[',2),"$")
       if(is.null(title)){
         main<-paste(gseaRes$pathway[i], "NES:", round(gseaRes$NES[i], digits=3), "padj:", signif(gseaRes$padj[i], digits=3))
       }
     }else  if(length(grep("%", gseaRes$pathway[i]))>0){
-      #message("BaderLab names detected....")
-      id<-sapply(strsplit(gseaRes$pathway[i],"%",T),'[[',3)
+      id<-sapply(strsplit(gseaRes$pathway[i],"%",TRUE),'[[',3)
       if(is.null(title)){
-        main<-paste(sapply(strsplit(gseaRes$pathway[i],"%",T),'[[',1), "NES:", round(gseaRes$NES[i], digits=3), "padj:", signif(gseaRes$padj[i], digits=3))
+        main<-paste(sapply(strsplit(gseaRes$pathway[i],"%",TRUE),'[[',1), "NES:", round(gseaRes$NES[i], digits=3), "padj:", signif(gseaRes$padj[i], digits=3))
       }
     }else{
       id <- gseaRes$pathway[i]
@@ -200,13 +189,12 @@ enPlot<-function(gseaRes, rnk, gmt, title=NULL){
     }
     grid::grid.newpage()
     grid::pushViewport(grid::viewport(layout=grid::grid.layout(2,1, heights=grid::unit(c(0.75,0.25),"npc"))))
-    p<-tryCatch({plotEnrichment(myGO[[grep(id, names(myGO))[1]]], rnk, NES=gseaRes$NES[i], title=main)}, error=function(e){
+    p<-tryCatch({.plotEnrichment(myGO[[grep(id, names(myGO))[1]]], rnk, NES=gseaRes$NES[i], title=main)}, error=function(e){
      return(NA)})
     if(!is.na(p[1])){
-      #print(plotEnrichment(myGO[[grep(id, names(myGO))[1]]], rnk, NES=gseaRes$NES[i], title=main), vp=grid::viewport(layout.pos.row = 1))
       print(p, vp=grid::viewport(layout.pos.row = 1))
       rnk2<-as.data.frame(rnk, row.names=names(rnk))
-      rnk2<-as.data.frame(rnk2[order(rnk2$rnk, decreasing = T),,drop=F])
+      rnk2<-as.data.frame(rnk2[order(rnk2$rnk, decreasing = TRUE),,drop=FALSE])
       g<-ggplot2::ggplot(rnk2, ggplot2::aes(x=seq(1:nrow(rnk2)), y=rnk))+
         ggplot2::geom_bar(stat="identity", fill="lightgrey")+ggplot2::theme_classic() +
         ggplot2::labs(x="Rank", y="Score") +ggplot2::theme(axis.line.x=ggplot2::element_blank())
@@ -218,11 +206,11 @@ enPlot<-function(gseaRes, rnk, gmt, title=NULL){
 #' Make a custom gmt from GSEA terms
 #'
 #' @param terms Character vector of GSEA terms (pathway column from results of GSEA() function)
-#' @param gmt GMT file name or R object used to generate the gsea results using GSEA(). Can be GSEA results object if setting leadingEdge=T.
-#' @param leadingEdge Boolean indicating if the leading edge genes only should be extracted. Default=F
+#' @param gmt GMT file name or R object used to generate the gsea results using GSEA(). Can be GSEA results object if setting leadingEdge=TRUE.
+#' @param leadingEdge Boolean indicating if the leading edge genes only should be extracted. Default=FALSE
 #' @return List gmt object of genesets with terms from GSEA analysis
 #' @export
-gsea_gmt<-function(terms, gmt, leadingEdge=F){
+gsea_gmt<-function(terms, gmt, leadingEdge=FALSE){
   if(is.character(gmt)){
      if(length(grep("http", gmt)) > 0){
       gmt <- fgsea::gmtPathways(url(gmt))
@@ -254,9 +242,10 @@ gsea_gmt<-function(terms, gmt, leadingEdge=F){
 #' @param rnk RNK object used to generate GSEA results
 #' @param prefix Character of prefix for output files. Files will be named *prefix*_neg_report.tsv and *prefix*_pos_report.tsv. If NULL, prefix will be "GSEA"
 #' @param gmt file or address to gmt file used for gsea results. Use only if you need to save gmt to file (if you have it already saved to file, leave NULL)
+#' @param retEM Boolean indicating if enrichment map tables should be returned to R for use with RCy3 (default=FALSE)
 #' @export
 
-GSEA_EM<-function(gsea, rnk, prefix=NULL, gmt=NULL){
+GSEA_EM<-function(gsea, rnk, prefix = NULL, gmt = NULL, retEM = FALSE){
   N=length(rnk)
   df<-data.frame(NAME=gsea$pathway,
                  "GS <br> follow link to MSigDB"=gsea$pathway,
@@ -269,7 +258,7 @@ GSEA_EM<-function(gsea, rnk, prefix=NULL, gmt=NULL){
                  "FWER p-val"=gsea$padj,
                  "RANK AT MAX"=rep(0, nrow(gsea)),
                  "LEADING EDGE"=rep(NA, nrow(gsea)),
-                 check.names=F)
+                 check.names=FALSE)
   for(i in 1:nrow(gsea)){
     LE<-lengths(gsea$leadingEdge[i])
     tags<-LE/gsea$size[i]
@@ -284,10 +273,13 @@ GSEA_EM<-function(gsea, rnk, prefix=NULL, gmt=NULL){
     }
   if(nrow(pos)<1){
       pos[1,]<-c("TO_REMOVE","TO_REMOVE",1,1,1,1,1.1,1.1,1.1,0,1)
-    }
+  }
+  if(isTRUE(retEM)){
+    return(list(negative_EM=neg, positive_EM=pos))
+  }
   if(is.null(prefix)){
-    write.table(neg, file="GSEA_neg_report.tsv", quote=F, row.names=F, sep="\t")
-    write.table(pos, file="GSEA_pos_report.tsv", quote=F, row.names=F, sep="\t")
+    write.table(neg, file="GSEA_neg_report.tsv", quote=FALSE, row.names=FALSE, sep="\t")
+    write.table(pos, file="GSEA_pos_report.tsv", quote=FALSE, row.names=FALSE, sep="\t")
     if(!is.null(gmt)){
       if(is.character(gmt)){
         if(length(grep("http", gmt)) > 0){
@@ -299,8 +291,8 @@ GSEA_EM<-function(gsea, rnk, prefix=NULL, gmt=NULL){
       write.gmt(gmt, filename="GSEA_gmt.gmt")
     }
   } else {
-    write.table(neg, file=paste0(prefix, "_neg_report.tsv"), quote=F, row.names=F, sep="\t")
-    write.table(pos, file=paste0(prefix, "_pos_report.tsv"), quote=F, row.names=F, sep="\t")
+    write.table(neg, file=paste0(prefix, "_neg_report.tsv"), quote=FALSE, row.names=FALSE, sep="\t")
+    write.table(pos, file=paste0(prefix, "_pos_report.tsv"), quote=FALSE, row.names=FALSE, sep="\t")
     if(!is.null(gmt)){
       if(is.character(gmt)){
         if(length(grep("http", gmt)) > 0){
@@ -314,10 +306,17 @@ GSEA_EM<-function(gsea, rnk, prefix=NULL, gmt=NULL){
   }
 }
 
-subgsea<-function(x, p=0.05, n=100, byNES=T){
+#' Subset GSEA results
+#'
+#' @param x GSEA results produced by GSEA() function
+#' @param p FDR threshold to filter GSEA results. Default = 0.05.
+#' @param n Number of top terms to return. Default is 100. Set to Inf to return all possible filtered results.
+#' @param byNES Boolean indicating how terms should be ordered. If TRUE (default), terms are ordered by decreasing absolute normalized enrichment score. If FALSE, terms are ordered by decreasing significance.
+#' @export
+subGSEA<-function(x, p=0.05, n=100, byNES=TRUE){
   x<-subset(x, padj<p)
   if(isTRUE(byNES)){
-    x<-x[order(abs(x$NES), decreasing=T),]
+    x<-x[order(abs(x$NES), decreasing=TRUE),]
   } else {
     x<-x[order(x$padj),]
   }

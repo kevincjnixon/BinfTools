@@ -12,34 +12,34 @@
 #' @param species Character vector indicating the species (e.g. "hsapiens" (*default*), "mmusculus").
 #' @param target Character vector indicating which format of the gene IDs to return (e.g. "HGNC", ENSG", "REFSEQ_MRNA","ENTREZGENE", see https://biit.cs.ut.ee/gprofiler/convert for all options).
 #' @param addCol Boolean indicating if an additional column named "SYMBOL" should be added, leaving the rownames as the original format. If FALSE (*default*), rownames of *object* will be replaced with gene symbols - duplicate gene symbols will be handled by keeping the symbol with the highest gene expression values.
-#' @return A data.frame object in the format indicated by *obType* with gene symbols as the rownames (if *addCol*=F) or gene symbols added as their own column named "SYMBOL".
+#' @return A data.frame object in the format indicated by *obType* with gene symbols as the rownames (if *addCol*=FALSE) or gene symbols added as their own column named "SYMBOL".
 #' @export
 
-getSym<-function(object, obType=c("res","counts","vector"), species="hsapiens", target="HGNC", addCol=F){
+getSym<-function(object, obType=c("res","counts","vector"), species="hsapiens", target="HGNC", addCol=FALSE){
   x<-as.data.frame(object)
-  if(obType=="vector"){
+  if(obType == "vector"){
     genes<-object
   } else {
     genes<-rownames(object)
   }
-  if(target=="ENSGV"){
-    genes<-sapply(strsplit(genes, split=".", fixed=T), '[[',1)
+  if(target == "ENSGV"){
+    genes<-sapply(strsplit(genes, split=".", fixed=TRUE), '[[',1)
     target<-"ENSG"
   }
-  if(obType=="vector"){
-    y<-gprofiler2::gconvert(genes, organism=species, target=target, mthreshold=1, filter_na=F)
+  if(obType == "vector"){
+    y<-gprofiler2::gconvert(genes, organism=species, target=target, mthreshold=1, filter_na=FALSE)
     sym<-y$target
     return(sym)
   }
-  if(obType=="res"){
-    y<-gprofiler2::gconvert(genes, organism=species, target=target, mthreshold=1, filter_na=F)
+  if(obType == "res"){
+    y<-gprofiler2::gconvert(genes, organism=species, target=target, mthreshold=1, filter_na=FALSE)
     sym<-y$target
     if(isTRUE(addCol)){
       x$SYMBOL<-sym
     }else{
       x$tmp<-sym
       #Order based on expression (decreasing)
-      x<-x[order(x$baseMean, decreasing=T),]
+      x<-x[order(x$baseMean, decreasing=TRUE),]
       #Remove NAs
       x<-x[complete.cases(x$tmp),]
       #Check to see if there are any duplicated symbols in x$tmp
@@ -49,7 +49,7 @@ getSym<-function(object, obType=c("res","counts","vector"), species="hsapiens", 
         to_remove<-c()
         for(i in 1:length(dups)){
           #Get the array row numbers of the duplicates (first will be highest expression)
-          ind<-which(x$tmp%in%dups[i], arr.ind=T)
+          ind<-which(x$tmp%in%dups[i], arr.ind=TRUE)
           to_remove<-c(to_remove, ind[-1])
         }
         #Remove the rows
@@ -60,15 +60,15 @@ getSym<-function(object, obType=c("res","counts","vector"), species="hsapiens", 
       x<-x[,-(which(colnames(x) %in% "tmp"))]
     }
   }
-  if(obType=="counts"){
-    y<-gprofiler2::gconvert(genes, organism=species, target=target, mthreshold=1, filter_na=F)
+  if(obType == "counts"){
+    y<-gprofiler2::gconvert(genes, organism=species, target=target, mthreshold=1, filter_na=FALSE)
     sym<-y$target
     if(isTRUE(addCol)){
       x$SYMBOL<-sym
     }else{
       x$tmp<-sym
       #Order based on expression (decreasing)
-      x<-x[order(rowMeans(object), decreasing = T),]
+      x<-x[order(rowMeans(object), decreasing = TRUE),]
       #Remove NAs
       x<-x[complete.cases(x$tmp),]
       #Check to see if there are any duplicated symbols in x$tmp
@@ -78,7 +78,7 @@ getSym<-function(object, obType=c("res","counts","vector"), species="hsapiens", 
         to_remove<-c()
         for(i in 1:length(dups)){
           #Get the array row numbers of the duplicates (first will be highest expression)
-          ind<-which(x$tmp%in%dups[i], arr.ind=T)
+          ind<-which(x$tmp%in%dups[i], arr.ind=TRUE)
           to_remove<-c(to_remove, ind[-1])
         }
         #Remove the rows

@@ -40,28 +40,28 @@ normToGene<-function(counts, norm){
 #This function is for summarizing data and will be called in the next function
 #This will calculate the mean and sd/se allelic reads for each type of cancer
 #In some cases, there will be no sd/se (only one value/sample)
-data_sum<-function(data, eb){
+.data_sum<-function(data, eb){
   #data is the data table and eb is what we want the error bars to be (sd or se)
   summary_func<-function(x, col, eb){
     sum<-NULL
-    if(eb=="sd"){ #If we want sd, calcaulate sd
+    if(eb == "sd"){ #If we want sd, calcaulate sd
       #message("Calculating mean and standard deviation...")
       sum<-c(mean=mean(as.numeric(x[[col]]), na.rm=TRUE),
-             eb=sd(as.numeric(x[[col]]), na.rm=T))
+             eb=sd(as.numeric(x[[col]]), na.rm=TRUE))
     }
-    if(eb=="se"){ #If we want se, calculate se
+    if(eb == "se"){ #If we want se, calculate se
       #message("Calculating mean and standard error...")
-      sum<-c(mean=mean(as.numeric(x[[col]]), na.rm=T),
-             eb=(sd(as.numeric(x[[col]]), na.rm=T)/sqrt(length(x[[col]]))))
+      sum<-c(mean=mean(as.numeric(x[[col]]), na.rm=TRUE),
+             eb=(sd(as.numeric(x[[col]]), na.rm=TRUE)/sqrt(length(x[[col]]))))
     }
-	if(eb==0){ #We don't want any error bars
+	if(eb == 0){ #We don't want any error bars
 		#message("eb=0. Error bars will not be showns...")
-		sum<-c(mean=mean(as.numeric(x[[col]]), na.rm=T),
+		sum<-c(mean=mean(as.numeric(x[[col]]), na.rm=TRUE),
 			  eb=0)
 	}
     return(sum)
   }
-  if(eb==0){ #We don't want any error bars
+  if(eb == 0){ #We don't want any error bars
     message("eb=0. Error bars will not be shown...")
   }
   data_sum<-plyr::ddply(data, c("group","gene"), .fun=summary_func, "expression", eb)
@@ -91,7 +91,7 @@ data_sum<-function(data, eb){
 #'@return Bar plot of gene expression and list of length 2 containing 'rawData' and 'Summary' of gene expression data if 'returnDat' is TRUE.
 #'@export
 
-barGene<-function(genes, counts, conditions, title="Gene expression", norm=NULL, eb="sd", returnDat=F, col="Dark2", ord=NULL, con=NULL, stat.test="t.test", hide.ns = T, retGP=F){
+barGene<-function(genes, counts, conditions, title="Gene expression", norm=NULL, eb="sd", returnDat=FALSE, col="Dark2", ord=NULL, con=NULL, stat.test="t.test", hide.ns = TRUE, retGP=FALSE){
   ylab="Mean"
   #norm is the condition to normalize expression to for relative expression
   counts<-as.data.frame(counts)
@@ -103,13 +103,13 @@ barGene<-function(genes, counts, conditions, title="Gene expression", norm=NULL,
     dplyr::mutate(gene=genes2)
 
   #Summarize the data using the function above (get mean and sd/se for the bar plots)
-  x<-data_sum(y, eb)
+  x<-.data_sum(y, eb)
   x<- x %>% dplyr::mutate(gene=forcats::fct_relevel(gene, genes))
   if(!is.null(norm)){
     message("Normalizing values to ", norm, "...")
     y<-data.frame()
     for(i in 1:length(levels(x$gene))){
-      tmp<-subset(x, gene==levels(x$gene)[i])
+      tmp<-subset(x, gene == levels(x$gene)[i])
       tmp$mean<-tmp$mean/(tmp$mean[which(tmp$group %in% norm)])
 
       y<-rbind(y, tmp)
@@ -131,14 +131,14 @@ barGene<-function(genes, counts, conditions, title="Gene expression", norm=NULL,
   p_pwc<-c()
   if(!is.null(con)){
     y<-y%>% dplyr::mutate(group=forcats::fct_relevel(group, levels(x$group)))
-    if(stat.test=="t.test"){
+    if(stat.test == "t.test"){
       pwc <- y %>%
       dplyr::group_by(gene) %>%
       rstatix::t_test(expression ~ group) %>%
       rstatix::adjust_pvalue(method = "BH") %>%
       rstatix::add_significance("p.adj")
     }
-    if(stat.test=="wilcox"){
+    if(stat.test == "wilcox"){
       pwc <- y %>%
       dplyr::group_by(gene) %>%
       rstatix::wilcox_test(expression ~ group) %>%
@@ -151,7 +151,7 @@ barGene<-function(genes, counts, conditions, title="Gene expression", norm=NULL,
     #print(pwc)
     #Now make a pwc containing only the control condition
     conRows<-c()
-    if(length(con)==1 & !is.list(con)){
+    if(length(con) == 1 & !is.list(con)){
       conRows<-c(grep(con, pwc$group1),grep(con, pwc$group2))
     }
     if(length(con)>1 & !is.list(con)){
@@ -174,7 +174,7 @@ barGene<-function(genes, counts, conditions, title="Gene expression", norm=NULL,
     p_pwc<- p_pwc%>% dplyr::mutate(gene=forcats::fct_relevel(gene, genes))
 
     p_pwc <- p_pwc %>% rstatix::add_xy_position(x="gene", dodge=0.8)
-	  
+
     pwc <- pwc %>% dplyr::mutate(gene=forcats::fct_relevel(gene, genes))
     pwc <- pwc %>% rstatix::add_xy_position(x="gene", dodge=0.8)
     #print(p_pwc[,12:16])
@@ -191,7 +191,7 @@ barGene<-function(genes, counts, conditions, title="Gene expression", norm=NULL,
   }
   if(!is.null(con)){
    #Make sure the stats are over the right genes
-   if(con[1]=="show.all"){
+   if(con[1] == "show.all"){
      p_pwc<-pwc
    }
    for(i in 1:length(genes)){
@@ -199,8 +199,8 @@ barGene<-function(genes, counts, conditions, title="Gene expression", norm=NULL,
    }
    for(i in 1:nrow(p_pwc)){
      #check to see if the xmin has a decimal
-     if(lengths(strsplit(as.character(p_pwc$xmin[i]),".",T))>1){
-       p_pwc$xmin[i]<-as.numeric(paste(as.character(p_pwc$x[i]-1), sapply(strsplit(as.character(p_pwc$xmin[i]),".",T),'[[',2),sep="."))
+     if(lengths(strsplit(as.character(p_pwc$xmin[i]),".",TRUE))>1){
+       p_pwc$xmin[i]<-as.numeric(paste(as.character(p_pwc$x[i]-1), sapply(strsplit(as.character(p_pwc$xmin[i]),".",TRUE),'[[',2),sep="."))
      } else {
        #If no decimal, xmin should be x
        p_pwc$xmin[i]<-p_pwc$x[i]
@@ -213,13 +213,13 @@ barGene<-function(genes, counts, conditions, title="Gene expression", norm=NULL,
         p_pwc$xmin[i]<-p_pwc$xmin[i]+1
      }
      #check to see if the xmax has a decimal
-     if(lengths(strsplit(as.character(p_pwc$xmax[i]),".",T))>1){
-       if(as.numeric(paste(as.character(p_pwc$x[i]),sapply(strsplit(as.character(p_pwc$xmax[i]),".",T),'[[',2),sep="."))<as.numeric(paste(as.character(p_pwc$x[i]),"5",sep="."))){
+     if(lengths(strsplit(as.character(p_pwc$xmax[i]),".",TRUE))>1){
+       if(as.numeric(paste(as.character(p_pwc$x[i]),sapply(strsplit(as.character(p_pwc$xmax[i]),".",TRUE),'[[',2),sep="."))<as.numeric(paste(as.character(p_pwc$x[i]),"5",sep="."))){
 	       #print(i)
-       #if(as.numeric(sapply(strsplit(as.character(p_pwc$xmax[i]),".",T),'[[',2))<5){
-         p_pwc$xmax[i]<-as.numeric(paste(as.character(p_pwc$x[i]), sapply(strsplit(as.character(p_pwc$xmax[i]),".",T),'[[',2),sep="."))
+       #if(as.numeric(sapply(strsplit(as.character(p_pwc$xmax[i]),".",TRUE),'[[',2))<5){
+         p_pwc$xmax[i]<-as.numeric(paste(as.character(p_pwc$x[i]), sapply(strsplit(as.character(p_pwc$xmax[i]),".",TRUE),'[[',2),sep="."))
        } else {
-         p_pwc$xmax[i]<-as.numeric(paste(as.character(p_pwc$x[i]-1), sapply(strsplit(as.character(p_pwc$xmax[i]),".",T),'[[',2),sep="."))
+         p_pwc$xmax[i]<-as.numeric(paste(as.character(p_pwc$x[i]-1), sapply(strsplit(as.character(p_pwc$xmax[i]),".",TRUE),'[[',2),sep="."))
        }
      } else {
        #If there is no decimal, the number is whole and it should be equal to the corresponding x value
@@ -228,7 +228,7 @@ barGene<-function(genes, counts, conditions, title="Gene expression", norm=NULL,
      }
    }
    p<- p + ggpubr::stat_pvalue_manual(p_pwc, label="p.adj.signif",
-                               tip.length=0, inherit.aes=F, hide.ns= hide.ns)#, step.increase=0,
+                               tip.length=0, inherit.aes=FALSE, hide.ns= hide.ns)#, step.increase=0,
                                #x="gene", y="y")
   }
   print(p) #Print the plot (was saved to 'p')

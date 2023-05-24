@@ -21,7 +21,7 @@ loadData<-function(sampleTable){
   }
   x<-list()
   for(i in 1:nrow(sampleTable)){
-    x[[i]]<-read.delim(sampleTable[i,2], header=F, row.names=1)
+    x[[i]]<-read.delim(sampleTable[i,2], header=FALSE, row.names=1)
     colnames(x[[i]])<-sampleTable[i,1]
     names(x)[i]<-sampleTable[i,1]
   }
@@ -39,7 +39,7 @@ loadData<-function(sampleTable){
 loadFC<-function(filename){
   x<-read.delim(filename, skip=1)
   anno<-x[,c(1:6)]
-  counts<-x[,c(7:ncol(x)),drop=F]
+  counts<-x[,c(7:ncol(x)),drop=FALSE]
   rownames(counts)<-x$Geneid
   colnames(anno)[1]<-"GeneId"
   return(list(Counts=counts, annotation=anno))

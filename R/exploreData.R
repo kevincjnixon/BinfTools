@@ -23,14 +23,14 @@
 #' @export
 
 exploreData<-function(res, counts, cond){
-  require(gpGeneSets, quietly = T)
-  if(class(res)!="list"){
+  require(gpGeneSets, quietly = TRUE)
+  if(!is(res, "list")){
     res<-list(data=res)
   }
-  if(class(counts)!="list"){
+  if(!is(counts, "list")){
     counts<-list(data=counts)
   }
-  if(class(cond)!="list"){
+  if(!is(cond, "list")){
     cond<-list(data=cond)
   }
   # Define UI for app that draws a histogram ----
@@ -166,11 +166,11 @@ exploreData<-function(res, counts, cond){
     get.DEG<-shiny::reactive({
       x<-res[[which(names(res) %in% input$data)]]
       #print(head(x))
-      if(input$sig=="padj"){
+      if(input$sig == "padj"){
         return(list(Up=rownames(subset(x, log2FoldChange >= input$FC & padj < input$p)),
                     Down=rownames(subset(x, log2FoldChange <= -input$FC & padj < input$p))))
       }
-      if(input$sig=="pvalue"){
+      if(input$sig == "pvalue"){
         return(list(Up=rownames(subset(x, log2FoldChange >= input$FC & pvalue < input$p)),
                     Down=rownames(subset(x, log2FoldChange <= -input$FC & pvalue < input$p))))
       }
@@ -181,7 +181,7 @@ exploreData<-function(res, counts, cond){
       #print(lapply(DEG, head))
       BinfTools::GO_GEM(DEG, species=input$species, bg=rownames(x),
                         source=input$source, prefix=paste(input$data,input$source, sep="_"),
-                        pdf=F, fig=F, writeRes=F, writeGem=F, returnRes=T)
+                        pdf=FALSE, fig=FALSE, writeRes=FALSE, writeGem=FALSE, returnRes=TRUE)
     })
     get.gmt<-shiny::reactive({
       x<-res[[which(names(res) %in% input$data)]]
@@ -189,16 +189,16 @@ exploreData<-function(res, counts, cond){
       #print(lapply(DEG, head))
       y<-BinfTools::GO_GEM(DEG, species=input$species, bg=rownames(x),
                            source=input$source, prefix=paste(input$data,input$source, sep="_"),
-                           pdf=F, fig=F, writeRes=F, writeGem=F, returnRes=F, returnGost=T)
-      if(input$species=="hsapiens"){
+                           pdf=FALSE, fig=FALSE, writeRes=FALSE, writeGem=FALSE, returnRes=FALSE, returnGost=TRUE)
+      if(input$species == "hsapiens"){
         return(c(BinfTools::customGMT(y$Up, input$target, gp_hs),
                  BinfTools::customGMT(y$Down, input$target, gp_hs)))
       }
-      if(input$species=="mmusculus"){
+      if(input$species == "mmusculus"){
         return(c(BinfTools::customGMT(y$Up, input$target, gp_mm),
                  BinfTools::customGMT(y$Down, input$target, gp_mm)))
       }
-      if(input$species=="dmelanogaster"){
+      if(input$species == "dmelanogaster"){
         return(c(BinfTools::customGMT(y$Up, input$target, gp_dm),
                  BinfTools::customGMT(y$Down, input$target, gp_dm)))
       }
@@ -209,23 +209,23 @@ exploreData<-function(res, counts, cond){
       if(is.list(res)){
         x<-res[[which(names(res) %in% input$data)]]
       }
-      if(input$scale=="Yes"){
-        scale<-T
+      if(input$scale == "Yes"){
+        scale<-TRUE
       } else{
-        scale<-F
+        scale<-FALSE
       }
       ge<-unique(geneList$genes)
-      ge<-ge[ge!=""]
-      if(length(ge)==0){
+      ge<-ge[ge != ""]
+      if(length(ge) == 0){
         ge<-NULL
       }
-      if(input$sig=="padj"){
+      if(input$sig == "padj"){
         BinfTools::volcanoPlot(x, title="Volcano", p=input$p, FC=input$FC,
-                               lab=ge, col=ge, expScale=scale, returnDEG=F)
+                               lab=ge, col=ge, expScale=scale, returnDEG=FALSE)
       }
-      if(input$sig=="pvalue"){
+      if(input$sig == "pvalue"){
         BinfTools::volcanoPlot(x, title="Volcano", pval=input$p, FC=input$FC,
-                               lab=ge, col=ge, expScale=scale, returnDEG=F)
+                               lab=ge, col=ge, expScale=scale, returnDEG=FALSE)
       }
 
 
@@ -235,21 +235,21 @@ exploreData<-function(res, counts, cond){
       if(is.list(res)){
         x<-res[[which(names(res) %in% input$data)]]
       }
-      if(input$scale=="Yes"){
-        scale<-T
+      if(input$scale == "Yes"){
+        scale<-TRUE
       } else{
-        scale<-F
+        scale<-FALSE
       }
       ge<-unique(geneList$genes)
-      ge<-ge[ge!=""]
-      if(length(ge)==0){
+      ge<-ge[ge != ""]
+      if(length(ge) == 0){
         ge<-NULL
       }
-      if(input$sig=="padj"){
+      if(input$sig == "padj"){
         BinfTools::MA_Plot(x, "MA Plot", p=input$p, FC=input$FC, col=ge,
                            lab=ge, sigScale=scale)
       }
-      if(input$sig=="pvalue"){
+      if(input$sig == "pvalue"){
         BinfTools::MA_Plot(x, "MA Plot", pval=input$p, FC=input$FC, col=ge,
                            lab=ge, sigScale=scale)
       }
@@ -258,12 +258,12 @@ exploreData<-function(res, counts, cond){
     output$GO_up<-shiny::renderPlot({
       x<-GO_res()
       BinfTools:::GO_plot(x$Up, prefix=paste("Up",input$source, sep="_"),
-                          ts=c(10,500), pdf=F, fig=T, print=input$GOprint)
+                          ts=c(10,500), pdf=FALSE, fig=TRUE, print=input$GOprint)
     })
     output$GO_down<-shiny::renderPlot({
       x<-GO_res()
       BinfTools:::GO_plot(x$Down, prefix=paste("Down",input$source, sep="_"),
-                          ts=c(10,500), pdf=F, fig=T, print=input$GOprint)
+                          ts=c(10,500), pdf=FALSE, fig=TRUE, print=input$GOprint)
     })
     output$gsva<-shiny::renderPlot({
       x<-counts[[which(names(counts) %in% input$data)]]
@@ -275,8 +275,8 @@ exploreData<-function(res, counts, cond){
       x<-counts[[which(names(counts) %in% input$data)]]
       co<-cond[[which(names(cond) %in% input$data)]]
       ge<-unique(geneList$genes)
-      ge<-ge[ge!=""]
-      if(length(ge)==0){
+      ge<-ge[ge != ""]
+      if(length(ge) == 0){
         ge<-""
       }
       gmt<-unique(unlist(get.gmt()))
@@ -293,17 +293,17 @@ exploreData<-function(res, counts, cond){
       x<-counts[[which(names(counts) %in% input$data)]]
       co<-cond[[which(names(cond) %in% input$data)]]
       toNorm<-input$norm
-      if(toNorm=="Yes"){
+      if(toNorm == "Yes"){
         toNorm<-input$control
       } else {
         toNorm<-NULL
       }
       err<-input$eb
-      if(err=="none"){
+      if(err == "none"){
         err<-0
       }
       ge<-unique(geneList$genes)
-      ge<-ge[ge!=""]
+      ge<-ge[ge != ""]
       #print(ge[which(ge %in% rownames(x))])
       BinfTools::barGene(genes=ge[which(ge %in% rownames(x))], counts=x, conditions=co,
                          title=paste0("Gene expression - ", input$data),
@@ -314,7 +314,7 @@ exploreData<-function(res, counts, cond){
       x<-counts[[which(names(counts) %in% input$data)]]
       co<-cond[[which(names(cond) %in% input$data)]]
       ge<-unique(geneList$genes)
-      ge<-ge[ge!=""]
+      ge<-ge[ge != ""]
       #print(ge[which(ge %in% rownames(x))])
       BinfTools::zheat(genes=ge[which(ge %in% rownames(x))], counts=x, conditions=co,
                        con=input$control, title=paste0("Gene expression - ", input$data),
@@ -323,5 +323,5 @@ exploreData<-function(res, counts, cond){
   }
 
   # Create Shiny app ----
-  shiny::shinyApp(ui = ui, server = server, options=list(quiet=T))
+  shiny::shinyApp(ui = ui, server = server, options=list(quiet=TRUE))
 }

@@ -3,7 +3,7 @@
 #' A function to run an ssGSEA analysis using normalized counts and create
 #' a plot with pairwise comparisons
 #'
-#' @param counts Normalized count matrix - preferably z-score normalized by row. E.g. t(scale(t(counts(dds, normalized=T))))
+#' @param counts Normalized count matrix - preferably z-score normalized by row. E.g. t(scale(t(counts(dds, normalized=TRUE))))
 #' @param geneset List with length > 1 of character vectors indicating gene sets of interest. Can be created using qusage::read.gmt("geneset.gmt")
 #' @param method Method to employ in estimation of gene-set enrichment scores. One of "ssgsea","gsva","zscore","plage". Default is "ssgsea
 #' @param stat.test Test to employ in comparison of enrichment scores across conditions. Can only be "t-test" or "wilcoxon". Default is "t-test".
@@ -17,11 +17,11 @@
 #' @param showStat Boolean indicating if p-values should be plotted on figure
 #' @param retRes Boolean indicating if GSVA results should be returned. Default=FALSE. If both retRes and retGP are TRUE, only GSVA results will be returned.
 #' @param textsize Numeric indicating text size for plot. Leave NULL for default.
-#' @param retGP Boolean indicating if ggplots2 object should be returned for further editing. Default=F.
+#' @param retGP Boolean indicating if ggplots2 object should be returned for further editing. Default=FALSE.
 #' @return Violin or box plot of normalized enrichment scores for genesets between conditions
 #' @export
 
-gsva_plot<-function(counts, geneset, method="ssgsea", stat.test = "t-test", condition, con=NULL, title="ssGSEA", compare=NULL, col="Dark2", style="sina", sinaPoint="black", showStat=T, retRes=F, textsize=NULL, retGP=F){
+gsva_plot<-function(counts, geneset, method="ssgsea", stat.test = "t-test", condition, con=NULL, title="ssGSEA", compare=NULL, col="Dark2", style="sina", sinaPoint="black", showStat=TRUE, retRes=FALSE, textsize=NULL, retGP=FALSE){
   if (!stat.test %in% c("t-test", "wilcoxon")){
     stop("Only t-test and wilcoxon tests are supported! Default is t-test.")
   }
@@ -34,7 +34,7 @@ gsva_plot<-function(counts, geneset, method="ssgsea", stat.test = "t-test", cond
 	x<-res %>% tidyr::gather(key="Sample", value="NES") %>% dplyr::mutate(group=conditions) %>%
 		dplyr::group_by(group)
 	if(!is.null(con)){
-	  if(length(con)==length(levels(factor(x$group)))){
+	  if(length(con) == length(levels(factor(x$group)))){
 	    x<- x %>% dplyr::mutate(group=forcats::fct_relevel(group, con))
 	  } else {
 	    newlev<-c(con, levels(factor(x$group))[!which(levels(factor(x$group)) %in% con)])
@@ -53,13 +53,13 @@ gsva_plot<-function(counts, geneset, method="ssgsea", stat.test = "t-test", cond
 	pwc <- pwc %>% rstatix::add_xy_position(x="group")
 	#Now for the plot:
 	p<-NULL
-	if(style=="violin"){
+	if(style == "violin"){
 	p<- ggpubr::ggviolin(x, x="group", y="NES", fill="group") +
 	  ggplot2::geom_boxplot(width=0.1, fill="white") +
 	  ggplot2::labs(title=title, y="Normalized Enrichment Score", x="Condition") + ggplot2::theme_minimal() +
 	  ggplot2::scale_fill_manual(values=colPal(col)) + ggplot2::theme(text=ggplot2::element_text(size=textsize))
-	} 
-	if(style=="sina"){
+	}
+	if(style == "sina"){
 	  if(length(colPal(sinaPoint))<length(levels(factor(x$group)))){
 	    sinaPoint<-rep(colPal(sinaPoint)[1], length(levels(factor(x$group))))
 	  }
@@ -68,7 +68,7 @@ gsva_plot<-function(counts, geneset, method="ssgsea", stat.test = "t-test", cond
 	    ggplot2::labs(title=title, y="Normalized Enrichment Score", x="Condition") + ggplot2::theme_minimal() +
 	    ggplot2::scale_fill_manual(values=colPal(col)) + ggplot2::theme(text=ggplot2::element_text(size=textsize)) + ggplot2::guides(colour="none")
 	}
-	if(style=="box") {
+	if(style == "box") {
 	  p<- ggpubr::ggboxplot(x, x="group", y="NES", fill="group") +
 	    ggplot2::labs(title=title, y="Normalized Enrichment Score", x="Condition") + ggplot2::theme_minimal() +
 	    ggplot2::scale_fill_manual(values=colPal(col))+ ggplot2::theme(text=ggplot2::element_text(size=textsize))

@@ -20,7 +20,7 @@
 #' @export
 #'
 
-volcanoPlot<-function(res, title, p=NULL, pval=NULL, FC=1, lab=NULL, col=NULL, fclim=NULL, showNum=TRUE, returnDEG=F, ordBy="sig", expScale=F, upcol=NULL, dncol=NULL){
+volcanoPlot<-function(res, title, p=NULL, pval=NULL, FC=1, lab=NULL, col=NULL, fclim=NULL, showNum=TRUE, returnDEG=FALSE, ordBy="sig", expScale=FALSE, upcol=NULL, dncol=NULL){
   #Function to create a volcano plot from a results table (res)
   #p and pval are mutually exclusive and describe the adjusted pvalue or unadjusted pvalue thresholds of DEGs, respectively
   #FC is the absolute log2 fold-change threshold for a DEG
@@ -58,7 +58,7 @@ volcanoPlot<-function(res, title, p=NULL, pval=NULL, FC=1, lab=NULL, col=NULL, f
     #Separate out padj = 0
     zeroes<-subset(res, padj == 0)
     #Get the number of NA values for P values
-    pNA<-length(which(is.na(res$padj)==TRUE))
+    pNA<-length(which(is.na(res$padj) == TRUE))
     #Remove padj=0 from res
     res<-subset(res, padj > 0)
     #Subset out the down/up regulated genes and no change genes
@@ -83,7 +83,7 @@ volcanoPlot<-function(res, title, p=NULL, pval=NULL, FC=1, lab=NULL, col=NULL, f
     #Separate out padj = 0
     zeroes<-subset(res, pvalue == 0)
     #Get the number of NA values for P values
-    pNA<-length(which(is.na(res$pvalue)==TRUE))
+    pNA<-length(which(is.na(res$pvalue) == TRUE))
     #Remove padj=0 from res
     res<-subset(res, pvalue > 0)
     #Subset out the down/up regulated genes and no change genes
@@ -174,7 +174,7 @@ volcanoPlot<-function(res, title, p=NULL, pval=NULL, FC=1, lab=NULL, col=NULL, f
   }
   #Now add in the gene labels if they were specified
   if(!is.null(lab)){
-    if(lab[1]=="labDEG"){
+    if(lab[1] == "labDEG"){
       lab=c(DEdown,DEup)
     }
     labpoints<-res[lab,]
@@ -186,13 +186,13 @@ volcanoPlot<-function(res, title, p=NULL, pval=NULL, FC=1, lab=NULL, col=NULL, f
     return(list(Down=numdown,Up=numup,No_Change=numnc))
   }
   if(isTRUE(returnDEG)){
-    ord<-rownames(res)[order(abs(res$stat), decreasing=T)]
-    if(ordBy=="l2FC"){
-      ord<-rownames(res)[order(abs(res$log2FoldChange), decreasing=T)]
+    ord<-rownames(res)[order(abs(res$stat), decreasing=TRUE)]
+    if(ordBy == "l2FC"){
+      ord<-rownames(res)[order(abs(res$log2FoldChange), decreasing=TRUE)]
     }
     toRet<-list(Down=c(DEdown,rownames(subset(zeroes, log2FoldChange < -FC))), Up=c(DEup, rownames(subset(zeroes, log2FoldChange > FC))))
-    toRet$Down<-BinfTools:::na.rm(toRet$Down[match(ord, toRet$Down)])
-    toRet$Up<-BinfTools:::na.rm(toRet$Up[match(ord, toRet$Up)])
+    toRet$Down<-BinfTools:::rmNA(toRet$Down[match(ord, toRet$Down)])
+    toRet$Up<-BinfTools:::rmNA(toRet$Up[match(ord, toRet$Up)])
     return(toRet)
   }
 }
@@ -228,7 +228,7 @@ vol3d<-function(x, y, xlab="res1", ylab="res2", pval=0.05, pcol="pvalue", usep=N
     }
     pvals<- -log10(pvals)
   } else {
-    if(usep[1]==2){
+    if(usep[1] == 2){
       pvals<- -log10(y$pvalue)
     }
   }
@@ -242,7 +242,7 @@ vol3d<-function(x, y, xlab="res1", ylab="res2", pval=0.05, pcol="pvalue", usep=N
   for3d$col[which(for3d$x >0 & for3d$y <0 & for3d$z > -log10(pval))] <- rgb(0.5,0,1,0.5)
   for3d$DE[which(for3d$x >0 & for3d$y <0 & for3d$z > -log10(pval))] <- paste0("Up ",xlab,", Down ",ylab)
   scatterplot3d::scatterplot3d(for3d[,c(1:3)], pch=16, xlab=paste("log2FoldChange -", xlab), ylab=paste("log2FoldChange -", ylab), zlab=paste0("-log10(",zlab,")"), color=for3d$col,
-                               grid=T, box=F)
+                               grid=TRUE, box=FALSE)
   legend("topright", legend=c("Up Both", "Down Both", paste0("Up ",xlab,", Down ", ylab), paste0("Down ",xlab,", Up ",ylab), "No Change"),
          col=c(rgb(1,0,0,0.5), rgb(0,0,1,0.5), rgb(0.5,0,1,0.5), rgb(0,1,0,0.5), rgb(0,0,0,0.5)), pch=16)
   return(for3d)

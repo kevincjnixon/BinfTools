@@ -2,28 +2,28 @@
 #'
 #' Make a publication-quality table from your GO results
 #'
-#' @param GOres GO results table returned from GO_GEM when returnRes=T
+#' @param GOres GO results table returned from GO_GEM when returnRes=TRUE
 #' @param title Character for Table title, leave NULL to avoid a title
 #' @param subtitle Character for subtitle of table. Leave NULL to not have subtitle
-#' @param sig Boolean indeicating if terms should be ordered by significance. FALSE lets terms be ordered by enrichment. Default=T.
+#' @param sig Boolean indeicating if terms should be ordered by significance. FALSE lets terms be ordered by enrichment. Default=TRUE.
 #' @param ts numeric vector of length two indicating minimum and maximum terms size cutoffs for enrichment and significance, respectively. Default=c(10,500)
 #' @param colnames Character vector of length 3 indicating the output column names for the Term name, enrichment, and adjusted p-value. Defaults to c("Term", "Enrichment", "FDR")
 #' @param numTerm Number indicating the number of terms to print in the table. Default=10.
-#' @param retGT Boolean indicating if the gt table object should be returned - useful for custom formatting. Default=F.
-#' @param printGT Boolean indicating if the gt table object should be printed to Viewer. Default =T.
+#' @param retGT Boolean indicating if the gt table object should be returned - useful for custom formatting. Default=FALSE.
+#' @param printGT Boolean indicating if the gt table object should be printed to Viewer. Default =TRUE.
 #' @return A table of class gt of the top GO results
 #' @export
 
-GO_Table<-function(GOres, title=NULL, subtitle=NULL, sig=T, ts=c(10,500), colnames=c("Term", "Enrichment", "FDR"), numTerm=10, retGT=F, printGT=T){
-  require(gt, quietly=T)
-  require(dplyr, quietly = T)
+GO_Table<-function(GOres, title=NULL, subtitle=NULL, sig=TRUE, ts=c(10,500), colnames=c("Term", "Enrichment", "FDR"), numTerm=10, retGT=FALSE, printGT=TRUE){
+  require(gt, quietly=TRUE)
+  require(dplyr, quietly = TRUE)
   foot<-" genes per term"
   if(isTRUE(sig)){
     GOres<-GOres[order(GOres$p_value),]
     GOres<-subset(GOres, term_size < ts[2])
     foot<-paste0("*<",ts[2],foot)
   } else {
-    GOres<-GOres[order(GOres$enrichment, decreasing = T),]
+    GOres<-GOres[order(GOres$enrichment, decreasing = TRUE),]
     GOres<-subset(GOres, term_size > ts[1])
     foot<-paste0("*>",ts[1],foot)
   }
@@ -59,23 +59,23 @@ GO_Table<-function(GOres, title=NULL, subtitle=NULL, sig=T, ts=c(10,500), colnam
 #'
 #' Make a publication-quality table from your GO results
 #'
-#' @param GOres List of GO results table returned from GO_GEM or clusGO when returnRes=T.
+#' @param GOres List of GO results table returned from GO_GEM or clusGO when returnRes=TRUE.
 #' @param title Character for Table title, leave NULL to avoid a title
 #' @param subtitle Character for subtitle of table. Leave NULL to not have subtitle
-#' @param sig Boolean indeicating if terms should be ordered by significance. FALSE lets terms be ordered by enrichment. Default=T.
+#' @param sig Boolean indeicating if terms should be ordered by significance. FALSE lets terms be ordered by enrichment. Default=TRUE.
 #' @param ts numeric vector of length two indicating minimum and maximum terms size cutoffs for enrichment and significance, respectively. Default=c(10,500)
 #' @param colnames Character vector of length 3 indicating the output column names for the Term name, enrichment, and adjusted p-value. Defaults to c("Term", "Enrichment", "FDR")
 #' @param numTerm Number indicating the number of terms to print in the table. Default=10.
-#' @param retGT Boolean indicating if the gt table object should be returned - useful for custom formatting. Default=F.
-#' @param printGT Boolean indicating if the gt table object should be printed to Viewer. Default =T.
+#' @param retGT Boolean indicating if the gt table object should be returned - useful for custom formatting. Default=FALSE.
+#' @param printGT Boolean indicating if the gt table object should be printed to Viewer. Default =TRUE.
 #' @return A table of class gt of the top GO results for each entry in the list of GO results.
 #' @export
 
-listGO_Table<-function(GOres, title=NULL, subtitle=NULL, sig=T, ts=c(10,500), colnames=c("Term", "Enrichment", "FDR"), numTerm=10, retGT=F, printGT=T){
-  require(gt, quietly=T)
-  require(dplyr, quietly = T)
-  if(length(which(unlist(lapply(GOres, class)) !="data.frame"))>0){
-    clusters<-names(which(unlist(lapply(GOres, class)) !="data.frame"))
+listGO_Table<-function(GOres, title=NULL, subtitle=NULL, sig=TRUE, ts=c(10,500), colnames=c("Term", "Enrichment", "FDR"), numTerm=10, retGT=FALSE, printGT=TRUE){
+  require(gt, quietly=TRUE)
+  require(dplyr, quietly = TRUE)
+  if(length(which(unlist(lapply(GOres, class))  != "data.frame"))>0){
+    clusters<-names(which(unlist(lapply(GOres, class))  != "data.frame"))
     message("No results for ",toString(clusters),"... Removing them." )
   }
   GOres<-GOres[which(unlist(lapply(GOres, class)) == "data.frame")]
@@ -87,7 +87,7 @@ listGO_Table<-function(GOres, title=NULL, subtitle=NULL, sig=T, ts=c(10,500), co
     foot<-paste0("*<",ts[2],foot)
   } else {
     GOres<-lapply(GOres, function(x){
-      x<-x[order(x$enrichment, decreasing=T),]
+      x<-x[order(x$enrichment, decreasing=TRUE),]
       x<-subset(x, term_size > ts[1])})
     foot<-paste0("*>",ts[1],foot)
   }

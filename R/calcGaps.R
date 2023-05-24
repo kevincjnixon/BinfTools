@@ -53,7 +53,7 @@ calcGaps<-function(resList, maxClus=10, iter=10){
   #Put all the gap statistics in a single vector
   x<-unlist(sapply(gaps, '[[',1))
   #Max Gap
-  res<-c(x[which(x==max(x))], which(x==max(x), arr.ind=T)+1)
+  res<-c(x[which(x == max(x))], which(x == max(x), arr.ind=TRUE)+1)
   names(res)<-c("Max Gap Statistic","Optimal Cluster Number")
   return(res)
 }

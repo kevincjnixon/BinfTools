@@ -24,13 +24,13 @@
 #' @export
 #'
 
-GO_GEM<-function(geneList,species="hsapiens",bg=NULL,source=NULL, corr="fdr", iea=FALSE, ord=F, prefix="GO_analysis", ts=c(10,500),
-                 pdf=T, fig=T, figCols=c("blue","orange"), returnGost=F, writeRes=T, writeGem=F, writeGene=F, returnRes=F){
+GO_GEM<-function(geneList,species="hsapiens",bg=NULL,source=NULL, corr="fdr", iea=FALSE, ord=FALSE, prefix="GO_analysis", ts=c(10,500),
+                 pdf=TRUE, fig=TRUE, figCols=c("blue","orange"), returnGost=FALSE, writeRes=TRUE, writeGem=FALSE, writeGene=FALSE, returnRes=FALSE){
   GOfun<-function(genes, spec=species, cbg=bg, dsource=source, corrm=corr, exiea=iea, rnk=ord, prefix=pre, termsz=ts, prpdf=pdf, prfig=fig, cols=figCols, giveGost=returnGost,
                   gemWrite=writeGem, resWrite=writeRes, genWrite=writeGene, giveRes=returnRes){
     #ts is term size (for plotting, terms must have ts genes to make cutoff, default is 10)
     if(isTRUE(genWrite)){
-      write.table(genes, paste0(prefix,".genes.txt"), quote=F, row.names=F, col.names=F, sep="\t")
+      write.table(genes, paste0(prefix,".genes.txt"), quote=FALSE, row.names=FALSE, col.names=FALSE, sep="\t")
     }
     x<-gprofiler2::gost(genes, organism=spec, ordered_query=rnk, custom_bg=cbg, sources=dsource, evcodes=TRUE, multi_query=FALSE, correction_method=corrm, exclude_iea=exiea)
     y<-x$result[,-14]
@@ -43,7 +43,7 @@ GO_GEM<-function(geneList,species="hsapiens",bg=NULL,source=NULL, corr="fdr", ie
     if(isTRUE(gemWrite)){
       write.table(gem, paste0(prefix,".gem.txt"), quote=FALSE, sep="\t", row.names = FALSE)
     }
-    y<-y[order(y$enrichment, decreasing=T),]
+    y<-y[order(y$enrichment, decreasing=TRUE),]
     GO_plot(y, prefix, termsz, prpdf, prfig, cols)
     if(isTRUE(resWrite)){
       write.table(y, paste0(prefix,".GO.txt"), quote=FALSE, sep="\t", row.names=FALSE)
@@ -126,7 +126,7 @@ GO_plot<-function(GOres, prefix, ts, pdf, fig, col, print=c("both","sig","enr"))
   ylim.sec<-c(0, max(-log10(GOres$p_value))+1)
   b<-diff(ylim.prim)/diff(ylim.sec)
   a<-b*(ylim.prim[1]=ylim.sec[1])
-  subt<-strsplit(prefix, split="/", fixed=T)[[1]][length(strsplit(prefix, split="/", fixed=T)[[1]])]
+  subt<-strsplit(prefix, split="/", fixed=TRUE)[[1]][length(strsplit(prefix, split="/", fixed=TRUE)[[1]])]
   p<- ggplot2::ggplot(GOres, ggplot2::aes(x=seq(1:length(term_name)), y=enrichment)) +
     ggplot2::geom_col(fill=colPal(col)[1], width=0.75) + ggplot2::geom_col(ggplot2::aes(x=seq(1:length(term_name)), y=a+(-log10(p_value))*b), fill=colPal(col)[2], width=0.375) +
     ggplot2::scale_x_continuous(name="GO Term", breaks=1:10, labels=GOres$term_name) +
@@ -148,27 +148,27 @@ GO_plot<-function(GOres, prefix, ts, pdf, fig, col, print=c("both","sig","enr"))
                   subtitle=subt)
   if(isTRUE(pdf)){
     pdf(paste0(prefix,".Top10.pdf"))
-    if(print[1]=="both"){
+    if(print[1] == "both"){
       print(p)
       print(q)
     }
-    if(print[1]=="sig"){
+    if(print[1] == "sig"){
       print(q)
     }
-    if(print[1]=="enr"){
+    if(print[1] == "enr"){
       print(p)
     }
     dev.off()
   }
   if(isTRUE(fig)){
-    if(print[1]=="both"){
+    if(print[1] == "both"){
       print(p)
       print(q)
     }
-    if(print[1]=="sig"){
+    if(print[1] == "sig"){
       print(q)
     }
-    if(print[1]=="enr"){
+    if(print[1] == "enr"){
       print(p)
     }
   }
@@ -178,7 +178,7 @@ GO_plot<-function(GOres, prefix, ts, pdf, fig, col, print=c("both","sig","enr"))
 #'
 #'This function will combine GO results from GO_GEM when performed on DEGs into a single plot.
 #'
-#'@param GOresList list of GO_GEM results (set returnRes=T) of length 2. Best for DEG GO results, where the first entry in the list is downregulated, and the second entry in the list is upregulated
+#'@param GOresList list of GO_GEM results (set returnRes=TRUE) of length 2. Best for DEG GO results, where the first entry in the list is downregulated, and the second entry in the list is upregulated
 #'@param title Character for the plot title
 #'@param ts numeric vector of length 2 with the minimum and maximum term sizes for plotting. Default is c(10,500)
 #'@param sig Boolean indicating if top significant results should be plotted. Set to FALSE to plot top enriched results
@@ -187,13 +187,13 @@ GO_plot<-function(GOres, prefix, ts, pdf, fig, col, print=c("both","sig","enr"))
 #'@param downcols character vector of length 2 indicating the colour for downregulated enrichment and significance bars
 #'@param labs character vector of length 2 indicating the specific legend labels for the entries in GOresList. Default=c("Downregulated","Upgreulated")
 #'@param textsize numeric indicating text size for plot. Leave NULL to keep default size.
-#'@param retGP Booliean indicating if the ggplot2 object should be returned for further editing. Default=F.
+#'@param retGP Booliean indicating if the ggplot2 object should be returned for further editing. Default=FALSE.
 #'@return A plot of top GO results
 #'@export
 
-combGO_plot<-function(GOresList, title="GO results", ts=c(10,500), sig=T, numTerm=10, upcols=c("lightpink","red"),
-                      downcols=c("lightblue","blue"), labs=c("Downregulated","Upregulated"), textsize=NULL, retGP=F){
-  if(length(GOresList)!=2){
+combGO_plot<-function(GOresList, title="GO results", ts=c(10,500), sig=TRUE, numTerm=10, upcols=c("lightpink","red"),
+                      downcols=c("lightblue","blue"), labs=c("Downregulated","Upregulated"), textsize=NULL, retGP=FALSE){
+  if(length(GOresList) != 2){
     stop("length(GOresList) must be 2!")
   }
   #print(names(GOresList))
@@ -210,10 +210,10 @@ combGO_plot<-function(GOresList, title="GO results", ts=c(10,500), sig=T, numTer
     GOresList[[1]]<-subset(GOresList[[1]], term_size <= ts[2])
     GOresList[[2]]<-subset(GOresList[[2]], term_size <= ts[2])
     filtRes<-rbind(head(GOresList[[1]], n=numTerm),
-                   head(GOresList[[2]], n=numTerm)[order(head(GOresList[[2]], n=numTerm)$p_value, decreasing=T),])
+                   head(GOresList[[2]], n=numTerm)[order(head(GOresList[[2]], n=numTerm)$p_value, decreasing=TRUE),])
   } else {
     GOresList[[1]]<-GOresList[[1]][order(GOresList[[1]]$enrichment),]
-    GOresList[[2]]<-GOresList[[2]][order(GOresList[[2]]$enrichment, decreasing=T),]
+    GOresList[[2]]<-GOresList[[2]][order(GOresList[[2]]$enrichment, decreasing=TRUE),]
     GOresList[[1]]<-subset(GOresList[[1]], term_size >= ts[1])
     GOresList[[2]]<-subset(GOresList[[2]], term_size >= ts[1])
     filtRes<-rbind(head(GOresList[[1]], n=numTerm),
@@ -265,7 +265,7 @@ combGO_plot<-function(GOresList, title="GO results", ts=c(10,500), sig=T, numTer
 
 #'Make a heatmap showing significance of groups of GO terms from multiple sets of results
 #'
-#'@param GOresList list of GO_GEM results (set returnRes=T) of length >= 2.
+#'@param GOresList list of GO_GEM results (set returnRes=TRUE) of length >= 2.
 #'@param termList named list of character vectors where the names represent the group names for GO terms and vectors contain GO term names corresponding to the 'term_name' column in the GO_GEM results data frams.
 #'@param hmcol colorRampPalette of length 100 that will direct the colour palette of the heatmap. Default is colorRampPalette(c("white","darkblue"))(100)
 #'@param width numeric indicating the cell width (Default=NA will automatically direct the cell width)
@@ -277,7 +277,7 @@ combGO_plot<-function(GOresList, title="GO results", ts=c(10,500), sig=T, numTer
 #'@return A grouped heatmap showing significance of GO terms across analyses as -log10(p-value)
 #'@export
 
-GOHeat<-function(GOresList, termList, hmcol=colorRampPalette(c("white","darkblue"))(100), width=NA, height=NA, maxVal=NA, minVal=NA, NAcol="#DDDDDD", ret=F){
+GOHeat<-function(GOresList, termList, hmcol=colorRampPalette(c("white","darkblue"))(100), width=NA, height=NA, maxVal=NA, minVal=NA, NAcol="#DDDDDD", ret=FALSE){
   if(any(duplicated(unlist(termList)))){
     message("Duplicate term names found in termList. Removing all but the first instance of the term...")
     #creates a named vector where the names give the location of the duplicated instance of the term
@@ -327,7 +327,7 @@ GOHeat<-function(GOresList, termList, hmcol=colorRampPalette(c("white","darkblue
       maxVal<-seq(from=min(as.matrix(tmp)[is.finite(as.matrix(tmp))]), to=maxVal, length.out=100)
     }
   }
-  pheatmap::pheatmap(tmp, scale="none", cluster_rows=F, cluster_cols=F, legend=T, annotation_row=rowAnno,
+  pheatmap::pheatmap(tmp, scale="none", cluster_rows=FALSE, cluster_cols=FALSE, legend=TRUE, annotation_row=rowAnno,
                      gaps_row=gaps, color=hmcol, border_color="black",
                      cellwidth = width, cellheight = height, breaks=maxVal, na_col=NAcol)
   if(isTRUE(ret)){
@@ -345,14 +345,14 @@ GOHeat<-function(GOresList, termList, hmcol=colorRampPalette(c("white","darkblue
 #' @param bg character vector of genes indicating the background of genes. If left NULL, argument 'sp' will indicate species and assume all genes are in background.
 #' @param sp character of either "human" or "mouse" indicating the species. This will provide the number of background genes if bg=NULL.
 #' @param FDR Boolean indicating if p-values should be FDR corrected (Benjamini-Hochberg). Default is TRUE.
-#' @param byRegion Boolean. If query genes has duplicate gene symbols, set to TRUE to remove duplicates (relevant only if query genes are from annotated peaks from genomic data). Default=F.
+#' @param byRegion Boolean. If query genes has duplicate gene symbols, set to TRUE to remove duplicates (relevant only if query genes are from annotated peaks from genomic data). Default=FALSE.
 #' @param enr character of either "pos" or "neg" indicating if significance should be calculated for positive or negative hypergeometric enrichment, respectively. default="pos".
-#' @param significant Boolean indicating if only significant (p<0.05) results should be returned. defaulte=T.
+#' @param significant Boolean indicating if only significant (p<0.05) results should be returned. defaulte=TRUE.
 #' @param minp numeric indicating the minimum p-value possible reported (to avoid zeros)
-#' @return Data.frame of same structure of results table from GO_GEM() when returnRes=T.
+#' @return Data.frame of same structure of results table from GO_GEM() when returnRes=TRUE.
 #' @export
 
-customGO<-function(genes, gmt, gsName="custom GeneSet", bg=NULL, sp="human", FDR=T, byRegion=F, enr="pos", significant=T, minp=1e-300){
+customGO<-function(genes, gmt, gsName="custom GeneSet", bg=NULL, sp="human", FDR=TRUE, byRegion=FALSE, enr="pos", significant=TRUE, minp=1e-300){
   if(!is.list(gmt)){
     gmt<-BinfTools::read.gmt(gmt)
   }
@@ -368,10 +368,10 @@ customGO<-function(genes, gmt, gsName="custom GeneSet", bg=NULL, sp="human", FDR
       bg<-sp
     } else {
       message("No custom background, using genome size for ",sp,"...")
-      if(sp=="human"){
+      if(sp == "human"){
         bg<-c(1:18123) #Number used from g:profiler
       } else {
-        if(sp=="mouse"){
+        if(sp == "mouse"){
           bg<-c(1:18172) #Number from g:profiler
         } else {
           message("Using gmt as background...")
@@ -380,7 +380,7 @@ customGO<-function(genes, gmt, gsName="custom GeneSet", bg=NULL, sp="human", FDR
       }
     }
   }
-  findOL<-function(gs, x, retVal=F, unique){
+  findOL<-function(gs, x, retVal=FALSE, unique){
     if(isTRUE(unique)){
       x<-unique(x)
     }
@@ -391,7 +391,7 @@ customGO<-function(genes, gmt, gsName="custom GeneSet", bg=NULL, sp="human", FDR
     }
   }
   OL<-unlist(lapply(gmt, findOL, genes, unique=byRegion))
-  OL2<-lapply(gmt, findOL, genes, retVal=T, unique=byRegion)
+  OL2<-lapply(gmt, findOL, genes, retVal=TRUE, unique=byRegion)
   res<-data.frame(query=rep("query_1", length(gmt)),
                   significant=rep("FALSE", length(gmt)),
                   p_value=rep(1, length(gmt)),
@@ -406,7 +406,7 @@ customGO<-function(genes, gmt, gsName="custom GeneSet", bg=NULL, sp="human", FDR
                   effective_domain_size=length(bg),
                   intersection=unlist(lapply(OL2, toString)),
                   enrichment=rep(0, length(gmt)))
-  vectorPhyper<-function(intersection_size, term_size, domain_size,query_size, adj=T, lt=F){
+  vectorPhyper<-function(intersection_size, term_size, domain_size,query_size, adj=TRUE, lt=FALSE){
     pvals<-c()
     #pb<-txtProgressBar(0,1,style=3)
     for(i in 1:length(intersection_size)){
@@ -418,10 +418,10 @@ customGO<-function(genes, gmt, gsName="custom GeneSet", bg=NULL, sp="human", FDR
     }
     return(pvals)
   }
-  if(enr=="pos"){
-    enr<-F
+  if(enr == "pos"){
+    enr<-FALSE
   } else {
-    enr<-T
+    enr<-TRUE
   }
   print(dim(res))
   res$p_value<-vectorPhyper(res$intersection_size, res$term_size, res$effective_domain_size, res$query_size, adj=FDR, lt=enr)
@@ -429,16 +429,16 @@ customGO<-function(genes, gmt, gsName="custom GeneSet", bg=NULL, sp="human", FDR
   res$precision<-res$intersection_size/res$query_size
   res$recall<-res$intersection_size/res$term_size
   res$enrichment<-(res$intersection_size/res$query_size)/(res$term_size/res$effective_domain_size)
-  res<-res[order(res$enrichment, decreasing=T),]
+  res<-res[order(res$enrichment, decreasing=TRUE),]
   if(!is.null(minp)){
     res$p_value[res$p_value<minp]<-minp
   }
   if(isTRUE(significant)){
-    if(nrow(subset(res, significant=="TRUE"))<1){
+    if(nrow(subset(res, significant == "TRUE"))<1){
       message("No significant results. Returning NA.")
       return(NA)
     } else {
-      return(subset(res, significant=="TRUE"))
+      return(subset(res, significant == "TRUE"))
     }
   } else {
     return(res)
@@ -450,14 +450,14 @@ customGO<-function(genes, gmt, gsName="custom GeneSet", bg=NULL, sp="human", FDR
 #Great for making a termList for GOHeat (return "term_name" only) or getting intersection genes
 #' Grep a key word from a GO results table and return specific columns
 #'
-#' @param GOtable Data frame returned from GO_GEM or clusGO with returnRes=T
+#' @param GOtable Data frame returned from GO_GEM or clusGO with returnRes=TRUE
 #' @param key Character to be matched in the column 'term_name'. Note that the key is not case sensitive and will return parital matches. Be sure to review the results.
 #' @param cols Character vector of any of colnames(GOtable) indicating which columns should be returned. Default is c("term_name","intersection").
 #' @return Data frame of subset GOtable where key is found in term_name and columns match cols. If no matches are found, NA is returned.
 #' @export
 
 GOgrep<-function(GOtable, key, cols=c("term_name","intersection")){
-  x<-GOtable[grep(key, GOtable$term_name, ignore.case=T),which(colnames(GOtable) %in% cols), drop=F]
+  x<-GOtable[grep(key, GOtable$term_name, ignore.case=TRUE),which(colnames(GOtable) %in% cols), drop=FALSE]
   if(nrow(x)<1){
     x<-NA
   }
@@ -469,20 +469,20 @@ GOgrep<-function(GOtable, key, cols=c("term_name","intersection")){
 #' @param x vector of any type
 #' @return x with NAs removed
 #' @export
-na.rm<-function(x){
+rmNA<-function(x){
   return(x[!is.na(x)])
 }
 
-#Filter a list of GO results to either remove tables with no significant results (replace=F), or replace them with a dummy table (replace=T).
+#Filter a list of GO results to either remove tables with no significant results (replace=FALSE), or replace them with a dummy table (replace=TRUE).
 #Replacing with a dummy table is good when you want to show all GO analysis names in a GOHeat analysis.
 #' Filter a list of GO results to remove/replace tables with no enriched terms
 #'
-#' @param x list of GO results tables returned when returnRes=T in GO_GEM() or clusGO()
+#' @param x list of GO results tables returned when returnRes=TRUE in GO_GEM() or clusGO()
 #' @param replace Boolean indicating if slots with no enriched GO terms should be replaced with a 'dummy table' - this is good if you want to run a GOHeat analysis. Default is FALSE.
 #' @return list of GO results tables with tables containing no enriched terms being removed or replaced.
 #' @export
 
-filtGO<-function(x, replace=F){
+filtGO<-function(x, replace=FALSE){
   to_rm<-c()
   for(i in 1:length(x)){
     if(is.null(nrow(x[[i]]))){
@@ -506,19 +506,20 @@ filtGO<-function(x, replace=F){
 
 #' Easily make a termlist for GOHeat()
 #'
-#' @param GOres List of GO results tables from GO_GEM() with returnRes=T.
+#' @param GOres List of GO results tables from GO_GEM() with returnRes=TRUE.
 #' @param keylist named list of character vectors of keys to match in the term_name column of the GO results
+#' @param retCol character or character vectors of column names from GOres to be returned. Default is "term_name".
 #' @return named list of term names enriched in at least one of the GO tables in GOres for use with GOHeat(). Be sure to double check the termlist before making the heatmap as unwanted terms could be returned.
 #' @export
-makeTermList<-function(GOres, keylist){
+makeTermList<-function(GOres, keylist, retCol="term_name"){
   termlist<-list()
   for(i in 1:length(keylist)){
     tmp<-c()
     for(k in 1:length(keylist[[i]])){
-      tmp<-c(tmp, unlist(lapply(GOres, GOgrep, key=keylist[[i]][k], cols="term_name")))
+      tmp<-c(tmp, unlist(lapply(GOres, GOgrep, key=keylist[[i]][k], cols=retCol)))
     }
     termlist[[i]]<-tmp
-    termlist[[i]]<-na.rm(unique(termlist[[i]]))
+    termlist[[i]]<-rmNA(unique(termlist[[i]]))
     names(termlist)[i]<-names(keylist)[i]
   }
   return(termlist)

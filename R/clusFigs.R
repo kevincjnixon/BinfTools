@@ -1,4 +1,4 @@
-clusHeatmap<-function(mat, gaps, title, annotdf, hmcol, labgenes){
+.clusHeatmap<-function(mat, gaps, title, annotdf, hmcol, labgenes){
   if(is.null(hmcol)){
     hmcol<-colorRampPalette(c("blue","grey","red"))(100)
   }
@@ -7,21 +7,21 @@ clusHeatmap<-function(mat, gaps, title, annotdf, hmcol, labgenes){
   if(!is.null(labgenes)){
     tmp<-rep(" ", nrow(mat))
     for(i in 1:length(labgenes)){
-      tmp[which(rownames(mat) %in% labgenes[i], arr.ind=T)]<- labgenes[i]
+      tmp[which(rownames(mat) %in% labgenes[i], arr.ind=TRUE)]<- labgenes[i]
     }
     labgenes<-tmp
   }
-  pheatmap::pheatmap(mat, scale="none", color=hmcol, cluster_rows=F, cluster_cols=F,
-                     legend=T, labels_row = labgenes, annotation_row=annotdf, gaps_col=seq(1:ncol(mat-1)),
-                     show_colnames = T, gaps_row=gaps, main=title, breaks=seq(from=-lim, to=lim, length.out=100))
+  pheatmap::pheatmap(mat, scale="none", color=hmcol, cluster_rows=FALSE, cluster_cols=FALSE,
+                     legend=TRUE, labels_row = labgenes, annotation_row=annotdf, gaps_col=seq(1:ncol(mat-1)),
+                     show_colnames = TRUE, gaps_row=gaps, main=title, breaks=seq(from=-lim, to=lim, length.out=100))
 }
-clusBar<-function(mat, title, col, avgExp, cluslev=NULL){
+.clusBar<-function(mat, title, col, avgExp, cluslev=NULL){
   ylab<-"Average log2 Fold-Change (+/- sd)"
   if(isTRUE(avgExp)){
     ylab<-"Average Expression (+/- sd)"
   }
   clus<-mat$cluster
-  if(class(clus)!="factor"){
+  if(!is(clus, "factor")){
     clus<-factor(mat$cluster)
   }
   mat<-mat[,-(which(colnames(mat) %in% "cluster"))]
@@ -68,12 +68,15 @@ clusBar<-function(mat, title, col, avgExp, cluslev=NULL){
 #' @param yax Character indicating the y-axis label of the boxplot. Default="Log2FoldChange".
 #' @param col Character indicating the RColorBrewer palette name or list of colours (hex, name, rgb()) to be used for the bar plot. Default is "Dark2"
 #' @param title Character indicating the title of the plot
-#' @param showStat Boolean indicating if significance of pairwise contrasts within each group should be shown. Default=T
-#' @return Boxplot or grouped boxplot and tibble contatining statistics from pairwise t-tests.
+#' @param showStat Boolean indicating if significance of pairwise contrasts within each group should be shown. Default=TRUE
+#' @return Boxplot or grouped boxplot and tibble containing statistics from pairwise t-tests.
 #' @export
+#' @examples
+#' groups<-gmtHeat(counts, cond, gmt, retGroups=T)
+#' plotClusBox(x=groups, yax="Log2FoldChange", col="Dark2", title="", showStat=TRUE)
 
-plotClusBox<-function (x, yax = "Log2FoldChange", col = "Dark2", title = "", 
-         showStat = TRUE) 
+plotClusBox<-function (x, yax = "Log2FoldChange", col = "Dark2", title = "",
+                       showStat = TRUE)
 {
   require(dplyr, quietly = TRUE)
   res <- NULL
@@ -85,7 +88,7 @@ plotClusBox<-function (x, yax = "Log2FoldChange", col = "Dark2", title = "",
     ord <- colnames(x[[1]])
     res <- lapply(x, tidyr::gather, key = "group", value = "Expression")
     res <- dplyr::bind_rows(res, .id = "cluster")
-    res$group <- forcats::fct_relevel(as.factor(res$group), 
+    res$group <- forcats::fct_relevel(as.factor(res$group),
                                       ord)
     res$group1 <- paste(res$group, res$cluster, sep = ".")
   }
@@ -95,8 +98,8 @@ plotClusBox<-function (x, yax = "Log2FoldChange", col = "Dark2", title = "",
   res <- as.data.frame(res)
   #return(res)
   if (isTRUE(isList)) {
-    pwc <- res %>% dplyr::group_by(cluster) %>% rstatix::wilcox_test(Expression ~ 
-                                                                       group) %>% rstatix::adjust_pvalue(method = "BH") %>% 
+    pwc <- res %>% dplyr::group_by(cluster) %>% rstatix::wilcox_test(Expression ~
+                                                                       group) %>% rstatix::adjust_pvalue(method = "BH") %>%
       rstatix::add_significance("p.adj")
     #split pwc by cluster, then reorder and paste back into tible
     pwc<-split(pwc, f=pwc$cluster)
@@ -105,10 +108,10 @@ plotClusBox<-function (x, yax = "Log2FoldChange", col = "Dark2", title = "",
     pwc$x<-pwc$x[order(pwc$x)]
     pwc$xmin<-pwc$xmin[order(pwc$xmin)]
     pwc$xmax<-pwc$xmax[order(pwc$xmax)]
-    
+
   }
   else {
-    pwc <- res %>% rstatix::pairwise_wilcox_test(Expression ~ 
+    pwc <- res %>% rstatix::pairwise_wilcox_test(Expression ~
                                                    group, p.adjust.method = "BH")
     #split pwc by cluster, then reorder and paste back into tible
     pwc<-split(pwc, f=pwc$group)
@@ -120,18 +123,23 @@ plotClusBox<-function (x, yax = "Log2FoldChange", col = "Dark2", title = "",
   }
   p <- NULL
   if (isTRUE(isList)) {
-    p <- ggpubr::ggboxplot(res, x = "cluster", y = "Expression", 
-                           fill = "group") + ggplot2::labs(title = title, y = yax, 
+    p <- ggpubr::ggboxplot(res, x = "cluster", y = "Expression",
+                           fill = "group") + ggplot2::labs(title = title, y = yax,
                                                            x = "Cluster") + ggplot2::theme_minimal() + ggplot2::scale_fill_manual(values = BinfTools::colPal(col))
   }
   else {
-    p <- ggpubr::ggboxplot(res, x = "group", y = "Expression", 
-                           fill = "group") + ggplot2::labs(title = title, y = yax, 
+    p <- ggpubr::ggboxplot(res, x = "group", y = "Expression",
+                           fill = "group") + ggplot2::labs(title = title, y = yax,
                                                            x = "Condition") + ggplot2::theme_minimal() + ggplot2::scale_fill_manual(values = BinfTools::colPal(col))
   }
   if (isTRUE(showStat)) {
-    p <- p + ggpubr::stat_pvalue_manual(pwc, label = "p.adj.signif", 
-                                        tip.length = 0, step.increase = 0.1, hide.ns = TRUE)
+    if(isTRUE(isList)){
+      p <- p + ggpubr::stat_pvalue_manual(pwc, label = "p.adj.signif",
+                                          tip.length = 0, step.increase = 0.1, step.group.by = "cluster", hide.ns = TRUE)
+    } else {
+      p <- p + ggpubr::stat_pvalue_manual(pwc, label = "p.adj.signif",
+                                          tip.length = 0, step.increase = 0.1, step.group.by = "group", hide.ns = TRUE)
+    }
   }
   print(p)
   return(pwc)
@@ -156,7 +164,7 @@ plotClusBox<-function (x, yax = "Log2FoldChange", col = "Dark2", title = "",
 #' @param retStat Boolean. If set to TRUE, stats for contrasts (p-values and FDR) will be returned for each cluster along with results in a list object.
 #' @return A data frame of log2FoldChanges for each comparison as columns (rows are genes) and a column named "cluster" indicating the cluster each gene belongs to. Two figures: a Heatmap of log2FoldChange of each gene ordered into clusters and a bar plot of the average log2FoldChange in each cluster (+/- SD) by comparison.
 #' @export
-clusFigs<-function(resList, numClus, title="Clustered Results", labgenes="", col="Dark2", hmcol=NULL, avgExp=F, con=NULL, showStat=T, retStat=F){
+clusFigs<-function(resList, numClus, title="Clustered Results", labgenes="", col="Dark2", hmcol=NULL, avgExp=FALSE, con=NULL, showStat=TRUE, retStat=FALSE){
   mat<-NULL
   if(isTRUE(avgExp)){
     mat<-resList
@@ -191,12 +199,12 @@ clusFigs<-function(resList, numClus, title="Clustered Results", labgenes="", col
   mat$cluster<-clusRes$cluster
   mat<-mat[order(mat$cluster),]
   if(!is.null(con)){
-    newClusLev<-order(unlist(lapply(split(mat[,which(colnames(mat) %in% con)], mat$cluster), mean)), decreasing=T)
+    newClusLev<-order(unlist(lapply(split(mat[,which(colnames(mat) %in% con)], mat$cluster), mean)), decreasing=TRUE)
     mat <- mat %>% dplyr::mutate(cluster= forcats::fct_relevel(as.character(cluster), as.character(newClusLev)))
     newClus<-mat$cluster
     for(i in 1:numClus){
       message("changing cluster ",newClusLev[i]," to ",i,"...")
-      newClus[which(mat$cluster==newClusLev[i])]<-i
+      newClus[which(mat$cluster == newClusLev[i])]<-i
     }
     newClus<-forcats::fct_relevel(as.character(newClus), as.character(1:numClus))
     mat$cluster<-newClus
@@ -211,7 +219,7 @@ clusFigs<-function(resList, numClus, title="Clustered Results", labgenes="", col
   #Create the annotation data frame
   annotdf<-data.frame(row.names=rownames(mat), cluster=mat$cluster)
   #Pass it through to the heatmap function:
-  clusHeatmap(mat[,-(which(colnames(mat) %in% "cluster"))], gaps, title, annotdf, hmcol, labgenes)
+  .clusHeatmap(mat[,-(which(colnames(mat) %in% "cluster"))], gaps, title, annotdf, hmcol, labgenes)
   #Plot the boxplot
   clusList<-split(mat[,-which(colnames(mat) %in% "cluster")], mat$cluster)
   yax="log2FoldChange"
@@ -220,7 +228,7 @@ clusFigs<-function(resList, numClus, title="Clustered Results", labgenes="", col
   }
   stats<-plotClusBox(clusList, yax, col, title, showStat)
   #Pass it through to the barplot function:
-  tmp<-clusBar(mat, title, col=col, avgExp)
+  tmp<-.clusBar(mat, title, col=col, avgExp)
   if(isTRUE(retStat)){
     return(list(clusRes=mat, stat=stats))
   }
@@ -232,18 +240,18 @@ clusFigs<-function(resList, numClus, title="Clustered Results", labgenes="", col
 #'
 #' @param clusRes Results dataframe from clusRes()
 #' @param cluslev Numeric vector indicating the new order of clusters for clusRes
-#' @param rename Boolean indicating if clusteres should be renamed based on their new order. Default=T
+#' @param rename Boolean indicating if clusteres should be renamed based on their new order. Default=TRUE
 #' @param title Character indicating the title for the plots. Default= "Releveled Clsuters"
 #' @param col Character indicating the RColorBrewer palette name or list of colours (hex, name, rgb()) to be used for the bar plot. Default is "Dark2"
 #' @param hmcol Colour Ramp Palette of length 100 indicating the colour palette of the heatmap. Leave NULL for default.
 #' @param labgenes Character vector corresponding to rownames in clusRes of genes to label in heatmap. Set to NULL to label all genes. Default is "" which labeles no genes.
-#' @param avgExp Boolean. Set to TRUE if clusRes was generated with 'avgExp=T' in clusFigs().
+#' @param avgExp Boolean. Set to TRUE if clusRes was generated with 'avgExp=TRUE' in clusFigs().
 #' @param showStat Boolean. If set to TRUE, significance symbols will be shown for significant contrasts in boxplot.
 #' @param retStat Boolean. If set to TRUE, stats for contrasts (p-values and FDR) will be returned for each cluster along with results in a list object.
 #' @return A data frame of log2FoldChanges for each comparison as columns (rows are genes) and a column named "cluster" indicating the cluster each gene belongs to. Two figures: a Heatmap of log2FoldChange of each gene ordered into clusters and a bar plot of the average log2FoldChange in each cluster (+/- SD) by comparison.
 #' @export
 
-clusRelev<-function(clusRes, cluslev, rename=T, title="Releveled Clusters", col="Dark2", hmcol=NULL, labgenes="", avgExp=F, showStat=T, retStat=F){
+clusRelev<-function(clusRes, cluslev, rename=TRUE, title="Releveled Clusters", col="Dark2", hmcol=NULL, labgenes="", avgExp=FALSE, showStat=TRUE, retStat=FALSE){
   numClus<-length(levels(factor(clusRes$cluster)))
   clusRes$cluster<-factor(clusRes$cluster)
   if(length(cluslev) == length(levels(factor(clusRes$cluster)))){
@@ -254,43 +262,39 @@ clusRelev<-function(clusRes, cluslev, rename=T, title="Releveled Clusters", col=
     cluslev<-as.numeric(newlev)
   }
   clusRes<-as.data.frame(clusRes)
-  #clusRes$cluster<-as.numeric(clusRes$cluster)
   if(isTRUE(rename)){
     newClus<-clusRes$cluster
     for(i in 1:numClus){
       message("changing cluster ",cluslev[i]," to ",i,"...")
-      newClus[which(clusRes$cluster==cluslev[i])]<-i
+      newClus[which(clusRes$cluster == cluslev[i])]<-i
     }
     newClus<-forcats::fct_relevel(as.character(newClus), as.character(1:numClus))
     clusRes$cluster<-newClus
-    #mat <- mat%>% dplyr::mutate(cluster=forcats::fct_relevel(as.character(cluster), as.character(1:numClus)))
     clusRes<-clusRes[order(clusRes$cluster),]
     cluslev<-1:numClus
   }
-  #clusRes$cluster<-as.numeric(clusRes$cluster)
   clusRes<-clusRes[order(clusRes$cluster),]
-  #Calculate the gaps for the heatmap
+  ##Calculate the gaps for the heatmap
   gaps=c()
   for(i in 1:(length(cluslev)-1)){
     gaps<-c(gaps, sum(gaps[length(gaps)],length(which(clusRes$cluster == cluslev[i]))))
   }
-  #Create the annotation data frame
+  ##Create the annotation data frame
   annotdf<-data.frame(row.names=rownames(clusRes), cluster=clusRes$cluster)
-  #Pass it through to the heatmap function:
-  clusHeatmap(clusRes[,-(which(colnames(clusRes) %in% "cluster"))], gaps, title, annotdf, hmcol, labgenes)
+  ##Pass it through to the heatmap function:
+  .clusHeatmap(clusRes[,-(which(colnames(clusRes) %in% "cluster"))], gaps, title, annotdf, hmcol, labgenes)
   clusList<-split(clusRes[,-which(colnames(clusRes) %in% "cluster")], clusRes$cluster)
   yax="log2FoldChange"
   if(isTRUE(avgExp)){
     yax<-"Average Normalized Expression"
   }
   stats<-plotClusBox(clusList, yax, col, title, showStat)
-  #Pass it through to the barplot function:
-  #print(as.numeric(cluslev))
-  tmp<-clusBar(clusRes, title, col=col, avgExp, cluslev=as.numeric(cluslev))
+  ##Pass it through to the barplot function:
+  tmp<-.clusBar(clusRes, title, col=col, avgExp, cluslev=as.numeric(cluslev))
   if(isTRUE(retStat)){
     return(list(clusRes=clusRes, stat=stats))
   }
-  #return the cluster clusResrix
+  ##return the cluster clusResrix
   return(clusRes)
 }
 

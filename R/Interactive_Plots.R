@@ -71,15 +71,13 @@ interMA<-function(res, title="MA Plot", p=NULL, pval=NULL, FC=1){
   pal<-c("blue","black","red")
   fig<-plotly::plot_ly(res, type="scatter", mode="markers", x=~log10(baseMean), y=~log2FoldChange,
                        text=~rownames(res), color=~colour, colors=pal) %>%
-    plotly::layout(shapes=list(hline(-FC), hline(FC))) %>% #, vline(q[1]),
-                               #vline(q[2]), vline(q[3]), vline(q[4]), vline(q[5]))) %>%
-    plotly::layout(title=title, xaxis=list(title="log10 normalized expression", showgrid=F,
-                                           showline=T, zeroline=F, ticks="outside"),
-                   yaxis=list(title="log2 Fold-Change Expression", showgrid=F,
-                              showline=T, zeroline=F, ticks="outside"))
+    plotly::layout(shapes=list(hline(-FC), hline(FC))) %>%
+    plotly::layout(title=title, xaxis=list(title="log10 normalized expression", showgrid=FALSE,
+                                           showline=TRUE, zeroline=FALSE, ticks="outside"),
+                   yaxis=list(title="log2 Fold-Change Expression", showgrid=FALSE,
+                              showline=TRUE, zeroline=FALSE, ticks="outside"))
 
   return(fig)
-  #return(res)
 }
 
 
@@ -100,7 +98,7 @@ interVP<-function(res, title="Volcano Plot", p=NULL, pval=NULL, FC=1){
   to_remove<-c()
   sig<-NULL
   if(!is.null(p)){
-    #Set sig to the p-value threshold
+    ##Set sig to the p-value threshold
     sig<--log(res[which(res$padj == max(subset(res, padj<p)$padj)),]$pvalue[1],10)
     for(i in 1:nrow(res)){
       if(!is.na(res$padj[i])){
@@ -159,13 +157,11 @@ interVP<-function(res, title="Volcano Plot", p=NULL, pval=NULL, FC=1){
   pal<-c("blue","black","red")
   fig<-plotly::plot_ly(res, type="scatter", mode="markers", x=~log2FoldChange, y=~-log10(pvalue),
                        text=~rownames(res), color=~colour, colors=pal) %>%
-    plotly::layout(shapes=list(vline(-FC), vline(FC), hline(sig))) %>% #, vline(q[1]),
-    #vline(q[2]), vline(q[3]), vline(q[4]), vline(q[5]))) %>%
-    plotly::layout(title=title, xaxis=list(title="log2 Fold-Change Expression", showgrid=F,
-                                           showline=T, zeroline=F, ticks="outside"),
-                   yaxis=list(title="-log 10 p-value", showgrid=F,
-                              showline=T, zeroline=F, ticks="outside"))
+    plotly::layout(shapes=list(vline(-FC), vline(FC), hline(sig))) %>%
+    plotly::layout(title=title, xaxis=list(title="log2 Fold-Change Expression", showgrid=FALSE,
+                                           showline=TRUE, zeroline=FALSE, ticks="outside"),
+                   yaxis=list(title="-log 10 p-value", showgrid=FALSE,
+                              showline=TRUE, zeroline=FALSE, ticks="outside"))
 
   return(fig)
-  #return(res)
 }

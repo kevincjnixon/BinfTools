@@ -4,15 +4,15 @@
 #' object (downloaded from gprofiler) to extract gene sets of GO terms containing
 #' a given key.
 #'
-#' @param gost The gost output of GO_GEM (get by setting returnGost=T when using GO_GEM)
+#' @param gost The gost output of GO_GEM (get by setting returnGost=TRUE when using GO_GEM)
 #' @param key The keyword used to identify GO terms of interest
 #' @param gmt The geneset object (read in using qusage::read.gmt())
 #' @return A list of gene sets in the format for use with other BinfTools functions
 #' @export
 
 customGMT<-function(gost, key, gmt){
-  #Using the gost object, grep for a term, grab the GO ID, and then return the
-  #genesets related to the term
+  ##Using the gost object, grep for a term, grab the GO ID, and then return the
+  ##genesets related to the term
   if(class(gost) != "data.frame"){
     y<-gost$result[,-14]
   } else {
@@ -22,8 +22,8 @@ customGMT<-function(gost, key, gmt){
   terms<-c()
   pb<-txtProgressBar(min=0, max=length(key), style=3)
   for(i in 1:length(key)){
-    IDs<-c(IDs,y[grep(key[i], y$term_name, ignore.case = T),]$term_id)
-    terms<-c(terms,grep(key[i], y$term_name, ignore.case = T, value = T))
+    IDs<-c(IDs,y[grep(key[i], y$term_name, ignore.case = TRUE),]$term_id)
+    terms<-c(terms,grep(key[i], y$term_name, ignore.case = TRUE, value = TRUE))
     setTxtProgressBar(pb, i)
   }
   x<-gmt[IDs]
@@ -40,7 +40,7 @@ customGMT<-function(gost, key, gmt){
 #' @param filename The output filename for the gmt file. Use extension .gmt
 #' @export
 
-write.gmt<-function(geneSet, filename){
+writeGMT<-function(geneSet, filename){
   f=file(filename,'w')
   for(i in 1:length(geneSet)){
     cat(names(geneSet)[i], names(geneSet)[i], geneSet[[i]], file=f, sep="\t")
@@ -58,7 +58,7 @@ write.gmt<-function(geneSet, filename){
 #' @param gmt Character with path to file in .gmt format
 #' @export
 
-read.gmt<-function(gmt){
+readGMT<-function(gmt){
   x<-strsplit(readLines(gmt),"\t")
   y<-lapply(x, tail, -2)
   names(y)<-sapply(x, head, 1)
@@ -72,16 +72,17 @@ read.gmt<-function(gmt){
 #' @param gmt named list of gene sets to be used in the heatmap. Genes must be found in rownames(counts).
 #' @param con character indicating the control condition from cond. Or the order in which conditions in cond should appear on the heatmap.
 #' @param labgenes character indicating which genes (if any) should be labeled on the heatmap. Default NULL will label all genes. Set to "" to label no genes.
+#' @param title character indicating the title of the resulting heatmap
 #' @param avgExp Boolean indicating if gene expression should be averaged within each condition (TRUE) or if each individual replicate should be plotted (FALSE; default).
 #' @param zscore Boolean indicating if gene expression should be z-score scaled (TRUE; default) or not (FALSE).
 #' @param hmcol colorRampPalette object of length 100 indicating colour scheme of heatmap. Leave NULL for default colours.
 #' @param intClus Boolean indicating if hierarchical clustering should be performed within each gene set. Note trees will not be shown. Default = TRUE. If FALSE, heatmap will be presented in the order in which genes appear in the gene sets.
-#' @param printEach Boolean indicating if heatmaps for each individual gene set should be printed. Only works when intClus=T. Trees will be shown. Default = FALSE.
-#' @param retGroups Boolean indicating if named list of data frames of gene expression subset to each gene set should be returned (z-score normalized if zscore=T). Default is FALSE. if TRUE, heatmap won't be plotted.
+#' @param printEach Boolean indicating if heatmaps for each individual gene set should be printed. Only works when intClus=TRUE. Trees will be shown. Default = FALSE.
+#' @param retGroups Boolean indicating if named list of data frames of gene expression subset to each gene set should be returned (z-score normalized if zscore=TRUE). Default is FALSE. if TRUE, heatmap won't be plotted.
 #' @return Annotated heatmap of gene expression of all gene sets provided or named list of data frames of gene expression subset to each gene set.
 #' @export
 
-gmtHeat<-function(counts, cond, gmt, con=NULL, labgenes=NULL, avgExp=T, zscore=T, hmcol=NULL, intClus=T, printEach=F, retGroups=F){
+gmtHeat<-function(counts, cond, gmt, con=NULL, labgenes=NULL, title="", avgExp=TRUE, zscore=TRUE, hmcol=NULL, intClus=TRUE, printEach=FALSE, retGroups=FALSE){
   if (is.null(hmcol)) {
     hmcol <- colorRampPalette(rev(RColorBrewer::brewer.pal(n = 7,
                                                            name = "RdYlBu")))(100)
@@ -91,7 +92,7 @@ gmtHeat<-function(counts, cond, gmt, con=NULL, labgenes=NULL, avgExp=T, zscore=T
   })
   annodf <- suppressWarnings(unique(tidyr::gather(as.data.frame(do.call("cbind",
                                                                         gmt)), key = "Term", value = "Genes")))
-  rownames(annodf) <- make.names(annodf$Genes, unique = T)
+  rownames(annodf) <- make.names(annodf$Genes, unique = TRUE)
   if (isTRUE(zscore)) {
     message("Z-scoring counts")
     counts <- t(scale(t(counts)))
@@ -114,9 +115,9 @@ gmtHeat<-function(counts, cond, gmt, con=NULL, labgenes=NULL, avgExp=T, zscore=T
     tmp.counts <- counts[, which(cond == levels(cond)[1])]
     tmp.cond <- as.character(cond[which(cond == levels(cond)[1])])
     for (i in 2:length(levels(cond))) {
-      tmp.counts <- cbind(tmp.counts, counts[, which(cond ==
+      tmp.counts <- cbind(tmp.counts, counts[, which(cond  ==
                                                        levels(cond)[i])])
-      tmp.cond <- c(tmp.cond, as.character(cond[which(cond ==
+      tmp.cond <- c(tmp.cond, as.character(cond[which(cond  ==
                                                         levels(cond)[i])]))
     }
     counts <- tmp.counts
@@ -130,18 +131,17 @@ gmtHeat<-function(counts, cond, gmt, con=NULL, labgenes=NULL, avgExp=T, zscore=T
   forHeat <- list()
   for (i in 1:length(gmt)) {
     forHeat[[i]] <- counts[which(rownames(counts) %in% gmt[[i]]),]
-    if(isTRUE(intClus)){ #I think because the 'printEach' is set inside this 'if' statement, we don't see the heatmaps being plotted
+    if(isTRUE(intClus)){
       genelab<-rownames(forHeat[[i]])
       if (!is.null(labgenes)) {
         tmp <- rep(" ", nrow(forHeat[[i]]))
         for (k in 1:length(labgenes)) {
-          tmp[which(rownames(forHeat[[i]]) %in% labgenes[k], arr.ind = T)] <- labgenes[k]
+          tmp[which(rownames(forHeat[[i]]) %in% labgenes[k], arr.ind = TRUE)] <- labgenes[k]
         }
         genelab <- tmp
       }
-      tmp<-pheatmap::pheatmap(forHeat[[i]], cluster_row=T, silent=!printEach, main=names(gmt)[i], labels_row = genelab)
+      tmp<-pheatmap::pheatmap(forHeat[[i]], cluster_row=TRUE, silent=!printEach, main=names(gmt)[i], labels_row = genelab)
       ord<-rownames(forHeat[[i]])[tmp$tree_row$order]
-      #print(ord)
       gmt[[i]]<-ord
       forHeat[[i]]<-forHeat[[i]][match(ord, rownames(forHeat[[i]])),]
     } else {
@@ -153,13 +153,13 @@ gmtHeat<-function(counts, cond, gmt, con=NULL, labgenes=NULL, avgExp=T, zscore=T
     message("Returning list of groups")
     return(forHeat)
   }
-  #print(gmt)
+
   forHeat <- suppressWarnings(as.data.frame(do.call("rbind",
                                                     forHeat)))
 
   annodf <- suppressWarnings(unique(tidyr::gather(as.data.frame(do.call("cbind",
                                                                         gmt)), key = "Term", value = "Genes")))
-  rownames(annodf) <- make.names(annodf$Genes, unique = T)
+  rownames(annodf) <- make.names(annodf$Genes, unique = TRUE)
 
   rownames(forHeat) <- rownames(annodf)
   gaps <- c()
@@ -174,14 +174,13 @@ gmtHeat<-function(counts, cond, gmt, con=NULL, labgenes=NULL, avgExp=T, zscore=T
   if (!is.null(labgenes)) {
     tmp <- rep(" ", nrow(forHeat))
     for (i in 1:length(labgenes)) {
-      tmp[which(annodf$Genes %in% labgenes[i], arr.ind = T)] <- labgenes[i]
+      tmp[which(annodf$Genes %in% labgenes[i], arr.ind = TRUE)] <- labgenes[i]
     }
     labgenes <- tmp
   }
   else {
     labgenes <- annodf$Genes
   }
-  pheatmap::pheatmap(forHeat, annotation_row = annodf[, -2,
-                                                      drop = F], gaps_row = gaps, cluster_rows = F, labels_row = labgenes,
-                     cluster_cols = F)
+  pheatmap::pheatmap(forHeat, annotation_row = annodf[,-2,drop = FALSE], gaps_row = gaps, main=title,
+                     cluster_rows = FALSE, labels_row = labgenes, cluster_cols = FALSE)
 }

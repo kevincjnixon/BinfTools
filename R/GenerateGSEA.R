@@ -1,19 +1,28 @@
-GSEAclus<-function(gsFile, term, clusName, dir, retRNK=F){
-  if(length(term)!=length(clusName)){
+#' Create clusters of terms for Enrichment Map
+#'
+#' @param gsFile gmt file contatining gene sets used for GSEA
+#' @param term character vector of term keys to use to identify terms belonging to each cluster
+#' @param clusName character vector of same length as 'term' in the same order telling which cluster each term belongs to
+#' @param dir output directory for tsv file. Will be named "GSEA_clusters.tsv"
+#' @param retRNK Boolean. If TRUE, return the data frame containing the terms and clusters. Default is FALSE.
+#' @export
+
+GSEAclus<-function(gsFile, term, clusName, dir, retRNK=FALSE){
+  if(length(term) != length(clusName)){
     stop("term must be of same length as clusName")
   }
-  gs<-names(qusage::read.gmt(gsFile))
+  gs<-names(readGMT(gsFile))
   clus<-rep("", length(gs))
   message("Identifying GSEA names with terms...")
   pb<-txtProgressBar(min=0, max=length(term), style=3)
   for(i in 1:length(term)){
-    clus[grep(term[i], gs, ignore.case=T)]<-clusName[i]
+    clus[grep(term[i], gs, ignore.case=TRUE)]<-clusName[i]
     setTxtProgressBar(pb, i)
   }
   comb<-cbind(gs, clus)
   colnames(comb)<-c("NAME","Cluster")
   write.table(comb, paste0(dir,"GSEA_clusters.tsv"),
-              quote=F, row.names=F, sep="\t")
+              quote=FALSE, row.names=FALSE, sep="\t")
   message("\nDone")
   if(isTRUE(retRNK)){
     return(comb)
@@ -22,13 +31,13 @@ GSEAclus<-function(gsFile, term, clusName, dir, retRNK=F){
 
 #' Plot the distribution of scores by gene rank
 #'
-#' @param rnk rnk object obtained from GeneratedGSEA() with retRNK=T
+#' @param rnk rnk object obtained from GeneratedGSEA() with retRNK=TRUE
 #' @return Plot of scores in ranked gene list
 #' @export
 
 plotrnk<-function(rnk){
   rnk2<-as.data.frame(rnk, row.names=names(rnk))
-  rnk2<-as.data.frame(rnk2[order(rnk2$rnk, decreasing = T),,drop=F])
+  rnk2<-as.data.frame(rnk2[order(rnk2$rnk, decreasing = TRUE),,drop=FALSE])
   g<-ggplot2::ggplot(rnk2, ggplot2::aes(x=seq(1:nrow(rnk2)), y=rnk))+
     ggplot2::geom_bar(stat="identity", fill="lightgrey")+ggplot2::theme_minimal() +
     ggplot2::labs(x="Rank", y="Score")
@@ -44,12 +53,12 @@ plotrnk<-function(rnk){
 #' @param filename Path to the output .rnk file. Default is "./GSEA.rnk". Set NULL to not write out to file.
 #' @param bystat Boolean values determining if genes should be ranked by column 'stat'. If TRUE, and no column 'stat', genes will be ranked using the -log10 of column 'pvalue'. Default is TRUE.
 #' @param byFC Boolean values determining if genes should be ranked by column 'log2FoldChange'Default is FALSE.
-#' @param plotRNK Boolean indicating if ranked scores should be plotted. Default=T
+#' @param plotRNK Boolean indicating if ranked scores should be plotted. Default=TRUE
 #' @param retRNK Boolean indicating if ranked list should be returned as data frame object
 #' @return Exports a ranked gene list. If both bystat and byFC are true, ranking will be abs(stat)*log2FoldChange.
 #' @export
 
-GenerateGSEA<-function(res, filename="GSEA.rnk", bystat=T, byFC=F, plotRNK=T, retRNK=F){
+GenerateGSEA<-function(res, filename="GSEA.rnk", bystat=TRUE, byFC=FALSE, plotRNK=TRUE, retRNK=FALSE){
   GSEA<-data.frame(NAME=rownames(res), Rank=rep(NA,nrow(res)))
   #res<-res[complete.cases(res),]
   #Check to see if there is a column named 'stat', if not, rename 'pvalue' to stat
@@ -92,7 +101,7 @@ GenerateGSEA<-function(res, filename="GSEA.rnk", bystat=T, byFC=F, plotRNK=T, re
 	#   }
   }
   if(!is.null(filename)){
-  write.table(GSEA[complete.cases(GSEA),], filename, quote=FALSE, row.names=FALSE, sep="\t")
+    write.table(GSEA[complete.cases(GSEA),], filename, quote=FALSE, row.names=FALSE, sep="\t")
   }
 
   # GSEA<-GSEA[complete.cases(GSEA),]
