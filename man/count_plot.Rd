@@ -14,19 +14,19 @@ count_plot(
   compare = NULL,
   col = "Dark2",
   method = "ind",
-  pair = F,
+  pair = FALSE,
   pc = 1,
   yax = NULL,
-  showStat = T,
+  showStat = TRUE,
   style = "sina",
   sinaPoint = "black",
   textsize = NULL,
-  retStat = F,
-  retGP = F
+  retStat = FALSE,
+  retGP = FALSE
 )
 }
 \arguments{
-\item{counts}{Normalized counts from a DESeq2 object - use 'counts(dds, normalized=T)'}
+\item{counts}{Normalized counts from a DESeq2 object - use 'counts(dds, normalized=TRUE)'}
 
 \item{scaling}{Method used to scale counts per gene across samples. 'zscore', 'log10', or 'none'. Default is 'zscore'}
 
@@ -42,9 +42,9 @@ count_plot(
 
 \item{col}{Character indicating the RColorBrewer palette name or list of colours (hex, name, rgb()) to be used. Default is "Dark2"}
 
-\item{method}{Character indicating what to plot. One of "ind", "mean", "geoMean", or "median", or "perMean". Defaults to "ind" for individual data points (one point per sample).}
+\item{method}{Character indicating what to plot. One of "ind", "mean", "geoMean", or "median", or ".perMean". Defaults to "ind" for individual data points (one point per sample).}
 
-\item{pair}{Boolean indicating if t-test should be independent (F; default) or paired (T).}
+\item{pair}{Boolean indicating if t-test should be independent (FALSE; default) or paired (TRUE).}
 
 \item{pc}{Numeric indicating the pseudocount to be added when scaling="log10". Default=1.}
 
@@ -60,7 +60,7 @@ count_plot(
 
 \item{retStat}{Boolean indicating if the stats should be returned}
 
-\item{retGP}{Boolean indicating if ggplots2 object should be returned for further editing. Default=F}
+\item{retGP}{Boolean indicating if ggplots2 object should be returned for further editing. Default=FALSE}
 }
 \value{
 Generates a violin or box plot

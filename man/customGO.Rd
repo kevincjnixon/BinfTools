@@ -10,10 +10,10 @@ customGO(
   gsName = "custom GeneSet",
   bg = NULL,
   sp = "human",
-  FDR = T,
-  byRegion = F,
+  FDR = TRUE,
+  byRegion = FALSE,
   enr = "pos",
-  significant = T,
+  significant = TRUE,
   minp = 1e-300
 )
 }
@@ -30,16 +30,16 @@ customGO(
 
 \item{FDR}{Boolean indicating if p-values should be FDR corrected (Benjamini-Hochberg). Default is TRUE.}
 
-\item{byRegion}{Boolean. If query genes has duplicate gene symbols, set to TRUE to remove duplicates (relevant only if query genes are from annotated peaks from genomic data). Default=F.}
+\item{byRegion}{Boolean. If query genes has duplicate gene symbols, set to TRUE to remove duplicates (relevant only if query genes are from annotated peaks from genomic data). Default=FALSE.}
 
 \item{enr}{character of either "pos" or "neg" indicating if significance should be calculated for positive or negative hypergeometric enrichment, respectively. default="pos".}
 
-\item{significant}{Boolean indicating if only significant (p<0.05) results should be returned. defaulte=T.}
+\item{significant}{Boolean indicating if only significant (p<0.05) results should be returned. defaulte=TRUE.}
 
 \item{minp}{numeric indicating the minimum p-value possible reported (to avoid zeros)}
 }
 \value{
-Data.frame of same structure of results table from GO_GEM() when returnRes=T.
+Data.frame of same structure of results table from GO_GEM() when returnRes=TRUE.
 }
 \description{
 Perform a hypergeometric enrichment test for a custom gene set

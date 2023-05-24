@@ -9,8 +9,8 @@ plotVenn(
   title = "Venn Diagram",
   cols = "Dark2",
   lty = "blank",
-  scale = F,
-  retVals = F
+  scale = FALSE,
+  retVals = FALSE
 )
 }
 \arguments{
@@ -22,9 +22,9 @@ plotVenn(
 
 \item{lty}{Line type (1=solid line, 2=dashed line, default="blank")}
 
-\item{scale}{Boolean indicating if circles should be scaled to size (works only for 2 or 3-way Venn diagrams). Default=F.}
+\item{scale}{Boolean indicating if circles should be scaled to size (works only for 2 or 3-way Venn diagrams). Default=FALSE.}
 
-\item{retVals}{Boolean indicating if the overlaps should be returned (default=F)}
+\item{retVals}{Boolean indicating if the overlaps should be returned (default=FALSE)}
 }
 \value{
 An image of a Venn diagram showing overlaps between groups

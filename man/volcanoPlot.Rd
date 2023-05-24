@@ -14,9 +14,9 @@ volcanoPlot(
   col = NULL,
   fclim = NULL,
   showNum = TRUE,
-  returnDEG = F,
+  returnDEG = FALSE,
   ordBy = "sig",
-  expScale = F,
+  expScale = FALSE,
   upcol = NULL,
   dncol = NULL
 )

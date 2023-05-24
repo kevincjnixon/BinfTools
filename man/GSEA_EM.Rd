@@ -4,7 +4,7 @@
 \alias{GSEA_EM}
 \title{Export GSEA results to format compatible with enrichment map (cytoscape)}
 \usage{
-GSEA_EM(gsea, rnk, prefix = NULL, gmt = NULL)
+GSEA_EM(gsea, rnk, prefix = NULL, gmt = NULL, retEM = FALSE)
 }
 \arguments{
 \item{gsea}{GSEA results from GSEA() function}
@@ -14,6 +14,8 @@ GSEA_EM(gsea, rnk, prefix = NULL, gmt = NULL)
 \item{prefix}{Character of prefix for output files. Files will be named \emph{prefix}_neg_report.tsv and \emph{prefix}_pos_report.tsv. If NULL, prefix will be "GSEA"}
 
 \item{gmt}{file or address to gmt file used for gsea results. Use only if you need to save gmt to file (if you have it already saved to file, leave NULL)}
+
+\item{retEM}{Boolean indicating if enrichment map tables should be returned to R for use with RCy3 (default=FALSE)}
 }
 \description{
 Export GSEA results to format compatible with enrichment map (cytoscape)

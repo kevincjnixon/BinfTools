@@ -7,14 +7,14 @@
 clusRelev(
   clusRes,
   cluslev,
-  rename = T,
+  rename = TRUE,
   title = "Releveled Clusters",
   col = "Dark2",
   hmcol = NULL,
   labgenes = "",
-  avgExp = F,
-  showStat = T,
-  retStat = F
+  avgExp = FALSE,
+  showStat = TRUE,
+  retStat = FALSE
 )
 }
 \arguments{
@@ -22,7 +22,7 @@ clusRelev(
 
 \item{cluslev}{Numeric vector indicating the new order of clusters for clusRes}
 
-\item{rename}{Boolean indicating if clusteres should be renamed based on their new order. Default=T}
+\item{rename}{Boolean indicating if clusteres should be renamed based on their new order. Default=TRUE}
 
 \item{title}{Character indicating the title for the plots. Default= "Releveled Clsuters"}
 
@@ -32,7 +32,7 @@ clusRelev(
 
 \item{labgenes}{Character vector corresponding to rownames in clusRes of genes to label in heatmap. Set to NULL to label all genes. Default is "" which labeles no genes.}
 
-\item{avgExp}{Boolean. Set to TRUE if clusRes was generated with 'avgExp=T' in clusFigs().}
+\item{avgExp}{Boolean. Set to TRUE if clusRes was generated with 'avgExp=TRUE' in clusFigs().}
 
 \item{showStat}{Boolean. If set to TRUE, significance symbols will be shown for significant contrasts in boxplot.}
 

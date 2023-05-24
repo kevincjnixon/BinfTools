@@ -4,10 +4,10 @@
 \alias{filtGO}
 \title{Filter a list of GO results to remove/replace tables with no enriched terms}
 \usage{
-filtGO(x, replace = F)
+filtGO(x, replace = FALSE)
 }
 \arguments{
-\item{x}{list of GO results tables returned when returnRes=T in GO_GEM() or clusGO()}
+\item{x}{list of GO results tables returned when returnRes=TRUE in GO_GEM() or clusGO()}
 
 \item{replace}{Boolean indicating if slots with no enriched GO terms should be replaced with a 'dummy table' - this is good if you want to run a GOHeat analysis. Default is FALSE.}
 }

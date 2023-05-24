@@ -7,7 +7,7 @@
 customGMT(gost, key, gmt)
 }
 \arguments{
-\item{gost}{The gost output of GO_GEM (get by setting returnGost=T when using GO_GEM)}
+\item{gost}{The gost output of GO_GEM (get by setting returnGost=TRUE when using GO_GEM)}
 
 \item{key}{The keyword used to identify GO terms of interest}
 

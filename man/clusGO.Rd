@@ -13,13 +13,13 @@ clusGO(
   iea = FALSE,
   prefix = "ClusGO",
   ts = c(10, 500),
-  pdf = T,
-  fig = T,
-  returnGost = F,
-  writeRes = T,
-  writeGem = F,
-  returnRes = F,
-  writeGene = F
+  pdf = TRUE,
+  fig = TRUE,
+  returnGost = FALSE,
+  writeRes = TRUE,
+  writeGem = FALSE,
+  returnRes = FALSE,
+  writeGene = FALSE
 )
 }
 \arguments{

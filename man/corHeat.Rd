@@ -9,8 +9,8 @@ corHeat(
   method = "spearman",
   title = "Spearman Correlation",
   hmcol = NULL,
-  showNum = T,
-  showTree = F,
+  showNum = TRUE,
+  showTree = FALSE,
   annodf = NULL,
   annoCols = "Dark2"
 )
@@ -26,7 +26,7 @@ corHeat(
 
 \item{showNum}{Boolean indicating if correlation coefficients should be displayed on heatmap. Default=TRUE.}
 
-\item{showTree}{Boolean indicating if hierarchical clustering trees should be shown. Default=F}
+\item{showTree}{Boolean indicating if hierarchical clustering trees should be shown. Default=FALSE}
 
 \item{annodf}{Data frame with rownames=sample names and columns of annotation data to be plotted. Leave NULL if none.}
 

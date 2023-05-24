@@ -7,7 +7,7 @@
 PathWC(
   text,
   cols = "Dark2",
-  retTerms = F,
+  retTerms = FALSE,
   minfreq = 3,
   rmwords = c("regulation", "process", "positive", "negative", "mediated", "cell",
     "cellular", "protein"),
@@ -19,7 +19,7 @@ PathWC(
 
 \item{cols}{Colour palette. Can be RColourBrewer palette name, rgb, colour names, or hexadecimal. Default is "Dark2"}
 
-\item{retTerms}{Boolean if term-document matrix dataframe should be returned. Default=F}
+\item{retTerms}{Boolean if term-document matrix dataframe should be returned. Default=FALSE}
 
 \item{minfreq}{Minimum frequency for a word to be included in the word cloud. Default=3}
 

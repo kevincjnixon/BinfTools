@@ -10,7 +10,7 @@ expCor(
   title,
   method = "spearman",
   transform = "none",
-  printInd = F
+  printInd = FALSE
 )
 }
 \arguments{

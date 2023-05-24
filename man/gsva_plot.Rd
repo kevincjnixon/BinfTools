@@ -16,14 +16,14 @@ gsva_plot(
   col = "Dark2",
   style = "sina",
   sinaPoint = "black",
-  showStat = T,
-  retRes = F,
+  showStat = TRUE,
+  retRes = FALSE,
   textsize = NULL,
-  retGP = F
+  retGP = FALSE
 )
 }
 \arguments{
-\item{counts}{Normalized count matrix - preferably z-score normalized by row. E.g. t(scale(t(counts(dds, normalized=T))))}
+\item{counts}{Normalized count matrix - preferably z-score normalized by row. E.g. t(scale(t(counts(dds, normalized=TRUE))))}
 
 \item{geneset}{List with length > 1 of character vectors indicating gene sets of interest. Can be created using qusage::read.gmt("geneset.gmt")}
 
@@ -51,7 +51,7 @@ gsva_plot(
 
 \item{textsize}{Numeric indicating text size for plot. Leave NULL for default.}
 
-\item{retGP}{Boolean indicating if ggplots2 object should be returned for further editing. Default=F.}
+\item{retGP}{Boolean indicating if ggplots2 object should be returned for further editing. Default=FALSE.}
 }
 \value{
 Violin or box plot of normalized enrichment scores for genesets between conditions

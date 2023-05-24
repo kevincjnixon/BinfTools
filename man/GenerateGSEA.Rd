@@ -7,10 +7,10 @@
 GenerateGSEA(
   res,
   filename = "GSEA.rnk",
-  bystat = T,
-  byFC = F,
-  plotRNK = T,
-  retRNK = F
+  bystat = TRUE,
+  byFC = FALSE,
+  plotRNK = TRUE,
+  retRNK = FALSE
 )
 }
 \arguments{
@@ -22,7 +22,7 @@ GenerateGSEA(
 
 \item{byFC}{Boolean values determining if genes should be ranked by column 'log2FoldChange'Default is FALSE.}
 
-\item{plotRNK}{Boolean indicating if ranked scores should be plotted. Default=T}
+\item{plotRNK}{Boolean indicating if ranked scores should be plotted. Default=TRUE}
 
 \item{retRNK}{Boolean indicating if ranked list should be returned as data frame object}
 }

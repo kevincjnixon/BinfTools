@@ -4,12 +4,14 @@
 \alias{fromEdgeR}
 \title{Convert outputs from tools other than DESeq2 for compatibility with BinfTools}
 \usage{
-fromEdgeR(topTags, geneNames = rownames(topTags$table))
+fromEdgeR(topTags, geneNames = rownames(topTags$table), statCol = NULL)
 }
 \arguments{
 \item{topTags}{A TopTags object originating from the output of edgeR::topTags()}
 
-\item{geneNames}{Acharacter vector specifying the names of the genes. Defaults to rownames(topTable) or rownames(topTags$table).}
+\item{geneNames}{A character vector specifying the names of the genes. Defaults to rownames(topTable) or rownames(topTags$table).}
+
+\item{statCol}{A character indicating the column name of topTags$table that contains the calculated stats (e.g. 'LR', 'F', etc) - default NULL uses -log10(PValue)}
 }
 \value{
 A data frame of results compatible with BinfTools commands

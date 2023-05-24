@@ -14,9 +14,9 @@ MA_Plot(
   col = NULL,
   fclim = NULL,
   showNum = TRUE,
-  returnDEG = F,
+  returnDEG = FALSE,
   ordBy = "sig",
-  sigScale = F,
+  sigScale = FALSE,
   upcol = NULL,
   dncol = NULL
 )

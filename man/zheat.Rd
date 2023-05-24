@@ -11,11 +11,11 @@ zheat(
   con = "WT",
   title = "DEGs",
   labgenes = NULL,
-  zscore = T,
-  avgExp = F,
-  rclus = F,
+  zscore = TRUE,
+  avgExp = FALSE,
+  rclus = FALSE,
   hmcol = NULL,
-  retClus = F,
+  retClus = FALSE,
   annoCols = "Dark2",
   fs = 10
 )
@@ -23,7 +23,7 @@ zheat(
 \arguments{
 \item{genes}{A character vector of genes to subset from rownames(counts) to create the heatmap}
 
-\item{counts}{Normalized count matrix with rows as genes and columns as samples. Use 'counts(dds, normalized=T)'.}
+\item{counts}{Normalized count matrix with rows as genes and columns as samples. Use 'counts(dds, normalized=TRUE)'.}
 
 \item{conditions}{Character vector indicating conditions belonging to each sample (same order as colnames(counts))}
 
@@ -33,9 +33,9 @@ zheat(
 
 \item{labgenes}{Character vector corresponding to rownames(counts) of genes to be labelled on the side of the heatmap. Leave as NULL to label all genes. Use "" to label no genes.}
 
-\item{zscore}{Boolean indicating if counts should be z-score normalized (default=T)}
+\item{zscore}{Boolean indicating if counts should be z-score normalized (default=TRUE)}
 
-\item{avgExp}{Boolean indicating if values should be averaged within each condition (i.e. plot one value per condition). Default=F.}
+\item{avgExp}{Boolean indicating if values should be averaged within each condition (i.e. plot one value per condition). Default=FALSE.}
 
 \item{rclus}{Boolean indicating if rows (genes) should be clustered. Leave FALSE for genes to be ordered on decreasing expression in 'con'.}
 

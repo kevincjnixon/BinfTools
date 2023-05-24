@@ -4,12 +4,14 @@
 \alias{makeTermList}
 \title{Easily make a termlist for GOHeat()}
 \usage{
-makeTermList(GOres, keylist)
+makeTermList(GOres, keylist, retCol = "term_name")
 }
 \arguments{
-\item{GOres}{List of GO results tables from GO_GEM() with returnRes=T.}
+\item{GOres}{List of GO results tables from GO_GEM() with returnRes=TRUE.}
 
 \item{keylist}{named list of character vectors of keys to match in the term_name column of the GO results}
+
+\item{retCol}{character or character vectors of column names from GOres to be returned. Default is "term_name".}
 }
 \value{
 named list of term names enriched in at least one of the GO tables in GOres for use with GOHeat(). Be sure to double check the termlist before making the heatmap as unwanted terms could be returned.

@@ -9,7 +9,7 @@ getSym(
   obType = c("res", "counts", "vector"),
   species = "hsapiens",
   target = "HGNC",
-  addCol = F
+  addCol = FALSE
 )
 }
 \arguments{
@@ -24,7 +24,7 @@ getSym(
 \item{addCol}{Boolean indicating if an additional column named "SYMBOL" should be added, leaving the rownames as the original format. If FALSE (\emph{default}), rownames of \emph{object} will be replaced with gene symbols - duplicate gene symbols will be handled by keeping the symbol with the highest gene expression values.}
 }
 \value{
-A data.frame object in the format indicated by \emph{obType} with gene symbols as the rownames (if \emph{addCol}=F) or gene symbols added as their own column named "SYMBOL".
+A data.frame object in the format indicated by \emph{obType} with gene symbols as the rownames (if \emph{addCol}=FALSE) or gene symbols added as their own column named "SYMBOL".
 }
 \description{
 This function makes use of gprofiler2's 'gconvert' function to convert gene

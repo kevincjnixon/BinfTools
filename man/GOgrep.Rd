@@ -7,7 +7,7 @@
 GOgrep(GOtable, key, cols = c("term_name", "intersection"))
 }
 \arguments{
-\item{GOtable}{Data frame returned from GO_GEM or clusGO with returnRes=T}
+\item{GOtable}{Data frame returned from GO_GEM or clusGO with returnRes=TRUE}
 
 \item{key}{Character to be matched in the column 'term_name'. Note that the key is not case sensitive and will return parital matches. Be sure to review the results.}
 

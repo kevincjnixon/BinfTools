@@ -5,7 +5,16 @@
 \title{Correlation Plotting
 Plot a correlation bewteen any two columns from any data frame(s) or named vectors}
 \usage{
-plotCor(x, y, xCol = F, yCol = F, xlab = "", ylab = "", title = "", scale = F)
+plotCor(
+  x,
+  y,
+  xCol = FALSE,
+  yCol = FALSE,
+  xlab = "",
+  ylab = "",
+  title = "",
+  scale = FALSE
+)
 }
 \arguments{
 \item{x}{Data frame with rownames or named vector containing data to be plotted on the x-axis}

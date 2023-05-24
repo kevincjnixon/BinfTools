@@ -11,17 +11,17 @@ GO_GEM(
   source = NULL,
   corr = "fdr",
   iea = FALSE,
-  ord = F,
+  ord = FALSE,
   prefix = "GO_analysis",
   ts = c(10, 500),
-  pdf = T,
-  fig = T,
+  pdf = TRUE,
+  fig = TRUE,
   figCols = c("blue", "orange"),
-  returnGost = F,
-  writeRes = T,
-  writeGem = F,
-  writeGene = F,
-  returnRes = F
+  returnGost = FALSE,
+  writeRes = TRUE,
+  writeGem = FALSE,
+  writeGene = FALSE,
+  returnRes = FALSE
 )
 }
 \arguments{

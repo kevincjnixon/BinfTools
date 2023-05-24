@@ -9,7 +9,7 @@ barplotTopGSEA(
   n = 30,
   by = "padj",
   decreasing = FALSE,
-  parseBader = T,
+  parseBader = TRUE,
   plot.title = "GSEA Bar plot"
 )
 }

@@ -10,9 +10,9 @@ GSEA(
   pval = 1,
   ts = c(10, 600),
   nperm = 10000,
-  parseBader = T,
+  parseBader = TRUE,
   plot.title = "Gene Set Enrichment Analysis",
-  useGAGE = T
+  useGAGE = TRUE
 )
 }
 \arguments{
@@ -30,7 +30,7 @@ GSEA(
 
 \item{plot.title}{Title for the plot}
 
-\item{useGAGE}{Boolean indicating if GAGE results should be used to filter fgsea results. Default=T}
+\item{useGAGE}{Boolean indicating if GAGE results should be used to filter fgsea results. Default=TRUE}
 }
 \value{
 A data frame of GSEA results and a figure showing normalized enrichment scores (NES) for top positive and negative enriched gene sets.

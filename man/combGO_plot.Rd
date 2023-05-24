@@ -8,17 +8,17 @@ combGO_plot(
   GOresList,
   title = "GO results",
   ts = c(10, 500),
-  sig = T,
+  sig = TRUE,
   numTerm = 10,
   upcols = c("lightpink", "red"),
   downcols = c("lightblue", "blue"),
   labs = c("Downregulated", "Upregulated"),
   textsize = NULL,
-  retGP = F
+  retGP = FALSE
 )
 }
 \arguments{
-\item{GOresList}{list of GO_GEM results (set returnRes=T) of length 2. Best for DEG GO results, where the first entry in the list is downregulated, and the second entry in the list is upregulated}
+\item{GOresList}{list of GO_GEM results (set returnRes=TRUE) of length 2. Best for DEG GO results, where the first entry in the list is downregulated, and the second entry in the list is upregulated}
 
 \item{title}{Character for the plot title}
 
@@ -36,7 +36,7 @@ combGO_plot(
 
 \item{textsize}{numeric indicating text size for plot. Leave NULL to keep default size.}
 
-\item{retGP}{Booliean indicating if the ggplot2 object should be returned for further editing. Default=F.}
+\item{retGP}{Booliean indicating if the ggplot2 object should be returned for further editing. Default=FALSE.}
 }
 \value{
 A plot of top GO results

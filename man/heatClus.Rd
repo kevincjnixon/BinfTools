@@ -7,7 +7,7 @@
 heatClus(out, level = round(max(out$tree_row$height)))
 }
 \arguments{
-\item{out}{output from zheat() when retClus=T}
+\item{out}{output from zheat() when retClus=TRUE}
 
 \item{level}{Level to cut the hierarchy tree to genreate clusters. Default is the rounded max tree height.}
 }

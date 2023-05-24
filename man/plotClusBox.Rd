@@ -4,7 +4,13 @@
 \alias{plotClusBox}
 \title{Make a boxplot grouped by gene sets or clusters}
 \usage{
-plotClusBox(x, yax = "Log2FoldChange", col = "Dark2", title = "", showStat = T)
+plotClusBox(
+  x,
+  yax = "Log2FoldChange",
+  col = "Dark2",
+  title = "",
+  showStat = TRUE
+)
 }
 \arguments{
 \item{x}{Data frame or named list of data frames of average gene expression or log2FoldChanges of a subset of genes, where each column is a condition or contrast (in the order you want displayed), and rows are genes.}
@@ -15,11 +21,15 @@ plotClusBox(x, yax = "Log2FoldChange", col = "Dark2", title = "", showStat = T)
 
 \item{title}{Character indicating the title of the plot}
 
-\item{showStat}{Boolean indicating if significance of pairwise contrasts within each group should be shown. Default=T}
+\item{showStat}{Boolean indicating if significance of pairwise contrasts within each group should be shown. Default=TRUE}
 }
 \value{
-Boxplot or grouped boxplot and tibble contatining statistics from pairwise t-tests.
+Boxplot or grouped boxplot and tibble containing statistics from pairwise t-tests.
 }
 \description{
 Make a boxplot grouped by gene sets or clusters
+}
+\examples{
+groups<-gmtHeat(counts, cond, gmt, retGroups=T)
+plotClusBox(x=groups, yax="Log2FoldChange", col="Dark2", title="", showStat=TRUE)
 }

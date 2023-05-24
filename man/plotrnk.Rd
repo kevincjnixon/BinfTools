@@ -7,7 +7,7 @@
 plotrnk(rnk)
 }
 \arguments{
-\item{rnk}{rnk object obtained from GeneratedGSEA() with retRNK=T}
+\item{rnk}{rnk object obtained from GeneratedGSEA() with retRNK=TRUE}
 }
 \value{
 Plot of scores in ranked gene list

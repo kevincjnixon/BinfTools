@@ -13,11 +13,11 @@ GOHeat(
   maxVal = NA,
   minVal = NA,
   NAcol = "#DDDDDD",
-  ret = F
+  ret = FALSE
 )
 }
 \arguments{
-\item{GOresList}{list of GO_GEM results (set returnRes=T) of length >= 2.}
+\item{GOresList}{list of GO_GEM results (set returnRes=TRUE) of length >= 2.}
 
 \item{termList}{named list of character vectors where the names represent the group names for GO terms and vectors contain GO term names corresponding to the 'term_name' column in the GO_GEM results data frams.}
 

@@ -8,22 +8,22 @@ listGO_Table(
   GOres,
   title = NULL,
   subtitle = NULL,
-  sig = T,
+  sig = TRUE,
   ts = c(10, 500),
   colnames = c("Term", "Enrichment", "FDR"),
   numTerm = 10,
-  retGT = F,
-  printGT = T
+  retGT = FALSE,
+  printGT = TRUE
 )
 }
 \arguments{
-\item{GOres}{List of GO results table returned from GO_GEM or clusGO when returnRes=T.}
+\item{GOres}{List of GO results table returned from GO_GEM or clusGO when returnRes=TRUE.}
 
 \item{title}{Character for Table title, leave NULL to avoid a title}
 
 \item{subtitle}{Character for subtitle of table. Leave NULL to not have subtitle}
 
-\item{sig}{Boolean indeicating if terms should be ordered by significance. FALSE lets terms be ordered by enrichment. Default=T.}
+\item{sig}{Boolean indeicating if terms should be ordered by significance. FALSE lets terms be ordered by enrichment. Default=TRUE.}
 
 \item{ts}{numeric vector of length two indicating minimum and maximum terms size cutoffs for enrichment and significance, respectively. Default=c(10,500)}
 
@@ -31,9 +31,9 @@ listGO_Table(
 
 \item{numTerm}{Number indicating the number of terms to print in the table. Default=10.}
 
-\item{retGT}{Boolean indicating if the gt table object should be returned - useful for custom formatting. Default=F.}
+\item{retGT}{Boolean indicating if the gt table object should be returned - useful for custom formatting. Default=FALSE.}
 
-\item{printGT}{Boolean indicating if the gt table object should be printed to Viewer. Default =T.}
+\item{printGT}{Boolean indicating if the gt table object should be printed to Viewer. Default =TRUE.}
 }
 \value{
 A table of class gt of the top GO results for each entry in the list of GO results.

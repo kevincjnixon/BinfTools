@@ -11,13 +11,13 @@ barGene(
   title = "Gene expression",
   norm = NULL,
   eb = "sd",
-  returnDat = F,
+  returnDat = FALSE,
   col = "Dark2",
   ord = NULL,
   con = NULL,
   stat.test = "t.test",
-  hide.ns = T,
-  retGP = F
+  hide.ns = TRUE,
+  retGP = FALSE
 )
 }
 \arguments{

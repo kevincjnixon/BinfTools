@@ -5,7 +5,15 @@
 \title{Make a 'pseudo' MA plot
 Make a MA plot even when you have only n=1. Note that this can be used if one or both condition groups have more than one or more replicates.}
 \usage{
-pseudoMA(counts, treat, con, FoldChange = 1, title = "", retDA = F, retRes = F)
+pseudoMA(
+  counts,
+  treat,
+  con,
+  FoldChange = 1,
+  title = "",
+  retDA = FALSE,
+  retRes = FALSE
+)
 }
 \arguments{
 \item{counts}{data frame of normalized counts to be used.}
@@ -23,7 +31,7 @@ pseudoMA(counts, treat, con, FoldChange = 1, title = "", retDA = F, retRes = F)
 \item{retRes}{Boolean indicating if 'pseudo' results object should be returned. Default is FALSE, and will not return if retDA=TRUE. Note that any p-values indicated in this table are dummy values.}
 }
 \value{
-MA plot with differently activated genes highlighted, named list of differently activated genes if retDA=T, and 'pseudo' results object if retRes=T (and retDA=F).
+MA plot with differently activated genes highlighted, named list of differently activated genes if retDA=TRUE, and 'pseudo' results object if retRes=TRUE (and retDA=FALSE).
 }
 \description{
 Make a 'pseudo' MA plot

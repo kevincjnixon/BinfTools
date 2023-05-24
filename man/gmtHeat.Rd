@@ -10,12 +10,13 @@ gmtHeat(
   gmt,
   con = NULL,
   labgenes = NULL,
-  avgExp = T,
-  zscore = T,
+  title = "",
+  avgExp = TRUE,
+  zscore = TRUE,
   hmcol = NULL,
-  intClus = T,
-  printEach = F,
-  retGroups = F
+  intClus = TRUE,
+  printEach = FALSE,
+  retGroups = FALSE
 )
 }
 \arguments{
@@ -29,6 +30,8 @@ gmtHeat(
 
 \item{labgenes}{character indicating which genes (if any) should be labeled on the heatmap. Default NULL will label all genes. Set to "" to label no genes.}
 
+\item{title}{character indicating the title of the resulting heatmap}
+
 \item{avgExp}{Boolean indicating if gene expression should be averaged within each condition (TRUE) or if each individual replicate should be plotted (FALSE; default).}
 
 \item{zscore}{Boolean indicating if gene expression should be z-score scaled (TRUE; default) or not (FALSE).}
@@ -37,9 +40,9 @@ gmtHeat(
 
 \item{intClus}{Boolean indicating if hierarchical clustering should be performed within each gene set. Note trees will not be shown. Default = TRUE. If FALSE, heatmap will be presented in the order in which genes appear in the gene sets.}
 
-\item{printEach}{Boolean indicating if heatmaps for each individual gene set should be printed. Only works when intClus=T. Trees will be shown. Default = FALSE.}
+\item{printEach}{Boolean indicating if heatmaps for each individual gene set should be printed. Only works when intClus=TRUE. Trees will be shown. Default = FALSE.}
 
-\item{retGroups}{Boolean indicating if named list of data frames of gene expression subset to each gene set should be returned (z-score normalized if zscore=T). Default is FALSE. if TRUE, heatmap won't be plotted.}
+\item{retGroups}{Boolean indicating if named list of data frames of gene expression subset to each gene set should be returned (z-score normalized if zscore=TRUE). Default is FALSE. if TRUE, heatmap won't be plotted.}
 }
 \value{
 Annotated heatmap of gene expression of all gene sets provided or named list of data frames of gene expression subset to each gene set.

@@ -11,10 +11,10 @@ clusFigs(
   labgenes = "",
   col = "Dark2",
   hmcol = NULL,
-  avgExp = F,
+  avgExp = FALSE,
   con = NULL,
-  showStat = T,
-  retStat = F
+  showStat = TRUE,
+  retStat = FALSE
 )
 }
 \arguments{
