@@ -193,7 +193,8 @@ zheat<-function(genes=NULL, counts, conditions, con="WT", title="DEGs", labgenes
 
 zheat_v2 <- function (genes = NULL, counts, conditions, order.by = NULL, sort.genes.by = NULL, title = "DEGs",
                       labgenes = NULL, zscore = TRUE, avgExp = FALSE, rclus = FALSE, hmcol = NULL,
-                      retClus = FALSE, annoCols = "Dark2", border_color = "grey60")
+                      retClus = FALSE, annoCols = "Dark2", border_color = "grey60",
+                      cellheight = NA, fontsize = 10)
 {
   if (is.null(hmcol)) {
     hmcol <- colorRampPalette(c("blue", "grey", "red"))(100)
@@ -279,6 +280,7 @@ zheat_v2 <- function (genes = NULL, counts, conditions, order.by = NULL, sort.ge
   if (is.logical(rclus)) {
     out <- pheatmap::pheatmap(zmat, color = hmcol, show_colnames = TRUE,
                               cluster_cols = FALSE, cluster_rows = rclus, main = title, border_color = border_color,
+                              fontsize = fontsize, cellheight = cellheight,
                               labels_row = labgenes, breaks = seq(from = lim[1],
                                                                   to = lim[2], length.out = 100))
   }
@@ -288,6 +290,7 @@ zheat_v2 <- function (genes = NULL, counts, conditions, order.by = NULL, sort.ge
     ]
     out <- pheatmap::pheatmap(zmat, color = hmcol, show_colnames = TRUE,
                               cluster_cols = FALSE, cluster_rows = FALSE, main = title, border_color = border_color,
+                              fontsize = fontsize, cellheight = cellheight,
                               annotation_row = rclus, annotation_colors = annoCols,
                               labels_row = labgenes, breaks = seq(from = lim[1],
                                                                   to = lim[2], length.out = 100))
