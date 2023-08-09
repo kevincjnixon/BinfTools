@@ -12,8 +12,8 @@
 #' @param title Character vector indicating the title of the plot
 #' @param compare List of character vectors (each of length 2) indicating the pairwise comparisons to be made between conditions. Leave NULL for all comparisons to be made
 #' @param col Character indicating the RColorBrewer palette name or list of colours (hex, name, rgb()) to be used. Default is "Dark2".
-#' @param style Character indicating the style of plot ("violin", "box", or "sina"). Defaults to "sina".
-#' @param sinaPoint Character indicating colour of sina plot points. Defaults to "black".
+#' @param style Character indicating the style of plot ("violin", "box"). Defaults to "violin".
+#' @param sinaPoint Boolean indicating if sina points should be shown. Only when style="violin".
 #' @param showStat Boolean indicating if p-values should be plotted on figure
 #' @param retRes Boolean indicating if GSVA results should be returned. Default=FALSE. If both retRes and retGP are TRUE, only GSVA results will be returned.
 #' @param textsize Numeric indicating text size for plot. Leave NULL for default.
@@ -21,7 +21,7 @@
 #' @return Violin or box plot of normalized enrichment scores for genesets between conditions
 #' @export
 
-gsva_plot<-function(counts, geneset, method="ssgsea", stat.test = "t-test", condition, con=NULL, title="ssGSEA", compare=NULL, col="Dark2", style="sina", sinaPoint="black", showStat=TRUE, retRes=FALSE, textsize=NULL, retGP=FALSE){
+gsva_plot<-function(counts, geneset, method="ssgsea", stat.test = "t-test", condition, con=NULL, title="ssGSEA", compare=NULL, col="Dark2", style="violin", sinaPoint=TRUE, showStat=TRUE, retRes=FALSE, textsize=NULL, retGP=FALSE){
   if (!stat.test %in% c("t-test", "wilcoxon")){
     stop("Only t-test and wilcoxon tests are supported! Default is t-test.")
   }
@@ -59,12 +59,11 @@ gsva_plot<-function(counts, geneset, method="ssgsea", stat.test = "t-test", cond
 	  ggplot2::labs(title=title, y="Normalized Enrichment Score", x="Condition") + ggplot2::theme_minimal() +
 	  ggplot2::scale_fill_manual(values=colPal(col)) + ggplot2::theme(text=ggplot2::element_text(size=textsize))
 	}
-	if(style == "sina"){
-	  if(length(colPal(sinaPoint))<length(levels(factor(x$group)))){
-	    sinaPoint<-rep(colPal(sinaPoint)[1], length(levels(factor(x$group))))
-	  }
-	  p<- ggpubr::ggviolin(x, x="group", y="NES", fill="group") +
-	    ggforce::geom_sina(ggplot2::aes(colour=factor(group)), alpha=0.5) + ggplot2::scale_colour_manual(values=colPal(sinaPoint)) +
+	if(isTRUE(sinaPoint)){
+
+	  p<- ggpubr::ggviolin(x, x="group", y="NES", fill="group", alpha=0.5) +
+	    ggplot2::geom_boxplot(width=0.1, fill="white") +
+	    ggforce::geom_sina(ggplot2::aes(colour=factor(group)), position = ggplot2::position_dodge(0.8)) + ggplot2::scale_colour_manual(values=colPal(col)) +
 	    ggplot2::labs(title=title, y="Normalized Enrichment Score", x="Condition") + ggplot2::theme_minimal() +
 	    ggplot2::scale_fill_manual(values=colPal(col)) + ggplot2::theme(text=ggplot2::element_text(size=textsize)) + ggplot2::guides(colour="none")
 	}

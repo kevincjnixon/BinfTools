@@ -68,6 +68,7 @@
 #' @param yax Character indicating the y-axis label of the boxplot. Default="Log2FoldChange".
 #' @param col Character indicating the RColorBrewer palette name or list of colours (hex, name, rgb()) to be used for the bar plot. Default is "Dark2"
 #' @param title Character indicating the title of the plot
+#' @param style Character of either 'box' or 'violin' to change the style of the figure generated.
 #' @param showStat Boolean indicating if significance of pairwise contrasts within each group should be shown. Default=TRUE
 #' @return Boxplot or grouped boxplot and tibble containing statistics from pairwise t-tests.
 #' @export
@@ -75,7 +76,7 @@
 #' groups<-gmtHeat(counts, cond, gmt, retGroups=T)
 #' plotClusBox(x=groups, yax="Log2FoldChange", col="Dark2", title="", showStat=TRUE)
 
-plotClusBox<-function (x, yax = "Log2FoldChange", col = "Dark2", title = "",
+plotClusBox<-function (x, yax = "Log2FoldChange", col = "Dark2", title = "", style="box",
                        showStat = TRUE)
 {
   require(dplyr, quietly = TRUE)
@@ -123,14 +124,32 @@ plotClusBox<-function (x, yax = "Log2FoldChange", col = "Dark2", title = "",
   }
   p <- NULL
   if (isTRUE(isList)) {
-    p <- ggpubr::ggboxplot(res, x = "cluster", y = "Expression",
-                           fill = "group") + ggplot2::labs(title = title, y = yax,
-                                                           x = "Cluster") + ggplot2::theme_minimal() + ggplot2::scale_fill_manual(values = BinfTools::colPal(col))
+    if(style=="box"){
+      p <- ggpubr::ggboxplot(res, x = "cluster", y = "Expression",
+                             fill = "group") + ggplot2::labs(title = title, y = yax,
+                                                             x = "Cluster") + ggplot2::theme_minimal() + ggplot2::scale_fill_manual(values = BinfTools::colPal(col))
+    } else {
+      p<-ggpubr::ggviolin(res, x = "cluster", y = "Expression",
+                          fill = "group", alpha=0.5) +
+        ggforce::geom_sina(ggplot2::aes(colour = group), position = ggplot2::position_dodge(0.8)) +
+        ggplot2::geom_boxplot(data=res, ggplot2::aes(group=interaction(group, cluster)), width=0.1, fill="white", position=ggplot2::position_dodge(0.8)) +
+        ggplot2::labs(title = title, y = yax, x = "Cluster") + ggplot2::theme_minimal() + ggplot2::scale_fill_manual(values = BinfTools::colPal(col)) +
+        ggplot2::scale_colour_manual(values=BinfTools::colPal(col))
+    }
   }
   else {
-    p <- ggpubr::ggboxplot(res, x = "group", y = "Expression",
-                           fill = "group") + ggplot2::labs(title = title, y = yax,
-                                                           x = "Condition") + ggplot2::theme_minimal() + ggplot2::scale_fill_manual(values = BinfTools::colPal(col))
+    if(style=="box"){
+      p <- ggpubr::ggboxplot(res, x = "group", y = "Expression",
+                             fill = "group") + ggplot2::labs(title = title, y = yax,
+                                                             x = "Condition") + ggplot2::theme_minimal() + ggplot2::scale_fill_manual(values = BinfTools::colPal(col))
+    } else {
+      p<-ggpubr::ggviolin(res, x = "group", y = "Expression",
+                          fill = "group", alpha=0.5) +
+        ggforce::geom_sina(ggplot2::aes(colour = group), position = ggplot2::position_dodge(0.8)) +
+        ggplot2::geom_boxplot(data=res, ggplot2::aes(group=interaction(group, cluster)), width=0.1, fill="white", position=ggplot2::position_dodge(0.8)) +
+        ggplot2::labs(title = title, y = yax, x = "Condition") + ggplot2::theme_minimal() + ggplot2::scale_fill_manual(values = BinfTools::colPal(col)) +
+        ggplot2::scale_colour_manual(values=BinfTools::colPal(col))
+    }
   }
   if (isTRUE(showStat)) {
     if(isTRUE(isList)){
@@ -144,6 +163,7 @@ plotClusBox<-function (x, yax = "Log2FoldChange", col = "Dark2", title = "",
   print(p)
   return(pwc)
 }
+
 
 
 #' k-means clustered figures

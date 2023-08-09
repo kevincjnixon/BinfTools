@@ -75,6 +75,7 @@ readGMT<-function(gmt){
 #' @param title character indicating the title of the resulting heatmap
 #' @param avgExp Boolean indicating if gene expression should be averaged within each condition (TRUE) or if each individual replicate should be plotted (FALSE; default).
 #' @param zscore Boolean indicating if gene expression should be z-score scaled (TRUE; default) or not (FALSE).
+#' @param colAnno Dataframe with rownames=colnames counts and at least one column to annotate the columns of the heatmap. Leave NULL for no annotation.
 #' @param hmcol colorRampPalette object of length 100 indicating colour scheme of heatmap. Leave NULL for default colours.
 #' @param intClus Boolean indicating if hierarchical clustering should be performed within each gene set. Note trees will not be shown. Default = TRUE. If FALSE, heatmap will be presented in the order in which genes appear in the gene sets.
 #' @param printEach Boolean indicating if heatmaps for each individual gene set should be printed. Only works when intClus=TRUE. Trees will be shown. Default = FALSE.
@@ -82,7 +83,7 @@ readGMT<-function(gmt){
 #' @return Annotated heatmap of gene expression of all gene sets provided or named list of data frames of gene expression subset to each gene set.
 #' @export
 
-gmtHeat<-function(counts, cond, gmt, con=NULL, labgenes=NULL, title="", avgExp=TRUE, zscore=TRUE, hmcol=NULL, intClus=TRUE, printEach=FALSE, retGroups=FALSE){
+gmtHeat<-function(counts, cond, gmt, con=NULL, labgenes=NULL, title="", avgExp=TRUE, zscore=TRUE, colAnno=NULL, hmcol=NULL, intClus=TRUE, printEach=FALSE, retGroups=FALSE){
   if (is.null(hmcol)) {
     hmcol <- colorRampPalette(rev(RColorBrewer::brewer.pal(n = 7,
                                                            name = "RdYlBu")))(100)
@@ -181,6 +182,17 @@ gmtHeat<-function(counts, cond, gmt, con=NULL, labgenes=NULL, title="", avgExp=T
   else {
     labgenes <- annodf$Genes
   }
-  pheatmap::pheatmap(forHeat, annotation_row = annodf[,-2,drop = FALSE], gaps_row = gaps, main=title,
-                     cluster_rows = FALSE, labels_row = labgenes, cluster_cols = FALSE)
+  lim <- c(ifelse(min(as.matrix(forHeat)[is.finite(as.matrix(forHeat))])<0, min(as.matrix(forHeat)[is.finite(as.matrix(forHeat))]), 0), max(as.matrix(forHeat)[is.finite(as.matrix(forHeat))]))
+  if(isTRUE(zscore)){
+    lim <- c(max(abs(as.matrix(forHeat)[is.finite(as.matrix(forHeat))])) * -1, max(abs(as.matrix(forHeat)[is.finite(as.matrix(forHeat))])))
+  }
+  if(is.null(colAnno)){
+    pheatmap::pheatmap(forHeat, annotation_row = annodf[,-2,drop = FALSE], gaps_row = gaps, main=title,
+                       cluster_rows = FALSE, labels_row = labgenes, cluster_cols = FALSE,
+                       breaks = seq(from = lim[1], to = lim[2], length.out = 100), color=hmcol)
+  } else {
+    pheatmap::pheatmap(forHeat, annotation_row = annodf[,-2,drop = FALSE], annotation_col = colAnno, gaps_row = gaps, main=title,
+                       cluster_rows = FALSE, labels_row = labgenes, cluster_cols = FALSE,
+                       breaks = seq(from = lim[1], to = lim[2], length.out = 100), color=hmcol)
+  }
 }

@@ -43,15 +43,15 @@
 #' @param pc Numeric indicating the pseudocount to be added when scaling="log10". Default=1.
 #' @param yax Character indicating the y-axis label. Leave NULL if going with default axis label.
 #' @param showStat Boolean indicating if statistics should be plotted.
-#' @param style Character indicating the style of plot ("violin", "box", or "sina"). Defaults to "sina".
-#' @param sinaPoint Character indicating colour of the sina plot points. Default is "black"
+#' @param style Character indicating the style of plot ("violin", "box"). Defaults to "violin".
+#' @param sinaPoint Boolean indicating if sina points should be shown. Only when style="violin".
 #' @param textsize Numeric indicating text size for the plot. Leave NULL for default.
 #' @param retStat Boolean indicating if the stats should be returned
 #' @param retGP Boolean indicating if ggplots2 object should be returned for further editing. Default=FALSE
 #' @return Generates a violin or box plot
 #' @export
 
-count_plot<-function(counts, scaling="zscore", genes, condition, con=NULL, title="expression", compare=NULL, col="Dark2", method="ind", pair=FALSE, pc=1, yax=NULL, showStat=TRUE, style="sina", sinaPoint="black", textsize=NULL, retStat=FALSE, retGP=FALSE){
+count_plot<-function(counts, scaling="zscore", genes, condition, con=NULL, title="expression", compare=NULL, col="Dark2", method="ind", pair=FALSE, pc=1, yax=NULL, showStat=TRUE, style="violin", sinaPoint=T, textsize=NULL, retStat=FALSE, retGP=FALSE){
   #Pull the normalized counts of genes
   res<-counts[which(rownames(counts) %in% genes),]
   ylab="z-score Normalized Expression"
@@ -144,18 +144,17 @@ count_plot<-function(counts, scaling="zscore", genes, condition, con=NULL, title
   }
   p<-NULL
   if(style == "violin"){
-    p<- ggpubr::ggviolin(x, x="group", y="Expression", fill="group") +
-      ggplot2::geom_boxplot(width=0.1, fill="white") +
-      ggplot2::labs(title=title, y=ylab, x="Condition") + ggplot2::theme_minimal() + ggplot2::scale_fill_manual(values=colPal(col))+ ggplot2::theme(text=ggplot2::element_text(size=textsize))
-  }
-  if(style == "sina"){
-    if(length(colPal(sinaPoint))<length(levels(factor(x$group)))){
-      sinaPoint<-rep(colPal(sinaPoint)[1], length(levels(factor(x$group))))
+    if(isFALSE(sinaPoint)){
+      p<- ggpubr::ggviolin(x, x="group", y="Expression", fill="group") +
+        ggplot2::geom_boxplot(width=0.1, fill="white") +
+        ggplot2::labs(title=title, y=ylab, x="Condition") + ggplot2::theme_minimal() + ggplot2::scale_fill_manual(values=colPal(col))+ ggplot2::theme(text=ggplot2::element_text(size=textsize))
+    } else {
+      p<- ggpubr::ggviolin(x, x="group", y="Expression", fill="group", alpha=0.5) +
+        ggplot2::geom_boxplot(width=0.1, fill="white") +
+        ggforce::geom_sina(ggplot2::aes(colour=factor(group)), position = ggplot2::position_dodge(0.8)) + ggplot2::scale_colour_manual(values=colPal(col)) +
+        ggplot2::labs(title=title, y=ylab, x="Condition") + ggplot2::theme_minimal() +
+        ggplot2::scale_fill_manual(values=colPal(col)) + ggplot2::theme(text=ggplot2::element_text(size=textsize)) + ggplot2::guides(colour="none")
     }
-    p<- ggpubr::ggviolin(x, x="group", y="Expression", fill="group") +
-	ggforce::geom_sina(ggplot2::aes(colour=factor(group)), alpha=0.5) + ggplot2::scale_colour_manual(values=colPal(sinaPoint)) +
-	ggplot2::labs(title=title, y=ylab, x="Condition") + ggplot2::theme_minimal() +
-	ggplot2::scale_fill_manual(values=colPal(col)) + ggplot2::theme(text=ggplot2::element_text(size=textsize)) + ggplot2::guides(colour="none")
   }
   if(style == "box") {
     p<- ggpubr::ggboxplot(x, x="group", y="Expression", fill="group") +
