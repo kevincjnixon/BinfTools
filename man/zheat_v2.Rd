@@ -18,7 +18,9 @@ zheat_v2(
   hmcol = NULL,
   retClus = FALSE,
   annoCols = "Dark2",
-  border_color = "grey60"
+  border_color = "grey60",
+  cellheight = NA,
+  fontsize = 10
 )
 }
 \arguments{

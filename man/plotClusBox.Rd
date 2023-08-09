@@ -9,6 +9,7 @@ plotClusBox(
   yax = "Log2FoldChange",
   col = "Dark2",
   title = "",
+  style = "box",
   showStat = TRUE
 )
 }
@@ -20,6 +21,8 @@ plotClusBox(
 \item{col}{Character indicating the RColorBrewer palette name or list of colours (hex, name, rgb()) to be used for the bar plot. Default is "Dark2"}
 
 \item{title}{Character indicating the title of the plot}
+
+\item{style}{Character of either 'box' or 'violin' to change the style of the figure generated.}
 
 \item{showStat}{Boolean indicating if significance of pairwise contrasts within each group should be shown. Default=TRUE}
 }

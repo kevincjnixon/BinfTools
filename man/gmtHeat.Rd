@@ -13,6 +13,7 @@ gmtHeat(
   title = "",
   avgExp = TRUE,
   zscore = TRUE,
+  colAnno = NULL,
   hmcol = NULL,
   intClus = TRUE,
   printEach = FALSE,
@@ -35,6 +36,8 @@ gmtHeat(
 \item{avgExp}{Boolean indicating if gene expression should be averaged within each condition (TRUE) or if each individual replicate should be plotted (FALSE; default).}
 
 \item{zscore}{Boolean indicating if gene expression should be z-score scaled (TRUE; default) or not (FALSE).}
+
+\item{colAnno}{Dataframe with rownames=colnames counts and at least one column to annotate the columns of the heatmap. Leave NULL for no annotation.}
 
 \item{hmcol}{colorRampPalette object of length 100 indicating colour scheme of heatmap. Leave NULL for default colours.}
 
