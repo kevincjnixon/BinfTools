@@ -18,7 +18,9 @@ volcanoPlot(
   ordBy = "sig",
   expScale = FALSE,
   upcol = NULL,
-  dncol = NULL
+  dncol = NULL,
+  labcol = "orange",
+  labColumn = NULL
 )
 }
 \arguments{
@@ -44,10 +46,15 @@ volcanoPlot(
 
 \item{ordBy}{Character indicating how DEGs should be ordered: "l2FC" order by descending absolute log2FoldChange, "sig" order by descending significance. Default is "sig".}
 
-\item{expScale}{A boolean indicating if points should be scaled using average expression (baseMean) - higher expressed = larger point. Default=FALSE.
-#'@param upcol A character vector indicating the colour (colour name or hexadecimal) of 'upregulated' genes. leave NULL for default red.}
+\item{expScale}{A boolean indicating if points should be scaled using average expression (baseMean) - higher expressed = larger point. Default=FALSE.}
+
+\item{upcol}{A character vector indicating the colour (colour name or hexadecimal) of 'upregulated' genes. leave NULL for default red.}
 
 \item{dncol}{A character vector indicating the colour (colour name or hexadecimal) of 'downregulated' genes. leave NULL for default blue.}
+
+\item{labcol}{A character vector indicating the colour (colour name or hexadecimal) of genes to be specifically highlighted by the 'col' and 'lab' arguments. default is "orange".}
+
+\item{labColumn}{A character vector indicating the column name (if left NULL, 'rownames(res)' will be used) to be used as labels. The gene names provided in the 'lab' argument must still correspond to rownames(res).}
 }
 \value{
 A volcano plot with x-axis indicating log2FoldChange expression and y-axis indicating -log10 pvalue. Blue dots are downregulated genes, red dots are upregulated genes.

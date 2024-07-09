@@ -13,7 +13,8 @@ plotCor(
   xlab = "",
   ylab = "",
   title = "",
-  scale = FALSE
+  scale = FALSE,
+  showP = FALSE
 )
 }
 \arguments{
@@ -32,6 +33,8 @@ plotCor(
 \item{title}{Character indicating title of plot}
 
 \item{scale}{Should the data be z-score scaled? Default is FALSE.}
+
+\item{showP}{Boolean indicating if the p-value should also be displayed (Default = FALSE)}
 }
 \value{
 Scatter plot of data with line of best fit and R-value of correlation. Note that x and y data are paired based on the rownames of the data frame or names of the named vector. Non-paired values will not be plotted.

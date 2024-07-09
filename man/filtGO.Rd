@@ -4,12 +4,18 @@
 \alias{filtGO}
 \title{Filter a list of GO results to remove/replace tables with no enriched terms}
 \usage{
-filtGO(x, replace = FALSE)
+filtGO(
+  x,
+  replace = FALSE,
+  sources = c("GO:BP", "GO:MF", "GO:CC", "CORUM", "REAC", "WP", "HP", "TF", "KEGG")
+)
 }
 \arguments{
 \item{x}{list of GO results tables returned when returnRes=TRUE in GO_GEM() or clusGO()}
 
 \item{replace}{Boolean indicating if slots with no enriched GO terms should be replaced with a 'dummy table' - this is good if you want to run a GOHeat analysis. Default is FALSE.}
+
+\item{sources}{Character vector indicating which values should be placed in the 'sources' column if replace = TRUE. Defaults to c("GO:BP","GO:MF","GO:CC","CORUM","REAC","WP","HP","TF","KEGG")}
 }
 \value{
 list of GO results tables with tables containing no enriched terms being removed or replaced.

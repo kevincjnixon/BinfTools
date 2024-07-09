@@ -18,7 +18,9 @@ MA_Plot(
   ordBy = "sig",
   sigScale = FALSE,
   upcol = NULL,
-  dncol = NULL
+  dncol = NULL,
+  labcol = "orange",
+  labColumn = NULL
 )
 }
 \arguments{
@@ -49,6 +51,10 @@ MA_Plot(
 \item{upcol}{A character vector indicating the colour (colour name or hexadecimal) of 'upregulated' genes. leave NULL for default red.}
 
 \item{dncol}{A character vector indicating the colour (colour name or hexadecimal) of 'downregulated' genes. leave NULL for default blue.}
+
+\item{labcol}{A character vector indicating the colour (colour name or hexadecimal) of genes to be specifically highlighted by the 'col' and 'lab' arguments. default is "orange".}
+
+\item{labColumn}{A character vector indicating the column name (if left NULL, 'rownames(res)' will be used) to be used as labels. The gene names provided in the 'lab' argument must still correspond to rownames(res).}
 }
 \value{
 An MA plot with x-axis indicating gene expression 'baseMean' and y-axis indicating log2FoldChange. Blue dots are downregulated genes, red dots are upregulated genes.
