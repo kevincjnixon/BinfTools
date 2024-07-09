@@ -167,10 +167,11 @@ expCor<-function(counts, cond, title, method="spearman", transform="none", print
 #' @param ylab Character indicating y-axis label
 #' @param title Character indicating title of plot
 #' @param scale Should the data be z-score scaled? Default is FALSE.
+#' @param showP Boolean indicating if the p-value should also be displayed (Default = FALSE)
 #' @return Scatter plot of data with line of best fit and R-value of correlation. Note that x and y data are paired based on the rownames of the data frame or names of the named vector. Non-paired values will not be plotted.
 #' @export
 
-plotCor<-function(x,y, xCol=FALSE, yCol=FALSE, xlab="", ylab="", title="", scale=FALSE){
+plotCor<-function(x,y, xCol = FALSE, yCol = FALSE, xlab = "", ylab = "", title = "", scale = FALSE, showP = FALSE){
   if(isFALSE(xCol)){
     if(isFALSE(yCol)){
       x<-x[which(names(x) %in% names(y))]
@@ -208,5 +209,10 @@ plotCor<-function(x,y, xCol=FALSE, yCol=FALSE, xlab="", ylab="", title="", scale
   fit<-lm(y~x)
   plot(x,y, main=title, pch=16, xlab=xlab, ylab=ylab)
   abline(fit, lty=2, col="red")
-  legend("topleft", legend=paste0("R=",round(sqrt(summary(fit)$adj.r.squared),digits=4)))
+  if(isFALSE(showP)){
+    legend("topleft", legend=paste0("R=",round(sqrt(summary(fit)$adj.r.squared),digits=4)))
+  } else {
+    legend("topleft", legend=c(paste0("R=",round(sqrt(summary(fit)$adj.r.squared),digits=4)),
+                               paste0("p=",signif(summary(fit)$coefficients[4], digits=4))))
+  }
 }

@@ -126,3 +126,29 @@ listGO_Table<-function(GOres, title=NULL, subtitle=NULL, sig=TRUE, ts=c(10,500),
     return(gt_tbl)
   }
 }
+
+#' Pander table of top n GO results
+#'
+#' Make a Pandoc table of the top n results from a GO_GEM() results object. This is useful for making markdown reports.
+#'
+#' @param GOres A single results table from GO_GEM() function with returnRes = T.
+#' @param ts Numeric vector of length 2 indicating the minimum and maximum term sizes to filter GO results. Defaults to c(10,500).
+#' @param sig Boolean indicating if the top significant terms should be shown. If FALSE, top enriched terms are shown. Default is TRUE.
+#' @param title Character for the table legend description
+#' @param n number of top terms to show. Default is 10. If there are fewer than n terms after filtering, only those terms will be shown.
+#' @return Prints a pandoc.table of results to stdout.
+#' @export
+
+GOtab<-function(GOres, ts=c(10,500), sig=TRUE, title="", n=10){
+  GOres<-subset(GOres, term_size >= ts[1] & term_size <= ts[2])
+  if(isTRUE(sig)){
+    GOres<-GOres[order(GOres$p_value, decreasing=F),]
+  } else {
+    GOres<-GOres[order(GOres$enrichment, decreasing=T),]
+  }
+  tmp<-data.frame(Term=GOres$term_name[1:n], FDR=GOres$p_value[1:n], Enrichment=GOres$enrichment[1:n])
+  tmp<-tmp[complete.cases(tmp),]
+  if(nrow(tmp)>0){
+    pander::pandoc.table(tmp, emphasize.rownames=FALSE, caption=title)
+  }
+}

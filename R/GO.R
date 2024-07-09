@@ -272,12 +272,12 @@ combGO_plot<-function(GOresList, title="GO results", ts=c(10,500), sig=TRUE, num
 #'@param height numeric indicating the cell height (Default=NA will automatically direct the cell height)
 #'@param maxVal numeric indicating the maximum -log10 p-value for the heatmap. Default NA sets it automatically.
 #'@param minVal numeric indicating the minimum -log10 p-value (1.3 should be absolute mimum - pvalue 0.05). Can only be set if maxVal is not NA. Default NA sets it automatically.
-#'@param NAcol character indicating the colour of NA values in heatmap. Default is "#DDDDDD" (grey)
+#'@param NAcol character indicating the colour of NA values in heatmap. Default is "darkgrey"
 #'@param ret Boolean indicating if table used for the heatmap (p-values not in -log10) should be returned. Default=FALSE.
 #'@return A grouped heatmap showing significance of GO terms across analyses as -log10(p-value)
 #'@export
 
-GOHeat<-function(GOresList, termList, hmcol=colorRampPalette(c("white","darkblue"))(100), width=NA, height=NA, maxVal=NA, minVal=NA, NAcol="#DDDDDD", ret=FALSE){
+GOHeat<-function(GOresList, termList, hmcol=colorRampPalette(c("white","darkblue"))(100), width=NA, height=NA, maxVal=NA, minVal=NA, NAcol="darkgrey", ret=FALSE){
   if(any(duplicated(unlist(termList)))){
     message("Duplicate term names found in termList. Removing all but the first instance of the term...")
     #creates a named vector where the names give the location of the duplicated instance of the term
@@ -479,25 +479,29 @@ rmNA<-function(x){
 #'
 #' @param x list of GO results tables returned when returnRes=TRUE in GO_GEM() or clusGO()
 #' @param replace Boolean indicating if slots with no enriched GO terms should be replaced with a 'dummy table' - this is good if you want to run a GOHeat analysis. Default is FALSE.
+#' @param sources Character vector indicating which values should be placed in the 'sources' column if replace = TRUE. Defaults to c("GO:BP","GO:MF","GO:CC","CORUM","REAC","WP","HP","TF","KEGG")
 #' @return list of GO results tables with tables containing no enriched terms being removed or replaced.
 #' @export
 
-filtGO<-function(x, replace=FALSE){
-  to_rm<-c()
-  for(i in 1:length(x)){
-    if(is.null(nrow(x[[i]]))){
-      to_rm<-c(to_rm,i)
+filtGO<-function (x, replace = FALSE, sources=c("GO:BP","GO:MF","GO:CC","CORUM","REAC","WP","HP","TF","KEGG"))
+{
+  to_rm <- c()
+  for (i in 1:length(x)) {
+    if (is.null(nrow(x[[i]]))) {
+      to_rm <- c(to_rm, i)
     }
   }
-  if(length(to_rm)>0){
-    if(isFALSE(replace)){
-      message("Removing ",length(to_rm)," GO tables with no results.")
-      x<-x[-to_rm]
-    } else {
-      message("Replacing ", length(to_rm)," GO tables with no results with a dummy table.")
-      tmp<-data.frame(p_value=c(1,1), term_name=rep("No Enriched Terms",2))
-      for(i in 1:length(to_rm)){
-        x[[to_rm[i]]]<-tmp
+  if (length(to_rm) > 0) {
+    if (isFALSE(replace)) {
+      message("Removing ", length(to_rm), " GO tables with no results.")
+      x <- x[-to_rm]
+    }
+    else {
+      message("Replacing ", length(to_rm), " GO tables with no results with a dummy table.")
+      tmp <- data.frame(p_value = rep(1, length(sources)), term_name = rep("No Enriched Terms",
+                                                                           length(sources)), enrichment = rep(0, length(sources)), precision = rep(0, length(sources), source=sources))
+      for (i in 1:length(to_rm)) {
+        x[[to_rm[i]]] <- tmp
       }
     }
   }
@@ -523,4 +527,146 @@ makeTermList<-function(GOres, keylist, retCol="term_name"){
     names(termlist)[i]<-names(keylist)[i]
   }
   return(termlist)
+}
+
+#' Create a dot plot of GO results
+#'
+#' @param GOres Single results table from GO_GEM() output with returnRes=T
+#' @param title Character indicating the title of the plot
+#' @return Dot plot representing enrichment, precision (as 'Gene Ratio'), and significance of enriched GO terms.
+#' @export
+
+GO_Dot<-function(GOres, title=""){
+  require(ggplot2, quietly=T)
+  x<-data.frame(Enrichment=log2(GOres$enrichment), Gene_Ratio=GOres$precision, FDR=GOres$p_value, term_name=GOres$term_name)
+  p<-ggplot(data=x, aes(x=Enrichment, y=term_name, color=FDR, size=Gene_Ratio)) +
+    geom_point() + scale_color_gradient(low="black", high="lightblue") + theme_minimal() +
+    ylab("") + xlab("log2(Enrichment)") + ggtitle(title) + labs(size="Gene Ratio")
+  print(p)
+}
+
+#' Dot heatmap for GO results
+#'
+#' @param GOresList Named list containing GO_GEM() results tables when returnRes=T
+#' @param termList Named list of relevant GO term names - made with makeTermList()
+#' @param ret Boolean indicating if values used for heatmap should be returned. Default is FALSE.
+#' @return Heatmap figure representing enrichment and precision (as 'Gene Ratio') of selected enriched pathways.
+#' @export
+
+GOHeat2<-function (GOresList, termList, ret = FALSE)
+{
+  if (any(duplicated(unlist(termList)))) {
+    message("Duplicate term names found in termList. Removing all but the first instance of the term...")
+    x <- data.frame(dups = names(unlist(termList)[which(duplicated(unlist(termList)))]),
+                    term = unlist(termList)[which(duplicated(unlist(termList)))])
+    loc <- tidyr::separate(x, col = dups, into = c("name",
+                                                   "index"), sep = "(?<=[A-Za-z])(?=[0-9])")
+    for (i in unique(loc$name)) {
+      tmp <- subset(loc[which(loc$name %in% i), ])
+      termList[[which(names(termList) %in% i)]] <- termList[[which(names(termList) %in%
+                                                                     i)]][-as.numeric(tmp$index)]
+    }
+  }
+  retEnr <- function(GOres, term) {
+    p_val <- log2(GOres$enrichment[which(GOres$term_name %in% term)])
+    if (length(p_val) < 1) {
+      p_val <- NA
+    }
+    return(p_val)
+  }
+  retGR <- function(GOres, term){
+    GR <- GOres$precision[which(GOres$term_name %in% term)]
+    if(length(GR) < 1) {
+      GR <- NA
+    }
+    return(GR)
+  }
+
+  forHeat <- suppressWarnings(unique(tidyr::gather(as.data.frame(do.call("cbind",
+                                                                         termList)), key = "Group", value = "Term")))
+  tmp <- c()
+  for (i in forHeat$Term) {
+    tmp <- rbind(tmp, unlist(lapply(GOresList, retEnr, term = i)))
+  }
+  colnames(tmp) <- names(GOresList)
+
+  forHeat <- cbind(forHeat, tmp)
+
+  tmp <- c()
+  for (i in forHeat$Term) {
+    tmp <- rbind(tmp, unlist(lapply(GOresList, retGR, term = i)))
+  }
+  colnames(tmp) <- names(GOresList)
+
+  forHeat <- cbind(forHeat, tmp)
+
+  #return(forHeat)
+
+  gaps <- c()
+  if (length(termList) < 2) {
+    gaps <- NULL
+  }
+  else {
+    for (i in 1:(length(termList) - 1)) {
+      gaps <- c(gaps, sum(gaps[length(gaps)], length(termList[[i]])))
+    }
+  }
+
+  d<-data.frame(
+    x=rep(names(GOresList), each= nrow(forHeat)),
+    y=rep(forHeat$Term, length(GOresList)),
+    z=rep(forHeat$Group, length(GOresList)),
+    Enrichment=unlist(forHeat[,3:(2+length(GOresList))]),
+    Gene_Ratio=unlist(forHeat[,(3+length(GOresList)):(2+2*length(GOresList))]))
+  d$y<-factor(d$y, levels=do.call("c",termList))
+  d$z<-factor(d$z, levels=names(termList))
+  #return(d)
+
+  p<-ggplot(d, aes(x, forcats::fct_rev(y), fill=Enrichment, size=Gene_Ratio)) +
+    geom_point(shape=21, stroke=0) + geom_hline(yintercept=seq(0.5,(nrow(forHeat)+0.5),1), size=.2) +
+    geom_vline(xintercept=seq(0.5, length(GOresList)+0.5,1), size=.2) +
+    scale_x_discrete(position = "top") +
+    scale_radius(range=c(1,15)) +
+    scale_fill_gradient(low="black", high="lightblue") +
+    theme_minimal() +
+    theme(legend.position = "bottom",
+          panel.grid.major = element_blank(),
+          legend.text = element_text(size=8),
+          legend.title=element_text(size=8)) +
+    guides(size = guide_legend(override.aes = list(fill=NA, color="black", stroke=0.25),
+                               label.position="bottom", title.position="right", order=1),
+           fill =  guide_colorbar(ticks.colour = NA, title.position = "top", order=2)) +
+    labs(size = "Gene Ratio", fill="log2(Enrichment)", x=NULL, y=NULL)
+  plot(p)
+
+  p <- ggplot(d, aes(x, forcats::fct_rev(y), fill = Enrichment)) +
+    geom_tile(color = "white") +  # Use geom_tile for heatmap squares
+    geom_point(aes(size = Gene_Ratio), shape = 16) +  # Add dots for gene ratio
+    geom_hline(yintercept = seq(0.5, (nrow(forHeat) + 0.5), 1), size = 0.2) +
+    geom_vline(xintercept = seq(0.5, length(GOresList) + 0.5, 1), size = 0.2) +
+    scale_x_discrete(position = "top") +
+    scale_size(range = c(5, 20)) +
+    scale_fill_gradient(low = "white", high = "red", na.value = "white") +  # Adjust color range to red
+    theme_minimal() +
+    theme(
+      legend.position = "bottom",
+      panel.grid.major = element_blank(),
+      legend.text = element_text(size = 8),
+      legend.title = element_text(size = 8)
+    ) +
+    guides(
+      size = guide_legend(
+        override.aes = list(fill = NA, color = "black", stroke = 0.25),
+        label.position = "bottom", title.position = "right", order = 1
+      ),
+      fill = guide_colorbar(ticks.colour = NA, title.position = "top", order = 2)
+    ) +
+    labs(size = "Gene Ratio", fill = "log2(Enrichment)", x = NULL, y = NULL)
+
+  #plot(p)
+  plot(p + facet_grid(rows=vars(z), scales="free",space="free"))
+
+  if (isTRUE(ret)) {
+    return(forHeat)
+  }
 }

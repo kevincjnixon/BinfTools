@@ -66,3 +66,27 @@ quart_group<-function(x, groups=c("1st","2nd","3rd","4th")){
   }
   return(g)
 }
+
+#' Combine two count tables
+#'
+#' @param x data.frame object representing the first count table. Entries must be numeric with columns representing samples and rownames are unique gene names.
+#' @param y data.frame object representing the second count table following the same rules as x. Both x and y must have shared rownames (gene) meaning the nomenclature must be the same and there must be at least SOME shared genes. Genes not shared between samples will be removed. Gene order does not matter.
+#' @param xName Character indicating an optional identifier added to the colnames of x. Default is NULL.
+#' @param yName Character indicating an optional identifier added to the colnames of y. Default is NULL.
+#' @return data.frame object of combined x and y where the rownames are shared genes and columns are samples.
+#' @export
+
+combCounts<-function(x,y, xName=NULL, yName=NULL){
+  genes<-rownames(x)[which(rownames(x) %in% rownames(y))]
+  genes<-rownames(y)[which(rownames(y) %in% genes)]
+  message(length(genes)," genes shared")
+  x<-x[which(rownames(x) %in% genes),]
+  y<-y[which(rownames(y) %in% genes),]
+  if(!is.null(xName)){
+    colnames(x)<-paste(colnames(x), xName, sep=".")
+  }
+  if(!is.null(yName)){
+    colnames(y)<-paste(colnames(y), yName, sep=".")
+  }
+  return(cbind(x, y[match(rownames(x), rownames(y)),]))
+}

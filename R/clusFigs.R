@@ -246,7 +246,7 @@ clusFigs<-function(resList, numClus, title="Clustered Results", labgenes="", col
   if(isTRUE(avgExp)){
     yax<-"Average Normalized Expression"
   }
-  stats<-plotClusBox(clusList, yax, col, title, showStat)
+  stats<-plotClusBox(clusList, yax, col, title, "box", showStat)
   #Pass it through to the barplot function:
   tmp<-.clusBar(mat, title, col=col, avgExp)
   if(isTRUE(retStat)){

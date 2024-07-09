@@ -17,11 +17,13 @@
 #'@param sigScale A boolean indicating if the point size should be scaled by significance (more significant = larger point). Default=FALSE.
 #'@param upcol A character vector indicating the colour (colour name or hexadecimal) of 'upregulated' genes. leave NULL for default red.
 #'@param dncol A character vector indicating the colour (colour name or hexadecimal) of 'downregulated' genes. leave NULL for default blue.
+#'@param labcol A character vector indicating the colour (colour name or hexadecimal) of genes to be specifically highlighted by the 'col' and 'lab' arguments. default is "orange".
+#'@param labColumn A character vector indicating the column name (if left NULL, 'rownames(res)' will be used) to be used as labels. The gene names provided in the 'lab' argument must still correspond to rownames(res).
 #'@return An MA plot with x-axis indicating gene expression 'baseMean' and y-axis indicating log2FoldChange. Blue dots are downregulated genes, red dots are upregulated genes.
 #' @export
 
 
-MA_Plot<-function(res, title, p=NULL, pval=NULL, FC=1, lab=NULL, col=NULL, fclim=NULL, showNum=TRUE, returnDEG=FALSE, ordBy="sig", sigScale=FALSE, upcol=NULL, dncol=NULL){
+MA_Plot<-function(res, title, p=NULL, pval=NULL, FC=1, lab=NULL, col=NULL, fclim=NULL, showNum=TRUE, returnDEG=FALSE, ordBy="sig", sigScale=FALSE, upcol=NULL, dncol=NULL, labcol="orange", labColumn=NULL){
   ##If there are p-values = 0, remove these because they will cause an error with the -log p-value calculation, but save them in zeroes to include in the numbers of genes
   zeroes<-NULL
   ##Set up variables to contain down/up regulated genes and genes with no change (nc)
@@ -133,12 +135,16 @@ MA_Plot<-function(res, title, p=NULL, pval=NULL, FC=1, lab=NULL, col=NULL, fclim
     ##Check to see if any extremems need to be labelled or coloured:
     if(!is.null(lab)){
       labpoints<-extremes[lab,]
-      text(labpoints$log2FoldChange ~ -log(labpoints$baseMean,10), labels=rownames(labpoints), cex=0.75, font=2,
-           pos=4, col="orange")
+      labs<-rownames(labpoints)
+      if(!is.null(labColumn)){
+        labs<-labpoints[,which(colnames(labpoints) %in% labColumn)]
+      }
+      text(labpoints$log2FoldChange ~ -log(labpoints$baseMean,10), labels=labs, cex=0.75, font=2,
+           pos=4, col=labcol)
     }
     if(!is.null(col)){
       colpoints<-extremes[col,]
-      points(colpoints$log2FoldChange ~ -log(colpoints$baseMean,10), pch=18, cex=1, col="orange")
+      points(colpoints$log2FoldChange ~ -log(colpoints$baseMean,10), pch=18, cex=1, col=labcol)
     }
   }
   ##Plot dotted lines for the thresholds
@@ -151,7 +157,7 @@ MA_Plot<-function(res, title, p=NULL, pval=NULL, FC=1, lab=NULL, col=NULL, fclim
     if(isTRUE(sigScale)){
       colpoints$cex<- -log10(colpoints$pvalue)/cex_scale
     }
-    points(colpoints$log2FoldChange ~ log(colpoints$baseMean,10), pch=16, cex=colpoints$cex, col="orange")
+    points(colpoints$log2FoldChange ~ log(colpoints$baseMean,10), pch=16, cex=colpoints$cex, col=labcol)
   }
   ##Now calculate number of DEGs (including padj=0)
   numdown<-dim(down)[1]+dim(subset(zeroes, log2FoldChange < -FC))[1]
@@ -173,8 +179,12 @@ MA_Plot<-function(res, title, p=NULL, pval=NULL, FC=1, lab=NULL, col=NULL, fclim
       lab=c(DEdown,DEup)
     }
     labpoints<-res[lab,]
-    text(labpoints$log2FoldChange ~ log(labpoints$baseMean,10), labels=rownames(labpoints), cex=0.75, font=2,
-         pos=4, col="orange")
+    labs<-rownames(labpoints)
+    if(!is.null(labColumn)){
+      labs<-labpoints[,which(colnames(labpoints) %in% labColumn)]
+    }
+    text(labpoints$log2FoldChange ~ log(labpoints$baseMean,10), labels=labs, cex=0.75, font=2,
+         pos=4, col=labcol)
   }
   ##Return a list of the numbers of genes (down, then up, then no change)
   if(isFALSE(returnDEG)){
